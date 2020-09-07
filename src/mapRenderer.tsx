@@ -13,12 +13,14 @@ export const getRenderer = (selectedCountyID: string | null) => {
         context.lineJoin = "round"
         context.lineCap = "round"
 
+        // Draw counties
         context.beginPath()
         path(topojson.mesh(us, us.objects.counties as GeometryObject, (a: any, b: any) => a !== b && (a.id / 1000 | 0) === (b.id / 1000 | 0)))
         context.lineWidth = 0.5;
         context.strokeStyle = "#aaa"
         context.stroke();
 
+        // Fill in selected county
         if (selectedCountyID) {
             context.beginPath()
             const county = usUntyped.objects.counties.geometries.find(county => county.id === selectedCountyID)
@@ -27,12 +29,14 @@ export const getRenderer = (selectedCountyID: string | null) => {
             context.fill()
         }
     
+        // Draw states
         context.beginPath()
         path(topojson.mesh(us, us.objects.states as GeometryObject, (a, b) => a !== b))
         context.lineWidth = 0.5
         context.strokeStyle = 'black'
         context.stroke()
     
+        // Draw nation
         context.beginPath()
         path(topojson.feature(us, us.objects.nation as GeometryObject))
         context.strokeStyle = 'black'
