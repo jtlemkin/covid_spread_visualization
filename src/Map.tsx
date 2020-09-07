@@ -39,7 +39,7 @@ export function Map() {
         <Row>
             <FilterableList data={searchData} onClick={selectCounty} />
             <AsLargeAsPossibleDiv style={{maxWidth: windowSize.height * 975 / 610}}>
-                <canvas ref={canvasRef} width={975 * ratio} height={610 * ratio} style={{width: 975, maxWidth: '100%'}}></canvas>
+                <canvas ref={canvasRef} width={975 * ratio} height={610 * ratio} style={{width: 975 * ratio, maxWidth: '100%'}}></canvas>
             </AsLargeAsPossibleDiv>
         </Row>
     )

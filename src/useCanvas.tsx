@@ -9,7 +9,8 @@ const useCanvas = (draw: (context: CanvasRenderingContext2D) => void) => {
         const context = canvas?.getContext('2d')
 
         if (context) {
-            context.scale(2, 2)
+            const ratio = window.devicePixelRatio
+            context.scale(ratio, ratio)
         }
     }, [])
 
