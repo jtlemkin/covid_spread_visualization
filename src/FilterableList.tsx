@@ -8,7 +8,7 @@ const FixedDiv = styled.div`
 `
 
 const Scrollable = styled.div`
-    height: 90%;
+    height: 95%;
     width: 200px;
     overflow-y: scroll;
 `

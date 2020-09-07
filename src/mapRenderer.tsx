@@ -4,37 +4,39 @@ import { Topology, GeometryObject } from 'topojson-specification'
 import usUntyped from './counties-albers-10m.json'
 
 //const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
-const path = d3.geoPath()
-const us = (usUntyped as unknown) as Topology
-const statesPath = path(topojson.mesh(us, us.objects.states as GeometryObject, (a, b) => a !== b)) ?? ""
-const nationPath = path(topojson.feature(us, us.objects.nation as GeometryObject)) ?? ""
-
-const counties = usUntyped.objects.counties.geometries
 
 export const getRenderer = (selectedCountyID: string | null) => {
     return (context: CanvasRenderingContext2D) => {
-        counties.forEach((county) => {
-            const countyPath = path(topojson.feature(us, county as GeometryObject)) ?? ""
-            const countyPath2D = new Path2D(countyPath)
+        const path = d3.geoPath(null, context)
+        const us = (usUntyped as unknown) as Topology
+
+        context.lineJoin = "round"
+        context.lineCap = "round"
+
+        context.beginPath()
+        path(topojson.mesh(us, us.objects.counties as GeometryObject, (a: any, b: any) => a !== b && (a.id / 1000 | 0) === (b.id / 1000 | 0)))
+        context.lineWidth = 0.5;
+        context.strokeStyle = "#aaa"
+        context.stroke();
+
+        if (selectedCountyID) {
+            context.beginPath()
+            const county = usUntyped.objects.counties.geometries.find(county => county.id === selectedCountyID)
+            path(topojson.feature(us, county as GeometryObject))
+            context.fillStyle = 'red'
+            context.fill()
+        }
     
-            context.lineWidth = 0.5
-            context.strokeStyle = "#aaa"
-            context.stroke(countyPath2D)
-    
-            if (selectedCountyID !== null && selectedCountyID === county.id) {
-                console.log("change color!")
-                context.fillStyle = 'red'
-                context.fill()
-            }
-        })
-    
-        const statesPath2D = new Path2D(statesPath)
+        context.beginPath()
+        path(topojson.mesh(us, us.objects.states as GeometryObject, (a, b) => a !== b))
         context.lineWidth = 0.5
         context.strokeStyle = 'black'
-        context.stroke(statesPath2D)
+        context.stroke()
     
-        const nationPath2D = new Path2D(nationPath)
+        context.beginPath()
+        path(topojson.feature(us, us.objects.nation as GeometryObject))
+        context.strokeStyle = 'black'
         context.lineWidth = 1
-        context.stroke(nationPath2D)
+        context.stroke()
     }
 }

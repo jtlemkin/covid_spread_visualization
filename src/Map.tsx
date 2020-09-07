@@ -33,15 +33,13 @@ export function Map() {
 
     const canvasRef = useCanvas(getRenderer(selectedCountyID))
     const windowSize = useWindowSize()
-
-    console.log("Size", windowSize)
-    console.log(canvasRef.current?.width, canvasRef.current?.height)
+    const ratio = window.devicePixelRatio
 
     return (
         <Row>
             <FilterableList data={searchData} onClick={selectCounty} />
             <AsLargeAsPossibleDiv style={{maxWidth: windowSize.height * 975 / 610}}>
-                <canvas ref={canvasRef}></canvas>
+                <canvas ref={canvasRef} width={975 * ratio} height={610 * ratio} style={{width: 975, maxWidth: '100%'}}></canvas>
             </AsLargeAsPossibleDiv>
         </Row>
     )
@@ -50,4 +48,9 @@ export function Map() {
 interface DataPoint {
     label: string,
     id: string,
+}
+
+interface Size {
+    width: number,
+    height: number
 }
