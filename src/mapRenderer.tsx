@@ -7,6 +7,8 @@ import usUntyped from './counties-albers-10m.json'
 
 export const getRenderer = (selectedCountyID: string | null) => {
     return (context: CanvasRenderingContext2D) => {
+        console.log(usUntyped)
+
         const path = d3.geoPath(null, context)
         const us = (usUntyped as unknown) as Topology
 
