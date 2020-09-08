@@ -4,7 +4,6 @@ import { FilterableList } from './FilterableList'
 import useCanvas from './useCanvas'
 import { getRenderer } from './mapRenderer'
 import useWindowSize from './useWindowSize'
-import useCounties from './useCounties'
 import counties from './counties.json'
 
 const Row = styled.div`
