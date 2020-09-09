@@ -55,7 +55,7 @@ export function FilterableList({ data, onClick }: FilterableListProps) {
                 <ul>
                     {filteredData.map((item, index) => {
                         return (
-                            <li key={item.id}>
+                            <li key={item.id + item.label}>
                                 <button onClick={() => { onClick(item) }}>
                                     {item.label}
                                 </button>
