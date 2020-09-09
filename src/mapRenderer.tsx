@@ -6,16 +6,9 @@ import cities from './cities.json'
 
 const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
 
-function drawMap(context: CanvasRenderingContext2D, transform: TransformParams | null = null) {
+function drawMap(context: CanvasRenderingContext2D) {
     const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
-
-    context.clearRect(0, 0, context.canvas.clientWidth, context.canvas.clientHeight)
-
-    if (transform) {
-        console.log("Transform!")
-        context.transform(transform.a, transform.b, transform.c, transform.d, transform.e, transform.f)
-    }
 
     // Draw counties
     context.beginPath()
@@ -75,61 +68,51 @@ function getCenterForCounty(selectedCountyID: string) {
     return path.centroid(topojson.feature(us, county as GeometryObject))
 }
 
+function getTransform(selectedCountyID: string, t: number) {
+    const oldHeight = 610
+    const newHeight = getCountyHeight(selectedCountyID)
+    const maxScale = oldHeight / newHeight
+    const scales = d3.interpolate(1, maxScale)
+
+    const oldCenter = [487.5, 305]
+    const newCenter = getCenterForCounty(selectedCountyID)
+    const maxTranslation = [
+        oldCenter[0] - maxScale * newCenter[0],
+        oldCenter[1] - maxScale * newCenter[1]
+    ]
+    const translations = d3.interpolate([0, 0], maxTranslation)
+
+    const transformParams: TransformParams = {
+        a: scales(t),
+        b: 0,
+        c: 0,
+        d: scales(t),
+        e: translations(t)[0],
+        f: translations(t)[1],
+    }
+
+    return transformParams
+}
+
 export const getRenderer = (selectedCountyID: string | null) => {
-    return (context: CanvasRenderingContext2D, t: number, t0: number | null = null) => {
+    return (context: CanvasRenderingContext2D, t: number) => {
         context.lineJoin = "round"
         context.lineCap = "round"
 
-        if (selectedCountyID) {
-            const oldCenter = [487.5, 305]
-            const newCenter = getCenterForCounty(selectedCountyID)
-            const maxTranslation = [oldCenter[0] - newCenter[0], oldCenter[1] - newCenter[1]]
-            const translations = d3.interpolate([0, 0], maxTranslation)
+        const transform = selectedCountyID !== null ? getTransform(selectedCountyID, t) : null
 
-            const oldHeight = 610
-            const newHeight = getCountyHeight(selectedCountyID)
-            const maxScale = oldHeight / newHeight
-            const scales = d3.interpolate(1, maxScale)
-            const scaleShifts = d3.interpolate([0, 0], oldCenter)
+        context.clearRect(0, 0, context.canvas.clientWidth, context.canvas.clientHeight)
 
-            const s = !t0 ? scales(t) : scales(t) - scales(t0)
-            const tx = !t0 ? translations(t)[0] : translations(t)[0] - translations(t0)[0]
-            const ty = !t0 ? translations(t)[1] : translations(t)[1] - translations(t0)[1]
-            const cx = !t0 ? scaleShifts(t)[0] : scaleShifts(t)[0] - scaleShifts(t0)[0]
-            const cy = !t0 ? scaleShifts(t)[1] : scaleShifts(t)[1] - scaleShifts(t0)[1]
-            //const cx = context.canvas.width / 2
-            //const cy = context.canvas.height / 2
+        context.save()
 
-            console.log("MAXSCALE", maxScale)
-            console.log("Scale", s)
-            console.log("TRANSL", tx, ty)
-            console.log("CTRANSL", -cx, -cy)
-
-            const transformParams: TransformParams = {
-                a: s,
-                b: 0,
-                c: 0,
-                d: s,
-                e: tx - cx,
-                f: ty - cy,
-            }
-
-            //console.log(transformParams)
-
-            /*const scales = d3.interpolate(1, maxScale)
-            const scale = t0 !== null ? (
-                scales(t) / scales(t0)
-            ) : (
-                scales(t)
-            )
-            const scaleVector2D = {x: scale, y: scale}
-            console.log("SCALE", scale)*/
-
-            drawMap(context, transformParams)
+        if (transform) {
+            context.transform(transform.a, transform.b, transform.c, transform.d, transform.e, transform.f)
         }
 
         drawMap(context)
         drawCapitalLabels(context)
+
+        context.restore()
     }
 }
 
