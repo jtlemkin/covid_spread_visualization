@@ -16,6 +16,8 @@ const PlaceFactory = (fips: number) => {
         )
     )
 
+    const type = fips === 0 ? "nation" : (fips % 1000 === 0 ? "state" : "county")
+
     const path = d3.geoPath()
     const us = (usUntyped as unknown) as Topology
     const bounds = path.bounds(topojson.feature(us, geometry as GeometryObject))
@@ -48,6 +50,7 @@ const PlaceFactory = (fips: number) => {
 
     return ({
         fips,
+        type,
         scale,
         scaleAdjustedTranslation,
         contains

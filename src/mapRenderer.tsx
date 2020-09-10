@@ -31,14 +31,28 @@ function drawMap(context: CanvasRenderingContext2D, t: number, selectedPlace: an
     })
 }
 
-function drawCapitalLabels(context: CanvasRenderingContext2D) {
+function drawCitiesLabels(context: CanvasRenderingContext2D, t: number, selectedPlace: any, previousPlace: any) {
     cities.forEach((city: City) => {
         const [x, y] = projection([city.lng, city.lat])!
         context.textAlign = "center"
-        context.fillText(city.name, x, y - 6)
+
+        if (selectedPlace.contains(city.county_fips) && previousPlace.contains(city.county_fips)) {
+            context.fillStyle = "black"
+        } else if (selectedPlace.contains(city.county_fips) && !previousPlace.contains(city.county_fips)) {
+            context.fillStyle = d3.interpolateString("rgba(0,0,0,0)", "rgba(0,0,0,1)")(t)
+        } else if (!selectedPlace.contains(city.county_fips) && previousPlace.contains(city.county_fips)) {
+            context.fillStyle = d3.interpolateString("rgba(0,0,0,1)", "rgba(0,0,0,0)")(t)
+        } else {
+            context.fillStyle = "rgba(0,0,0,0)"
+        }
+
+        const scalingFactor = d3.interpolate(1 / Math.sqrt(previousPlace.scale), 1 / Math.sqrt(selectedPlace.scale))(t)
+        const fontSize = 11 * scalingFactor
+        context.font = `${fontSize}px Arial`
+        context.fillText(city.name, x, y - 6 * scalingFactor)
 
         context.beginPath()
-        context.arc(x, y, 2, 0, 2 * Math.PI)
+        context.arc(x, y, 2 * scalingFactor, 0, 2 * Math.PI)
         context.fill()
     })
 }
@@ -82,7 +96,7 @@ export const getRenderer = (selectedFips: number, previousFips: number) => {
         }
 
         drawMap(context, t, selectedPlace, previousPlace)
-        drawCapitalLabels(context)
+        drawCitiesLabels(context, t, selectedPlace, previousPlace)
 
         context.restore()
     }
@@ -92,4 +106,5 @@ interface City {
     name: string,
     lat: number,
     lng: number,
+    county_fips: number,
 }
