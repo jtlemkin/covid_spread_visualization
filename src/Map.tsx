@@ -4,7 +4,7 @@ import { FilterableList } from './FilterableList'
 import useCanvas from './useCanvas'
 import { getRenderer } from './mapRenderer'
 import useWindowSize from './useWindowSize'
-import counties from './counties.json'
+import places from './places.json'
 
 const Row = styled.div`
   display: flex;
@@ -16,33 +16,29 @@ const AsLargeAsPossibleDiv = styled.div`
     flex: 1;
 `
 
-export function Map() {
-    const [selectedCountyID, setSelectedCountyID] = useState<string | null>(null)
+// A fips number is an identifier for counties, states, and the nation
 
-    const selectCounty = (county: DataPoint) => {
-        setSelectedCountyID(county.id)
+export function Map() {
+    const [previousFips, setPreviousFips] = useState(0)
+    const [currentFips, setSelectedFips] = useState(0)
+
+    const selectCounty = (newFip: number) => {
+        setPreviousFips(currentFips)
+        setSelectedFips(newFip)
     }
 
-    const canvasRef = useCanvas(getRenderer(selectedCountyID))
+    const canvasRef = useCanvas(getRenderer(currentFips, previousFips))
     const windowSize = useWindowSize()
-    const ratio = window.devicePixelRatio
+    const maxMapWidth = windowSize.height * 975 / 610
+    const width = 975 * window.devicePixelRatio
+    const height = 610 * window.devicePixelRatio
 
     return (
         <Row>
-            <FilterableList data={counties} onClick={selectCounty} />
-            <AsLargeAsPossibleDiv style={{maxWidth: windowSize.height * 975 / 610}}>
-                <canvas ref={canvasRef} width={975 * ratio} height={610 * ratio} style={{width: 975 * ratio, maxWidth: '100%'}}></canvas>
+            <FilterableList data={places} onClick={selectCounty} />
+            <AsLargeAsPossibleDiv style={{maxWidth: maxMapWidth}}>
+                <canvas ref={canvasRef} width={width} height={height} style={{width, maxWidth: '100%'}}></canvas>
             </AsLargeAsPossibleDiv>
         </Row>
     )
-}
-
-interface DataPoint {
-    label: string,
-    id: string,
-}
-
-interface Size {
-    width: number,
-    height: number
 }

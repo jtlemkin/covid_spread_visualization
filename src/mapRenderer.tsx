@@ -3,42 +3,32 @@ import * as topojson from 'topojson-client'
 import { Topology, GeometryObject } from 'topojson-specification'
 import usUntyped from './counties-albers-10m.json'
 import cities from './cities.json'
+import PlaceFactory from './PlaceFactory'
 
 const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
 
-function drawMap(context: CanvasRenderingContext2D) {
+// Draws a single frame of the map
+function drawMap(context: CanvasRenderingContext2D, t: number, selectedPlace: any, previousPlace: any) {
     const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
 
-    // Draw counties
-    context.beginPath()
-    path(topojson.mesh(us, us.objects.counties as GeometryObject, (a: any, b: any) => a !== b && (a.id / 1000 | 0) === (b.id / 1000 | 0)))
-    context.lineWidth = 0.5;
-    context.strokeStyle = "#aaa"
-    context.stroke();
+    usUntyped.objects.counties.geometries.forEach(county => {
+        const fip = parseInt(county.id)
+        if (selectedPlace.contains(fip) || previousPlace.contains(fip)) {
+            context.beginPath()
+            path(topojson.feature(us, county as GeometryObject))
 
-    // Fill in selected county
-    /*if (selectedCountyID) {
-        context.beginPath()
-        const county = usUntyped.objects.counties.geometries.find(county => county.id === selectedCountyID)
-        path(topojson.feature(us, county as GeometryObject))
-        context.fillStyle = 'red'
-        context.fill()
-    }*/
+            if (selectedPlace.contains(fip) && previousPlace.contains(fip)) {
+                context.fillStyle = "#aaa"
+            } else if (selectedPlace.contains(fip)) {
+                context.fillStyle = d3.interpolateRgb("white", "#aaa")(t)
+            } else {
+                context.fillStyle = d3.interpolateRgb("#aaa", "white")(t)
+            }
 
-    // Draw states
-    context.beginPath()
-    path(topojson.mesh(us, us.objects.states as GeometryObject, (a, b) => a !== b))
-    context.lineWidth = 0.5
-    context.strokeStyle = 'black'
-    context.stroke()
-
-    // Draw nation
-    context.beginPath()
-    path(topojson.feature(us, us.objects.nation as GeometryObject))
-    context.strokeStyle = 'black'
-    context.lineWidth = 1
-    context.stroke()
+            context.fill()
+        }
+    })
 }
 
 function drawCapitalLabels(context: CanvasRenderingContext2D) {
@@ -53,36 +43,14 @@ function drawCapitalLabels(context: CanvasRenderingContext2D) {
     })
 }
 
-function getCountyHeight(selectedCountyID: string) {
-    const path = d3.geoPath()
-    const us = (usUntyped as unknown) as Topology
-    const county = usUntyped.objects.counties.geometries.find(county => county.id === selectedCountyID)
-    const bounds = path.bounds(topojson.feature(us, county as GeometryObject))
-    return bounds[1][1] - bounds[0][1]
-}
+function getTransform(selectedPlace: any, previousPlace: any, t: number) {
+    const scales = d3.interpolate(previousPlace.scale, selectedPlace.scale)
+    const translations = d3.interpolate(
+        previousPlace.scaleAdjustedTranslation, 
+        selectedPlace.scaleAdjustedTranslation
+    )
 
-function getCenterForCounty(selectedCountyID: string) {
-    const path = d3.geoPath()
-    const us = (usUntyped as unknown) as Topology
-    const county = usUntyped.objects.counties.geometries.find(county => county.id === selectedCountyID)
-    return path.centroid(topojson.feature(us, county as GeometryObject))
-}
-
-function getTransform(selectedCountyID: string, t: number) {
-    const oldHeight = 610
-    const newHeight = getCountyHeight(selectedCountyID)
-    const maxScale = oldHeight / newHeight
-    const scales = d3.interpolate(1, maxScale)
-
-    const oldCenter = [487.5, 305]
-    const newCenter = getCenterForCounty(selectedCountyID)
-    const maxTranslation = [
-        oldCenter[0] - maxScale * newCenter[0],
-        oldCenter[1] - maxScale * newCenter[1]
-    ]
-    const translations = d3.interpolate([0, 0], maxTranslation)
-
-    const transformParams: TransformParams = {
+    const transformParams = {
         a: scales(t),
         b: 0,
         c: 0,
@@ -94,12 +62,16 @@ function getTransform(selectedCountyID: string, t: number) {
     return transformParams
 }
 
-export const getRenderer = (selectedCountyID: string | null) => {
+// Returns a rendering function that the canvas hook can call
+export const getRenderer = (selectedFips: number, previousFips: number) => {
     return (context: CanvasRenderingContext2D, t: number) => {
         context.lineJoin = "round"
         context.lineCap = "round"
 
-        const transform = selectedCountyID !== null ? getTransform(selectedCountyID, t) : null
+        const selectedPlace = PlaceFactory(selectedFips)
+        const previousPlace = PlaceFactory(previousFips)
+
+        const transform = getTransform(selectedPlace, previousPlace, t)
 
         context.clearRect(0, 0, context.canvas.clientWidth, context.canvas.clientHeight)
 
@@ -109,7 +81,7 @@ export const getRenderer = (selectedCountyID: string | null) => {
             context.transform(transform.a, transform.b, transform.c, transform.d, transform.e, transform.f)
         }
 
-        drawMap(context)
+        drawMap(context, t, selectedPlace, previousPlace)
         drawCapitalLabels(context)
 
         context.restore()
@@ -120,23 +92,4 @@ interface City {
     name: string,
     lat: number,
     lng: number,
-}
-
-interface Vector2D {
-    x: number,
-    y: number
-}
-
-interface Transition {
-    start: number,
-    end: number
-}
-
-interface TransformParams {
-    a: number,
-    b: number,
-    c: number,
-    d: number,
-    e: number,
-    f: number
 }

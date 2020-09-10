@@ -53,10 +53,10 @@ export function FilterableList({ data, onClick }: FilterableListProps) {
             <SearchForm field={field} handleFieldChange={handleFieldChange} />
             <Scrollable>
                 <ul>
-                    {filteredData.map((item, index) => {
+                    {filteredData.map(item => {
                         return (
                             <li key={item.id + item.label}>
-                                <button onClick={() => { onClick(item) }}>
+                                <button onClick={() => { onClick(item.id) }}>
                                     {item.label}
                                 </button>
                             </li>
@@ -70,16 +70,16 @@ export function FilterableList({ data, onClick }: FilterableListProps) {
 
 interface FilterableListProps {
     data: Array<DataPoint>,
-    onClick: (item: DataPoint) => void
+    onClick: (id: number) => void
 }
 
 interface DataPoint {
     label: string,
-    id: string,
+    id: number,
 }
 
 FilterableList.propTypes = {
     data: PropTypes.arrayOf(
-        PropTypes.exact({label: PropTypes.string.isRequired, id: PropTypes.string.isRequired}).isRequired
+        PropTypes.exact({label: PropTypes.string.isRequired, id: PropTypes.number.isRequired}).isRequired
     ).isRequired,
 }
