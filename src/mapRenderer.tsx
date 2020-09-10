@@ -87,13 +87,13 @@ export const getRenderer = (selectedFips: number, previousFips: number) => {
 
         const transform = getTransform(selectedPlace, previousPlace, t)
 
-        context.clearRect(0, 0, context.canvas.clientWidth, context.canvas.clientHeight)
-
         context.save()
 
         if (transform) {
             context.transform(transform.a, transform.b, transform.c, transform.d, transform.e, transform.f)
         }
+
+        context.clearRect(0, 0, context.canvas.clientWidth, context.canvas.clientHeight)
 
         drawMap(context, t, selectedPlace, previousPlace)
         drawCitiesLabels(context, t, selectedPlace, previousPlace)

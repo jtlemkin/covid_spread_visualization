@@ -5,7 +5,6 @@ import useCanvas from './useCanvas'
 import { getRenderer } from './mapRenderer'
 import useWindowSize from './useWindowSize'
 import places from './places.json'
-import * as d3 from 'd3'
 
 const Row = styled.div`
   display: flex;
