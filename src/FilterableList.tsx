@@ -1,21 +1,35 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import PropTypes, { InferProps } from "prop-types"
 import styled from 'styled-components'
 import useWindowSize from './useWindowSize'
 
 const FixedDiv = styled.div`
     flex: 0;
+    height: 400px;
 `
 
 const Scrollable = styled.div`
-    height: 95%;
-    width: 200px;
+    height: 100%;
+    width: 100%;
     overflow-y: scroll;
+    background: #555; 
 `
 
-function SearchForm({
+const Input = styled.input`
+    border: none;
+    border-radius: 3px;
+    font-size: 1.2em;
+    width: 150px;
+`
+
+const List = styled.ul`
+    padding-inline-start: 0px;  
+`
+
+export function SearchForm({
     field, 
-    handleFieldChange
+    handleFieldChange,
+    onFocus
 }: InferProps<typeof SearchForm.propTypes>) {
     const onChange = (event: any) => {
         if (handleFieldChange !== null && handleFieldChange !== undefined) {
@@ -23,11 +37,33 @@ function SearchForm({
         }
     }
 
+    const ref = useRef<HTMLInputElement>(null)
+
+    useEffect(() => {
+        if (onFocus) {
+            const onFocusTrue = () => {
+                onFocus(true)
+            }
+    
+            const onFocusFalse = () => {
+                onFocus(false)
+            }
+
+            const form = ref.current
+            form?.addEventListener('focusin', onFocusTrue)
+            form?.addEventListener('focusout', onFocusFalse)
+
+            return () => {
+                form?.removeEventListener('focusin', onFocusTrue)
+                form?.removeEventListener('focusout', onFocusFalse)
+            }
+        }
+    })
+
     return (
         <form>
             <label>
-                County:
-                <input type="text" value={field} onChange={onChange} />
+                <Input ref={ref} type="text" value={field} onChange={onChange} />
             </label>
         </form>
     )
@@ -36,6 +72,7 @@ function SearchForm({
 SearchForm.propTypes = {
     field: PropTypes.string.isRequired,
     handleFieldChange: PropTypes.func,
+    onFocus: PropTypes.func,
 }
 
 export function FilterableList({ data, onClick }: FilterableListProps) {
@@ -49,10 +86,9 @@ export function FilterableList({ data, onClick }: FilterableListProps) {
     const filteredData = data.filter(item => item.label.toLowerCase().startsWith(field.toLowerCase()))
 
     return (
-        <FixedDiv style={{height: windowSize.height}}>
-            <SearchForm field={field} handleFieldChange={handleFieldChange} />
+        <FixedDiv>
             <Scrollable>
-                <ul>
+                <List>
                     {filteredData.map(item => {
                         return (
                             <li key={item.id + item.label}>
@@ -62,7 +98,7 @@ export function FilterableList({ data, onClick }: FilterableListProps) {
                             </li>
                         )
                     })}
-                </ul>
+                </List>
             </Scrollable>
         </FixedDiv>
     )

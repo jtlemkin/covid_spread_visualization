@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { FilterableList } from './FilterableList'
 import useCanvas from './useCanvas'
 import { getRenderer } from './mapRenderer'
 import useWindowSize from './useWindowSize'
-import places from './places.json'
+import PropTypes, { InferProps } from "prop-types"
 
 const Row = styled.div`
   display: flex;
@@ -12,8 +11,9 @@ const Row = styled.div`
   align-item: stretch;
 `
 
-const AsLargeAsPossibleDiv = styled.div`
+const Container = styled.div`
     flex: 1;
+    padding: 75px 25px 0px 25px;
 `
 
 const OutlinedBox = styled.div`
@@ -27,15 +27,7 @@ const OutlinedBox = styled.div`
 
 // A fips number is an identifier for counties, states, and the nation
 
-export function Map() {
-    const [previousFips, setPreviousFips] = useState(0)
-    const [currentFips, setSelectedFips] = useState(0)
-
-    const selectCounty = (newFip: number) => {
-        setPreviousFips(currentFips)
-        setSelectedFips(newFip)
-    }
-
+export function Map({currentFips, previousFips}: InferProps<typeof Map.propTypes>) {
     const canvasRef = useCanvas(getRenderer(currentFips, previousFips))
     const windowSize = useWindowSize()
     const maxMapWidth = windowSize.height * 975 / 610
@@ -44,16 +36,22 @@ export function Map() {
 
     return (
         <Row>
-            <FilterableList data={places} onClick={selectCounty} />
-            <AsLargeAsPossibleDiv style={{maxWidth: maxMapWidth}}>
+            <Container style={{maxWidth: maxMapWidth}}>
                 <canvas ref={canvasRef} width={width} height={height} style={{width, maxWidth: '100%'}}></canvas>
-            </AsLargeAsPossibleDiv>
-            <div>
-                <p>Number of Cases Over Time</p>
-                <OutlinedBox />
-                <p>Number of Deaths Over Time</p>
-                <OutlinedBox />
-            </div>
+            </Container>
         </Row>
     )
 }
+
+Map.propTypes = {
+    currentFips: PropTypes.number.isRequired,
+    previousFips: PropTypes.number.isRequired
+}
+
+/*
+<div>
+    <p>Number of Cases Over Time</p>
+    <OutlinedBox />
+    <p>Number of Deaths Over Time</p>
+    <OutlinedBox />
+</div> */
