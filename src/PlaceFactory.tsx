@@ -22,7 +22,6 @@ const PlaceFactory = (fips: number) => {
     const us = (usUntyped as unknown) as Topology
     const bounds = path.bounds(topojson.feature(us, geometry as GeometryObject))
     const height = bounds[1][1] - bounds[0][1]
-    const width = bounds[1][0] - bounds[0][0]
     // The US is a special case where it seems like the center calculated this way causes maine to be cut off
     const center = fips === 0 ? (
         [MAP_SIZE[0] / 2, MAP_SIZE[1] / 2]
