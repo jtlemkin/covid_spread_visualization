@@ -14,8 +14,8 @@ function App() {
 
   return (
     <div className="App">
-      <Header />
-      <Map previousFips={previousFips} currentFips={currentFips}/>
+      <Header selectCounty={selectCounty} />
+      <Map style={{padding: '25px'}} previousFips={previousFips} currentFips={currentFips}/>
     </div>
   )
 }

@@ -1,12 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import PropTypes, { InferProps } from "prop-types"
 import styled from 'styled-components'
-import useWindowSize from './useWindowSize'
-
-const FixedDiv = styled.div`
-    flex: 0;
-    height: 400px;
-`
 
 const Scrollable = styled.div`
     height: 100%;
@@ -33,7 +27,7 @@ export function SearchForm({
 }: InferProps<typeof SearchForm.propTypes>) {
     const onChange = (event: any) => {
         if (handleFieldChange !== null && handleFieldChange !== undefined) {
-            handleFieldChange(event)
+            handleFieldChange(event.target.value)
         }
     }
 
@@ -75,32 +69,21 @@ SearchForm.propTypes = {
     onFocus: PropTypes.func,
 }
 
-export function FilterableList({ data, onClick }: FilterableListProps) {
-    const windowSize = useWindowSize()
-
-    const [field, setField] = useState('')
-    const handleFieldChange = (event: any) => {
-        setField(event.target.value)
-    }
-
-    const filteredData = data.filter(item => item.label.toLowerCase().startsWith(field.toLowerCase()))
-
+export function ScrollableList({ data, onClick }: FilterableListProps) {
     return (
-        <FixedDiv>
-            <Scrollable>
-                <List>
-                    {filteredData.map(item => {
-                        return (
-                            <li key={item.id + item.label}>
-                                <button onClick={() => { onClick(item.id) }}>
-                                    {item.label}
-                                </button>
-                            </li>
-                        )
-                    })}
-                </List>
-            </Scrollable>
-        </FixedDiv>
+        <Scrollable>
+            <List>
+                {data.map(item => {
+                    return (
+                        <li key={item.id + item.label}>
+                            <button onClick={() => { onClick(item.id) }}>
+                                {item.label}
+                            </button>
+                        </li>
+                    )
+                })}
+            </List>
+        </Scrollable>
     )
 }
 
@@ -114,7 +97,7 @@ interface DataPoint {
     id: number,
 }
 
-FilterableList.propTypes = {
+ScrollableList.propTypes = {
     data: PropTypes.arrayOf(
         PropTypes.exact({label: PropTypes.string.isRequired, id: PropTypes.number.isRequired}).isRequired
     ).isRequired,
