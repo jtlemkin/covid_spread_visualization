@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import './App.css'
-import { Map } from './Map'
+import { USMap } from './USMap'
 import { Header } from './Header'
 
 function App() {
@@ -15,7 +15,7 @@ function App() {
   return (
     <div className="App">
       <Header selectCounty={selectCounty} />
-      <Map style={{padding: '25px'}} previousFips={previousFips} currentFips={currentFips}/>
+      <USMap style={{padding: '25px', maxWidth: '1000px'}} previousFips={previousFips} currentFips={currentFips}/>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { SearchForm, ScrollableList } from './ScrollableList'
-import places from './places.json'
+import places from './data/places.json'
 import PropTypes, { InferProps } from "prop-types"
 import { Expandable } from './Expandable'
 
