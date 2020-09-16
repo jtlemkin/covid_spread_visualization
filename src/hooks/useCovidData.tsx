@@ -3,9 +3,9 @@ import moment from 'moment'
 import populationsUntyped from '../data/populations.json'
 import { useEffect, useState } from 'react'
 import { Fips, Timeline, CovidStatistics } from '../interfaces'
-import { DSVRowArray } from 'd3'
+import { DSVRowArray, DSVRowString } from 'd3'
 
-function createTimeline(covidData: DSVRowArray, callback: (timeline: Timeline) => void) {
+function createTimeline(covidData: DSVRowArray) {
     const populations = (populationsUntyped as any)
     // Initialize empty timeline
     let timeline: Timeline = {
@@ -18,8 +18,7 @@ function createTimeline(covidData: DSVRowArray, callback: (timeline: Timeline) =
         }
     }
 
-    const parseRow = (i: number) => {
-        const row = covidData[i]
+    const parseRow = (row: DSVRowString<string>) => {
         const { snapshots, highs } = timeline
         const timestamp = moment(row.date).valueOf()
         let lastSnapshot = snapshots.length > 0 ? snapshots[snapshots.length - 1] : null
@@ -78,34 +77,9 @@ function createTimeline(covidData: DSVRowArray, callback: (timeline: Timeline) =
         }
     }
 
-    // Define non-blocking function to parse csv row into section of timeline
-    const parseCSVNonBlocking = (callback: () => void) => {
-        const numRows = covidData.length
-        let i = 0
-        console.log("NumRows", numRows)
+    covidData.forEach(parseRow)
 
-        const loop = () => {
-            if (i < numRows) {
-                i++
-
-                if (i % 1000 === 0) {
-                    console.log(i)
-                }
-
-                parseRow(i)
-
-                window.setTimeout(loop)
-            } else {
-                callback()
-            }
-        }
-
-        loop()
-    }
-
-    parseCSVNonBlocking(() => {
-        callback(timeline)
-    })
+    return timeline
 }
 
 function convertFipsToKey(fips: number) {
@@ -125,12 +99,9 @@ const useCovidData = () => {
 
     useEffect(() => {
         if (covidData) {
-            console.log("Ready!")
-            createTimeline(covidData!, timeline => {
-                console.log("Done!")
-                setCovidTimeline(timeline)
-                setIsLoading(false)
-            })
+            const timeline = createTimeline(covidData)
+            setCovidTimeline(timeline)
+            setIsLoading(false)
         }
     }, [covidData])
 
