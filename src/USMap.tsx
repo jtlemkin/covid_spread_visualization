@@ -3,6 +3,8 @@ import useCanvas from './hooks/useCanvas'
 import useCovidData from './hooks/useCovidData'
 import { getRenderer } from './mapRenderer'
 import CSS from 'csstype'
+import { Spinner } from './Spinner'
+import { Timeline } from './interfaces'
 
 // A fips number is an identifier for counties, states, and the nation
 
@@ -12,22 +14,20 @@ interface USMapProps {
     style?: CSS.Properties
 }
 
-const getMostRecentNormalizedRates = (data: Map<number, number[]>) => {
-    let newest = new Map<number, number>()
-    data.forEach((countyData, fips) => {
-        newest.set(fips, countyData[countyData.length - 1])
-    })
-    return newest
-}
-
 export const USMap = ({ currentFips, previousFips, style}: USMapProps) => {
     const width = 975 * window.devicePixelRatio
     const height = 610 * window.devicePixelRatio
     
-    const countyData = useCovidData()
-    const mostRecentNormalizedRates = countyData ? getMostRecentNormalizedRates(countyData) : null
-    
-    const canvasRef = useCanvas(getRenderer(currentFips, previousFips, mostRecentNormalizedRates))
+    const [countyData, isLoading] = useCovidData()
+
+    const canvasRef = useCanvas(
+        getRenderer(
+            currentFips, 
+            previousFips, 
+            countyData?.snapshots[countyData?.snapshots.length - 1], 
+            countyData?.highs
+        )
+    )
 
     return (
         <div style={style}>

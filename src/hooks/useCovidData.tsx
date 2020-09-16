@@ -1,8 +1,112 @@
 import useCSV from './useCSV'
 import moment from 'moment'
-import populations from '../data/populations.json'
+import populationsUntyped from '../data/populations.json'
 import { useEffect, useState } from 'react'
-import * as d3 from 'd3'
+import { Fips, Timeline, CovidStatistics } from '../interfaces'
+import { DSVRowArray } from 'd3'
+
+function createTimeline(covidData: DSVRowArray, callback: (timeline: Timeline) => void) {
+    const populations = (populationsUntyped as any)
+    // Initialize empty timeline
+    let timeline: Timeline = {
+        snapshots: [],
+        highs: {
+            percentInfected: 0,
+            percentDead: 0,
+            percentNewlyInfected: 0,
+            percentNewlyDead: 0
+        }
+    }
+
+    const parseRow = (i: number) => {
+        const row = covidData[i]
+        const { snapshots, highs } = timeline
+        const timestamp = moment(row.date).valueOf()
+        let lastSnapshot = snapshots.length > 0 ? snapshots[snapshots.length - 1] : null
+
+        // Add a new snapshot to the timeline if data is for a new day
+        if (!lastSnapshot || timestamp > lastSnapshot.timestamp) {
+            snapshots.push({
+                timestamp: moment(row.date).valueOf(),
+                countyStatistics: new Map<Fips, CovidStatistics>(),
+            })
+
+            lastSnapshot = snapshots[snapshots.length - 1]
+        }
+
+        const fips = parseInt(row.fips!)
+        if (!lastSnapshot.countyStatistics.has(fips)) {
+            // Compute new values for county
+            const countyPopulation = populations[convertFipsToKey(fips)]
+            const percentInfected = parseInt(row.cases!) / countyPopulation
+            const percentDead = parseInt(row.deaths!) / countyPopulation
+            const previousSnapshotCountyStatistics = snapshots.length > 1 ? (
+                snapshots[snapshots.length - 2].countyStatistics.get(fips)
+            ) : ( 
+                null 
+            )
+            const percentNewlyInfected = previousSnapshotCountyStatistics ? (
+                percentInfected - previousSnapshotCountyStatistics.percentInfected
+            ) : ( 
+                percentInfected 
+            )
+            const percentNewlyDead = previousSnapshotCountyStatistics ? (
+                percentDead - previousSnapshotCountyStatistics.percentDead
+            ) : ( 
+                percentDead
+            )
+
+            // Update max stats for the snapshot
+            if (percentInfected > highs.percentInfected) {
+                highs.percentInfected = percentInfected
+            }
+            if (percentDead > highs.percentDead) {
+                highs.percentDead = percentDead
+            }
+            if (percentNewlyInfected > highs.percentNewlyInfected) {
+                highs.percentNewlyInfected = percentNewlyInfected
+            }
+            if (percentNewlyDead > highs.percentNewlyDead) {
+                highs.percentNewlyDead = percentNewlyDead
+            }
+
+            // Set county data in snapshot
+            lastSnapshot.countyStatistics.set(
+                fips, 
+                { percentInfected, percentDead, percentNewlyInfected, percentNewlyDead}
+            )
+        }
+    }
+
+    // Define non-blocking function to parse csv row into section of timeline
+    const parseCSVNonBlocking = (callback: () => void) => {
+        const numRows = covidData.length
+        let i = 0
+        console.log("NumRows", numRows)
+
+        const loop = () => {
+            if (i < numRows) {
+                i++
+
+                if (i % 1000 === 0) {
+                    console.log(i)
+                }
+
+                parseRow(i)
+
+                window.setTimeout(loop)
+            } else {
+                callback()
+            }
+        }
+
+        loop()
+    }
+
+    parseCSVNonBlocking(() => {
+        callback(timeline)
+    })
+}
 
 function convertFipsToKey(fips: number) {
     if (fips === 36061) {
@@ -14,89 +118,24 @@ function convertFipsToKey(fips: number) {
     }
 }
 
-function parseData(data: d3.DSVRowArray<string>) {
-    return data.reduce((memo, row) => {
-        const fips = row.fips ? parseInt(row.fips) : 36061
-        const timestamp = moment(row.time!).valueOf()
-        const cases = parseInt(row.cases!)
-        const deaths = parseInt(row.deaths!)
-        const population = (populations as any)[convertFipsToKey(fips)]
-
-        // Memo is just the intermediate value of the array of county data that we're trying
-        // to build
-        if (!memo.has(fips)) {
-            memo.set(fips, [])
-        }
-
-        const countyData = memo.get(fips)!
-
-        if (countyData.length === 0 || timestamp > countyData[countyData.length - 1].timestamp) {
-            countyData.push({
-                timestamp,
-                percentInfected: cases / population,
-                percentDead: deaths / population
-            })
-        }
-
-        return memo
-    }, new Map<number, Array<CountyCovidStatistics>>())
-}
-
-function getNewest(data: Map<number, Array<CountyCovidStatistics>>) {
-    let newest = new Map<number, CountyCovidStatistics>()
-    data.forEach((countyData, fips) => {
-        newest.set(fips, countyData[countyData.length - 1])
-    })
-    return newest
-}
-
-function getNormalizedRates(data: Map<number, Array<CountyCovidStatistics>>, maxCasePercentage: number) {
-    let normalizedRates = new Map<number, Array<number>>()
-    data.forEach((countyData, fips) => {
-        normalizedRates.set(fips, countyData.map(statistics => {
-            return statistics.percentInfected / maxCasePercentage
-        }))
-    })
-    return normalizedRates
-}
-
 const useCovidData = () => {
     const covidData = useCSV('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv')
-    const [countyRates, setCountyRates] = useState<Map<number, number[]> | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
+    const [covidTimeline, setCovidTimeline] = useState<Timeline | null>(null)
 
     useEffect(() => {
-        if (!covidData) {
-            return
+        if (covidData) {
+            console.log("Ready!")
+            createTimeline(covidData!, timeline => {
+                console.log("Done!")
+                setCovidTimeline(timeline)
+                setIsLoading(false)
+            })
         }
-
-        const memo = parseData(covidData)
-        // This is the same as memo except is only has the most recent statstics instead of an array
-        const newest = getNewest(memo)
-        let maxCasePercentage = 0
-        newest.forEach(statistics => {
-            if (statistics.percentInfected > maxCasePercentage) {
-                maxCasePercentage = statistics.percentInfected
-            }
-        })
-        const normalizedRates = getNormalizedRates(memo, maxCasePercentage)
-
-        setCountyRates(normalizedRates)
     }, [covidData])
 
-    return countyRates
-}
-
-export type Fips = number
-
-export interface Snapshot {
-    timestamp: number,
-    data: Map <Fips, CountyCovidStatistics>
-}
-
-export interface CountyCovidStatistics {
-    timestamp: number,
-    percentInfected: number,
-    percentDead: number,
+    const result: [Timeline | null, boolean] = [covidTimeline, isLoading]
+    return result
 }
 
 export default useCovidData

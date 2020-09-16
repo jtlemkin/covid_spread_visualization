@@ -4,6 +4,7 @@ import { Topology, GeometryObject } from 'topojson-specification'
 import usUntyped from './counties-albers-10m.json'
 import cities from './data/cities.json'
 import PlaceFactory from './PlaceFactory'
+import { Snapshot, CovidStatistics } from './interfaces'
 
 const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
 
@@ -11,7 +12,8 @@ const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
 function drawMap(
     context: CanvasRenderingContext2D, 
     t: number, 
-    rates: Map<number, number> | null, 
+    snapshot: Snapshot | undefined,
+    highs: CovidStatistics | undefined, 
     selectedPlace: any, 
     previousPlace: any
 ) {
@@ -28,22 +30,35 @@ function drawMap(
     context.lineWidth = 0.5
     context.stroke()
 
-    usUntyped.objects.counties.geometries.forEach((county, index) => {
-        const fips = parseInt(county.id)
-        const t = rates?.get(fips)
-        const countyColors = d3.interpolateHcl('#ffffff', '#000000')
-        const countyColor = t ? countyColors(t) : "blue"
-
-        context.beginPath()
-        path(topojson.feature(us, county as GeometryObject))
-
-        context.fillStyle = countyColor
-        context.fill()
-
-        if (selectedPlace.fips === fips) {
-            context.stroke()
-        }
-    })
+    if (snapshot && highs) {
+        usUntyped.objects.counties.geometries.forEach((county) => {
+            const fips = parseInt(county.id)
+            const percentInfected = snapshot.countyStatistics.get(fips)?.percentInfected
+            const normalizedPercentInfected = percentInfected !== undefined ? (
+                percentInfected / highs.percentInfected
+            ) : ( 
+                null
+            )
+            /*const percentNewlyInfected = snapshot.countyStatistics.get(fips)?.percentNewlyInfected
+            const normalizedPercentInfected = percentNewlyInfected !== undefined ? (
+                percentNewlyInfected / highs.percentNewlyInfected
+            ) : (
+                null
+            )*/
+            const countyColors = d3.interpolateHcl('#ffffff', '#000000')
+            const countyColor = normalizedPercentInfected !== null ? countyColors(normalizedPercentInfected) : "blue"
+    
+            context.beginPath()
+            path(topojson.feature(us, county as GeometryObject))
+    
+            context.fillStyle = countyColor
+            context.fill()
+    
+            if (selectedPlace.fips === fips) {
+                context.stroke()
+            }
+        })
+    }
 }
 
 function drawCitiesLabels(context: CanvasRenderingContext2D, t: number, selectedPlace: any, previousPlace: any) {
@@ -96,7 +111,12 @@ function getTransform(selectedPlace: any, previousPlace: any, t: number) {
 }
 
 // Returns a rendering function that the canvas hook can call
-export const getRenderer = (selectedFips: number, previousFips: number, rates: Map<number, number> | null) => {
+export const getRenderer = (
+    selectedFips: number, 
+    previousFips: number, 
+    snapshot: Snapshot | undefined,
+    highs: CovidStatistics | undefined
+) => {
     return (context: CanvasRenderingContext2D, t: number) => {
         context.lineJoin = "round"
         context.lineCap = "round"
@@ -116,7 +136,7 @@ export const getRenderer = (selectedFips: number, previousFips: number, rates: M
 
         context.clearRect(0, 0, context.canvas.clientWidth, context.canvas.clientHeight)
 
-        drawMap(context, t, rates, selectedPlace, previousPlace)
+        drawMap(context, t, snapshot, highs, selectedPlace, previousPlace)
         drawCitiesLabels(context, t, selectedPlace, previousPlace)
 
         context.restore()

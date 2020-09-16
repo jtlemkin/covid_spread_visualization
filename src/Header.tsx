@@ -43,7 +43,11 @@ export function Header({selectCounty}: InferProps<typeof Header.propTypes>) {
         }
     }
 
-    const filteredPlaces = places.filter(item => item.label.toLowerCase().startsWith(field.toLowerCase()))
+    const filteredPlaces = field.length > 0 ? (
+        places.filter(item => item.label.toLowerCase().startsWith(field.toLowerCase()))
+    ) : (
+        []
+    )
 
     return (
         <Container>

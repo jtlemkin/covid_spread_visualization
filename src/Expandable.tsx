@@ -21,10 +21,10 @@ export const Expandable: FunctionComponent<ExpandableProps> = (props) => {
     }) : ({
         height: 0, from: { height }
     })
-    const animated = useSpring(animationConfig)
+    const animation = useSpring(animationConfig)
 
     const displayHeight = isAnimated ? (
-        animated.height
+        animation.height
     ) : (
         isExpanded ? height: 0
     )
