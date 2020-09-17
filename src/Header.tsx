@@ -20,7 +20,7 @@ const Row = styled.div`
 
 const Container = styled.div`
   width: 100%;
-  background: #555;
+  background: black;
   color: #f1f1f1;
   display: flex;
   flex-direction: column;

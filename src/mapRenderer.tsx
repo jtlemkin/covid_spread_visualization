@@ -30,25 +30,26 @@ function drawMap(
     context.lineWidth = 0.5
     context.stroke()
 
-    console.log(snapshot?.countyStatistics.get(36061))
-
     if (snapshot && highs) {
         usUntyped.objects.counties.geometries.forEach((county) => {
             const fips = parseInt(county.id)
-            const percentInfected = snapshot.countyStatistics.get(fips)?.percentInfected
+            /*const percentInfected = snapshot.countyStatistics.get(fips)?.percentInfected
             const normalizedPercentInfected = percentInfected !== undefined ? (
                 percentInfected / highs.percentInfected
             ) : ( 
-                null
-            )
-            /*const percentNewlyInfected = snapshot.countyStatistics.get(fips)?.percentNewlyInfected
+                0
+            )*/
+            const percentNewlyInfected = snapshot.countyStatistics.get(fips)?.percentNewlyInfected
             const normalizedPercentInfected = percentNewlyInfected !== undefined ? (
                 percentNewlyInfected / highs.percentNewlyInfected
             ) : (
-                null
-            )*/
-            const countyColors = d3.interpolateHcl('#ffffff', '#000000')
-            const countyColor = normalizedPercentInfected !== null ? countyColors(normalizedPercentInfected) : "white"
+                0
+            )
+            const invertedDiscreteNormalizedPercentInfected = 1 - Math.ceil(normalizedPercentInfected * 6) / 6
+            const countyColor = d3.interpolateInferno(invertedDiscreteNormalizedPercentInfected)
+            //const countyColor = d3.interpolateViridis(invertedDiscreteNormalizedPercentInfected)
+            //const countyColors = d3.interpolateDiscrete(d3.schemeGreys[7] as string[])
+            //const countyColor = countyColors(normalizedPercentInfected)
     
             context.beginPath()
             path(topojson.feature(us, county as GeometryObject))

@@ -6,7 +6,7 @@ const Scrollable = styled.div`
     height: 100%;
     width: 100%;
     overflow-y: scroll;
-    background: #555; 
+    background: black; 
 `
 
 const Input = styled.input`

@@ -7,7 +7,6 @@ import { DSVRowArray, DSVRowString } from 'd3'
 
 function fipsesForRow(row: DSVRowString<string>) {
     if (row.county === "New York City") {
-        console.log("Hello!")
         return [36061, 36047, 36081, 36005, 36085]
     } else {
         return [parseInt(row.fips!)]
@@ -25,6 +24,23 @@ function createTimeline(covidData: DSVRowArray) {
             percentNewlyInfected: 0,
             percentNewlyDead: 0
         },
+    }
+
+    const populationForFipses = (fipses: number[]) => {
+        // Our populations data doesn't include this county so I add
+        // this here as a special case
+        if (fipses[0] === 2158) {
+            return 8316
+        }
+
+        return fipses.reduce((sum, fips) => {
+            const p = populations[convertFipsToKey(fips)]
+            if (p) {
+                return sum + p
+            } else {
+                return sum
+            }
+        }, 0)
     }
 
     const parseRow = (row: DSVRowString<string>) => {
@@ -45,18 +61,28 @@ function createTimeline(covidData: DSVRowArray) {
         // If the row has a county of New 
         const fipses = fipsesForRow(row)
 
-        if (fipses.length > 1) {
-            console.log("FIPS", row.county, fipses)
-        }
+        const blacklistedStates = ["Virgin Islands", "Puerto Rico", "Northern Mariana Islands"]
 
         fipses.forEach(fips => {
-            if (!lastSnapshot!.countyStatistics.has(fips)) {
+            if (
+                !lastSnapshot!.countyStatistics.has(fips) && 
+                row.county! !== "Unknown" && 
+                !blacklistedStates.includes(row.state!) &&
+                row.county !== "Kansas City" && // The data for Kansas City is spread among different counties
+                row.county !== "Joplin" // The same goes for Joplin
+            ) {
                 // Compute new values for county
                 // In the case of New York, we have data for all the counties aggregated, so we want to 
                 // divide that by the population in all new york city counties to get the percent
-                const placePopulation = fipses.reduce((sum, fips) => sum + populations[convertFipsToKey(fips)], 0)
-                const percentInfected = parseInt(row.cases!) / placePopulation
-                const percentDead = parseInt(row.deaths!) / placePopulation
+                const population = populationForFipses(fipses)
+
+                if (population === 0) {
+                    console.log(fips)
+                    console.log(populations[convertFipsToKey(fips)])
+                    console.log("NO POP", row)
+                }
+                const percentInfected = parseInt(row.cases!) / population
+                const percentDead = parseInt(row.deaths!) / population
                 const previousSnapshotCountyStatistics = snapshots.length > 1 ? (
                     snapshots[snapshots.length - 2].countyStatistics.get(fips)
                 ) : ( 
