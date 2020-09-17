@@ -5,6 +5,15 @@ import { useEffect, useState } from 'react'
 import { Fips, Timeline, CovidStatistics } from '../interfaces'
 import { DSVRowArray, DSVRowString } from 'd3'
 
+function fipsesForRow(row: DSVRowString<string>) {
+    if (row.county === "New York City") {
+        console.log("Hello!")
+        return [36061, 36047, 36081, 36005, 36085]
+    } else {
+        return [parseInt(row.fips!)]
+    }
+}
+
 function createTimeline(covidData: DSVRowArray) {
     const populations = (populationsUntyped as any)
     // Initialize empty timeline
@@ -33,48 +42,58 @@ function createTimeline(covidData: DSVRowArray) {
             lastSnapshot = snapshots[snapshots.length - 1]
         }
 
-        const fips = parseInt(row.fips!)
-        if (!lastSnapshot.countyStatistics.has(fips)) {
-            // Compute new values for county
-            const countyPopulation = populations[convertFipsToKey(fips)]
-            const percentInfected = parseInt(row.cases!) / countyPopulation
-            const percentDead = parseInt(row.deaths!) / countyPopulation
-            const previousSnapshotCountyStatistics = snapshots.length > 1 ? (
-                snapshots[snapshots.length - 2].countyStatistics.get(fips)
-            ) : ( 
-                null 
-            )
-            const percentNewlyInfected = previousSnapshotCountyStatistics ? (
-                percentInfected - previousSnapshotCountyStatistics.percentInfected
-            ) : ( 
-                percentInfected 
-            )
-            const percentNewlyDead = previousSnapshotCountyStatistics ? (
-                percentDead - previousSnapshotCountyStatistics.percentDead
-            ) : ( 
-                percentDead
-            )
+        // If the row has a county of New 
+        const fipses = fipsesForRow(row)
 
-            // Update max stats for the snapshot
-            if (percentInfected > highs.percentInfected) {
-                highs.percentInfected = percentInfected
-            }
-            if (percentDead > highs.percentDead) {
-                highs.percentDead = percentDead
-            }
-            if (percentNewlyInfected > highs.percentNewlyInfected) {
-                highs.percentNewlyInfected = percentNewlyInfected
-            }
-            if (percentNewlyDead > highs.percentNewlyDead) {
-                highs.percentNewlyDead = percentNewlyDead
-            }
-
-            // Set county data in snapshot
-            lastSnapshot.countyStatistics.set(
-                fips, 
-                { percentInfected, percentDead, percentNewlyInfected, percentNewlyDead}
-            )
+        if (fipses.length > 1) {
+            console.log("FIPS", row.county, fipses)
         }
+
+        fipses.forEach(fips => {
+            if (!lastSnapshot!.countyStatistics.has(fips)) {
+                // Compute new values for county
+                // In the case of New York, we have data for all the counties aggregated, so we want to 
+                // divide that by the population in all new york city counties to get the percent
+                const placePopulation = fipses.reduce((sum, fips) => sum + populations[convertFipsToKey(fips)], 0)
+                const percentInfected = parseInt(row.cases!) / placePopulation
+                const percentDead = parseInt(row.deaths!) / placePopulation
+                const previousSnapshotCountyStatistics = snapshots.length > 1 ? (
+                    snapshots[snapshots.length - 2].countyStatistics.get(fips)
+                ) : ( 
+                    null 
+                )
+                const percentNewlyInfected = previousSnapshotCountyStatistics ? (
+                    percentInfected - previousSnapshotCountyStatistics.percentInfected
+                ) : ( 
+                    percentInfected 
+                )
+                const percentNewlyDead = previousSnapshotCountyStatistics ? (
+                    percentDead - previousSnapshotCountyStatistics.percentDead
+                ) : ( 
+                    percentDead
+                )
+    
+                // Update max stats for the snapshot
+                if (percentInfected > highs.percentInfected) {
+                    highs.percentInfected = percentInfected
+                }
+                if (percentDead > highs.percentDead) {
+                    highs.percentDead = percentDead
+                }
+                if (percentNewlyInfected > highs.percentNewlyInfected) {
+                    highs.percentNewlyInfected = percentNewlyInfected
+                }
+                if (percentNewlyDead > highs.percentNewlyDead) {
+                    highs.percentNewlyDead = percentNewlyDead
+                }
+    
+                // Set county data in snapshot
+                lastSnapshot!.countyStatistics.set(
+                    fips, 
+                    { percentInfected, percentDead, percentNewlyInfected, percentNewlyDead}
+                )
+            }
+        })
     }
 
     covidData.forEach(parseRow)

@@ -30,6 +30,8 @@ function drawMap(
     context.lineWidth = 0.5
     context.stroke()
 
+    console.log(snapshot?.countyStatistics.get(36061))
+
     if (snapshot && highs) {
         usUntyped.objects.counties.geometries.forEach((county) => {
             const fips = parseInt(county.id)
