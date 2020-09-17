@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react'
 import * as d3 from 'd3'
 
-const useCanvas = (draw: (context: CanvasRenderingContext2D, t: number) => void) => {
+const useCanvas = (draw: (context: CanvasRenderingContext2D, t: number) => void, isVisible: boolean) => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     // Scale canvas to be retina resolution
@@ -13,7 +13,7 @@ const useCanvas = (draw: (context: CanvasRenderingContext2D, t: number) => void)
             const ratio = window.devicePixelRatio
             context.scale(ratio, ratio)
         }
-    }, [])
+    }, [isVisible])
 
     useEffect(() => {
         const canvas = canvasRef.current

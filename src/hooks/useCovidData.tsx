@@ -15,7 +15,7 @@ function createTimeline(covidData: DSVRowArray) {
             percentDead: 0,
             percentNewlyInfected: 0,
             percentNewlyDead: 0
-        }
+        },
     }
 
     const parseRow = (row: DSVRowString<string>) => {

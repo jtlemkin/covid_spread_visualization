@@ -7,15 +7,19 @@ function App() {
   const [previousFips, setPreviousFips] = useState(0)
   const [currentFips, setSelectedFips] = useState(0)
 
-  const selectCounty = (newFip: number) => {
+  const setFips = (newFip: number) => {
     setPreviousFips(currentFips)
     setSelectedFips(newFip)
   } 
 
   return (
     <div className="App">
-      <Header selectCounty={selectCounty} />
-      <USMap style={{padding: '25px', maxWidth: '1000px'}} previousFips={previousFips} currentFips={currentFips}/>
+      <Header selectCounty={setFips} />
+      <USMap 
+        style={{padding: '25px', maxWidth: '1000px'}} 
+        previousFips={previousFips} 
+        currentFips={currentFips}
+        setFips={setFips} />
     </div>
   )
 }

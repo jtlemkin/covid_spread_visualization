@@ -98,13 +98,15 @@ function getTransform(selectedPlace: any, previousPlace: any, t: number) {
         selectedPlace.scaleAdjustedTranslation
     )
 
+    const _t = selectedPlace === previousPlace ? 1 : t
+
     const transformParams = {
-        a: scales(t),
+        a: scales(_t),
         b: 0,
         c: 0,
-        d: scales(t),
-        e: translations(t)[0],
-        f: translations(t)[1],
+        d: scales(_t),
+        e: translations(_t)[0],
+        f: translations(_t)[1],
     }
 
     return transformParams
@@ -113,7 +115,7 @@ function getTransform(selectedPlace: any, previousPlace: any, t: number) {
 // Returns a rendering function that the canvas hook can call
 export const getRenderer = (
     selectedFips: number, 
-    previousFips: number, 
+    previousFips: number,
     snapshot: Snapshot | undefined,
     highs: CovidStatistics | undefined
 ) => {
