@@ -48,7 +48,7 @@ function drawMap(
                 null
             )*/
             const countyColors = d3.interpolateHcl('#ffffff', '#000000')
-            const countyColor = normalizedPercentInfected !== null ? countyColors(normalizedPercentInfected) : "blue"
+            const countyColor = normalizedPercentInfected !== null ? countyColors(normalizedPercentInfected) : "white"
     
             context.beginPath()
             path(topojson.feature(us, county as GeometryObject))
