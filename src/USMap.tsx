@@ -5,6 +5,7 @@ import { getRenderer } from './mapRenderer'
 import CSS from 'csstype'
 import { Spinner } from './Spinner'
 import { Slider } from './Slider'
+import { Scale } from './Scale'
 import moment from 'moment'
 
 // A fips number is an identifier for counties, states, and the nation
@@ -61,6 +62,7 @@ export const USMap = ({ currentFips, previousFips, setFips, style}: USMapProps) 
 
     return (
         <div style={style}>
+            <Scale max={countyData.highs.percentInfected}/>
             <canvas 
                 ref={canvasRef} 
                 width={width} 
