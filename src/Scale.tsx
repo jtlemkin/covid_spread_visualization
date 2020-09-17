@@ -28,6 +28,10 @@ const Box = styled.div`
     width: 100%;
 `
 
+const Label = styled.p`
+    font-size: 0.75em;
+`
+
 interface ScaleProps {
     max: number
 }
@@ -42,7 +46,7 @@ export const Scale = (props: ScaleProps) => {
 
     const label = (index: number) => {
         const upperBound = index / 6 * max * 100
-        return index === 0 ? `${upperBound.toFixed(2)}%` : `< ${upperBound.toFixed(2)}%`
+        return index === 0 ? `${Math.ceil(upperBound)}%` : `< ${Math.ceil(upperBound)}%`
     }
 
     return (
@@ -53,7 +57,7 @@ export const Scale = (props: ScaleProps) => {
                     return (
                         <LabelledValue>
                             <Box style={{backgroundColor: color(index)}} />
-                            <p>{label(index)}</p>
+                            <Label>{label(index)}</Label>
                         </LabelledValue>
                     )
                 })}
