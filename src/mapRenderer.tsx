@@ -98,6 +98,9 @@ function getTransform(selectedPlace: any, previousPlace: any, t: number) {
         selectedPlace.scaleAdjustedTranslation
     )
 
+    // If the selected place has not changed, we don't want to animate
+    // showing the same place. Setting t := 1 effectively prevents the animation
+    // from happening
     const _t = selectedPlace === previousPlace ? 1 : t
 
     const transformParams = {
