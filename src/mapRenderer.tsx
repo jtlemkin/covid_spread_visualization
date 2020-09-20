@@ -33,7 +33,7 @@ function drawMap(
     if (snapshot && highs) {
         usUntyped.objects.counties.geometries.forEach((county) => {
             const fips = parseInt(county.id)
-            const percentInfected = snapshot.countyStatistics.get(fips)?.percentInfected
+            const percentInfected = snapshot.statistics.get(fips)?.percentInfected
             const normalizedPercentInfected = percentInfected !== undefined ? (
                 percentInfected / highs.percentInfected
             ) : ( 
@@ -45,8 +45,9 @@ function drawMap(
             ) : (
                 0
             )*/
-            const invertedDiscreteNormalizedPercentInfected = 1 - Math.ceil(normalizedPercentInfected * 6) / 6
-            const countyColor = d3.interpolateInferno(invertedDiscreteNormalizedPercentInfected)
+            const discreteNormalizedPercentInfected = Math.ceil(normalizedPercentInfected * 6) / 6
+            const countyColor = d3.interpolateYlOrRd(discreteNormalizedPercentInfected)
+            //const countyColor = d3.interpolateInferno(invertedDiscreteNormalizedPercentInfected)
             //const countyColor = d3.interpolateViridis(invertedDiscreteNormalizedPercentInfected)
             //const countyColors = d3.interpolateDiscrete(d3.schemeGreys[7] as string[])
             //const countyColor = countyColors(normalizedPercentInfected)

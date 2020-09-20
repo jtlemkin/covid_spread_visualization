@@ -40,8 +40,8 @@ export const Scale = (props: ScaleProps) => {
     const { max } = props
 
     const color = (index: number) => {
-        const t = 1 - index / 6
-        return d3.interpolateInferno(t)
+        const t = index / 6
+        return d3.interpolateYlOrRd(t)
     }
 
     const label = (index: number) => {
@@ -55,7 +55,7 @@ export const Scale = (props: ScaleProps) => {
             <Row>
                 {[0,1,2,3,4,5,6].map(index => {
                     return (
-                        <LabelledValue>
+                        <LabelledValue key={index.toString()}>
                             <Box style={{backgroundColor: color(index)}} />
                             <Label>{label(index)}</Label>
                         </LabelledValue>

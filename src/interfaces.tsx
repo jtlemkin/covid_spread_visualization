@@ -7,7 +7,7 @@ export interface Timeline {
 
 export interface Snapshot {
     timestamp: number,
-    countyStatistics: Map <Fips, CovidStatistics>
+    statistics: Map <Fips, CovidStatistics>
 }
 
 export interface CovidStatistics {

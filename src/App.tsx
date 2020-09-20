@@ -3,7 +3,6 @@ import './App.css'
 import { USMap } from './USMap'
 import { Header } from './Header'
 import useCovidData from './hooks/useCovidData'
-import useCSV from './hooks/useCSV'
 import { Spinner } from './Spinner'
 import { Graph } from './Graph'
 import styled from 'styled-components'
@@ -15,11 +14,6 @@ const Row = styled.div`
   flex-direction: row;
 `
 
-const PaddedGraph = styled.div`
-  padding-left: 10px;
-  padding-right: 1
-`
-
 function App() {
   const [previousFips, setPreviousFips] = useState(0)
   const [currentFips, setSelectedFips] = useState(0)
@@ -29,28 +23,35 @@ function App() {
     setSelectedFips(newFip)
   }
   
-  const [countyData, isLoading] = useCovidData()
-  const nationData = useCSV('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv')
+  const [mappingData, graphingData] = useCovidData(currentFips)
 
-  return (
-    <div className="App">
-      <Header selectCounty={setFips} />
-      { countyData && nationData ? (
+  const Content = () => {
+    if (mappingData !== null && graphingData !== null) {
+      return (
         <>
           <USMap 
             style={{padding: '25px', maxWidth: '1000px'}} 
             previousFips={previousFips} 
             currentFips={currentFips}
-            countyData={countyData}
+            countyData={mappingData}
             setFips={setFips} />
           <Row>
-            <Graph data={nationData} yName='cases' title="Number of cases in US" color={'red'}/>
-            <Graph data={nationData} yName='deaths' title="Number of deaths in US" color={'blue'}/>
+            <Graph data={graphingData} yName='cases' title="Number of cases in US" color={'red'} />
+            <Graph data={graphingData} yName='deaths' title="Number of deaths in US" color={'blue'}/>
           </Row>
         </>
-      ) : (
+      )
+    } else {
+      return (
         <Spinner />
-      ) }
+      )
+    }
+  }
+
+  return (
+    <div className="App">
+      <Header selectCounty={setFips} />
+      <Content />
     </div>
   )
 }

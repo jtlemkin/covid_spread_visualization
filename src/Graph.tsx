@@ -15,7 +15,7 @@ const SVG = styled.svg`
 `
 
 interface GraphProps {
-    data: d3.DSVRowArray<string>,
+    data: d3.DSVRowArray<string> | d3.DSVRowString[],
     yName: string,
     title: string,
     color: string,
@@ -53,7 +53,7 @@ export const Graph = ({ data, yName, title, color }: GraphProps) => {
         <Container>
             <h4><u>{title}</u></h4>
             <SVG viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
-                <path d={line(data)!} stroke={color} fill="none" stroke-width="2" stroke-miterLimit="1"></path>
+                <path d={line(data)!} stroke={color} fill="none" strokeWidth="2" strokeMiterlimit="1"></path>
                 <g ref={xAxisRef} transform={`translate(0, ${height - margin.bottom})`}></g>
                 <g ref={yAxisRef} transform={`translate(${margin.left},0)`}></g>
             </SVG>
