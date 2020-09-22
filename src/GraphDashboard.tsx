@@ -82,6 +82,22 @@ export const GraphDashboard = ({ data, fips }: GraphDashboardProps) => {
         })
     }
 
+    if (isDailyData) {
+        graphingData = graphingData.map(lineData => {
+            return lineData.map((dataEntry, index) => {
+                if (index === 0) {
+                    return dataEntry
+                } else {
+                    return {
+                        ...dataEntry,
+                        cases: dataEntry.cases - lineData[index - 1].cases,
+                        deaths: dataEntry.cases - lineData[index - 1].cases
+                    }
+                }
+            })
+        })
+    }
+
     return (
         <Column>
             <Row>
