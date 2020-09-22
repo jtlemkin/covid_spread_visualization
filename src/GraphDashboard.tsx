@@ -99,6 +99,18 @@ export const GraphDashboard = ({ data, fips }: GraphDashboardProps) => {
         })
     }
 
+    const titleForCaseGraph = isRelativeData ? (
+        isDailyData ? "Percent Infected Daily" : "Total Percent Infected"
+    ) : (
+        isDailyData ? "Number Infected Daily" : "Total Number Infected"
+    )
+
+    const titleForDeathGraph = isRelativeData ? (
+        isDailyData ? "Percent Dying Daily" : "Total Percent Dead"
+    ) : (
+        isDailyData ? "Number Dying Daily" : "Total Number Dead"
+    )
+
     return (
         <Column>
             <Row>
@@ -109,13 +121,13 @@ export const GraphDashboard = ({ data, fips }: GraphDashboardProps) => {
                 style={{ width: '100%' }}
                 data={graphingData} 
                 yName='cases' 
-                title="Number of cases" 
+                title={titleForCaseGraph}
                 color={colors.primary} />
             <Graph 
                 style={{ width: '100%' }}
                 data={graphingData} 
                 yName='deaths' 
-                title="Number of deaths" 
+                title={titleForDeathGraph} 
                 color={colors.text.onBackground}/>
         </Column>
     )
