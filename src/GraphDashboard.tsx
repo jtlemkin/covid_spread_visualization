@@ -104,10 +104,18 @@ export const GraphDashboard = ({ data, fips }: GraphDashboardProps) => {
                 <LabelledSwitch label={"View Daily?"} onChange={setIsDailyData} checked={isDailyData} />
                 <LabelledSwitch label={"View Relative?"} onChange={setIsRelativeData} checked={isRelativeData} />
             </Row>
-            <Row style={{width: '100%'}}>
-                <Graph data={graphingData} yName='cases' title="Number of cases" color={'red'} />
-                <Graph data={graphingData} yName='deaths' title="Number of deaths" color={'blue'}/>
-            </Row>
+            <Graph 
+                style={{ width: '100%' }}
+                data={graphingData} 
+                yName='cases' 
+                title="Number of cases" 
+                color={'red'} />
+            <Graph 
+                style={{ width: '100%' }}
+                data={graphingData} 
+                yName='deaths' 
+                title="Number of deaths" 
+                color={'blue'}/>
         </Column>
     )
 }

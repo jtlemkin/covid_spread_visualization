@@ -2,6 +2,7 @@ import React from 'react'
 import * as d3 from 'd3'
 import styled from 'styled-components'
 import { DataEntry } from './interfaces'
+import CSS from 'csstype'
 
 const Container = styled.div`
     flex: 1;
@@ -20,9 +21,10 @@ interface GraphProps {
     yName: string,
     title: string,
     color: string,
+    style?: CSS.Properties
 }
 
-export const Graph = ({ data, yName, title, color }: GraphProps) => {
+export const Graph = ({ data, yName, title, color, style }: GraphProps) => {
     const width = 400
     const height = 200
     const margin = {top: 20, right: 10, bottom: 30, left: 60}
@@ -54,7 +56,7 @@ export const Graph = ({ data, yName, title, color }: GraphProps) => {
     const colors = [color, '#aaa', 'black']
 
     return (
-        <Container>
+        <Container style={style}>
             <h4><u>{title}</u></h4>
             <SVG viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
                 { data.map((lineData, index) => {

@@ -7,25 +7,24 @@ const Scrollable = styled.div`
     height: 100%;
     width: 100%;
     overflow-y: scroll;
-    background: black; 
 `
 
 const Input = styled.input`
-    border: none;
-    border-radius: 3px;
+    border-color: black;
+    border-radius: 1px;
     font-size: 1.2em;
-    width: 150px;
+    width: 100%;
 `
 
 const List = styled.ul`
     padding-inline-start: 0px;  
 `
 
-export function SearchForm({
+export function SearchField({
     field, 
     handleFieldChange,
     onFocus
-}: InferProps<typeof SearchForm.propTypes>) {
+}: InferProps<typeof SearchField.propTypes>) {
     const onChange = (event: any) => {
         if (handleFieldChange !== null && handleFieldChange !== undefined) {
             handleFieldChange(event.target.value)
@@ -56,21 +55,21 @@ export function SearchForm({
     })
 
     return (
-        <form>
-            <label>
+        <form style={{width: '100%'}}>
+            <label style={{width: '100%'}}>
                 <Input ref={ref} type="text" value={field} onChange={onChange} />
             </label>
         </form>
     )
 }
 
-SearchForm.propTypes = {
+SearchField.propTypes = {
     field: PropTypes.string.isRequired,
     handleFieldChange: PropTypes.func,
     onFocus: PropTypes.func,
 }
 
-export function ScrollableList({ data, onClick }: FilterableListProps) {
+export function ScrollableList({ data, onClick }: ScrollableListProps) {
     return (
         <Scrollable>
             <List>
@@ -88,13 +87,7 @@ export function ScrollableList({ data, onClick }: FilterableListProps) {
     )
 }
 
-interface FilterableListProps {
+interface ScrollableListProps {
     data: Place[],
     onClick: (id: number) => void
-}
-
-ScrollableList.propTypes = {
-    data: PropTypes.arrayOf(
-        PropTypes.exact({label: PropTypes.string.isRequired, id: PropTypes.number.isRequired}).isRequired
-    ).isRequired,
 }

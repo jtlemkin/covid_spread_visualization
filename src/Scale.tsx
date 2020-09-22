@@ -1,31 +1,34 @@
 import React from 'react'
 import styled from 'styled-components'
 import * as d3 from 'd3';
+import CSS from 'csstype'
 
 const Container = styled.div`
     flex: 1;
-    flex-direction: column;
-    margin-top: 10px;
+    flex-direction: column-reverse;
 `
 
-const Row = styled.div`
+const Column = styled.div`
     flex: 1;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
 `
 
 const LabelledValue = styled.div`
-    width: calc(90% / 7);
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    text-align: center;   
+    margin-top: -10px;
+    margin-bottom: -10px;
 `
 
 const Box = styled.div`
     height: 10px;
-    width: 100%;
+    width: 30px;
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+    margin-right: 5px;
 `
 
 const Label = styled.p`
@@ -33,12 +36,11 @@ const Label = styled.p`
 `
 
 interface ScaleProps {
-    max: number
+    max: number,
+    style?: CSS.Properties
 }
 
-export const Scale = (props: ScaleProps) => {
-    const { max } = props
-
+export const Scale = ({ max, style }: ScaleProps) => {
     const color = (index: number) => {
         const t = index / 6
         return d3.interpolateYlOrRd(t)
@@ -46,13 +48,12 @@ export const Scale = (props: ScaleProps) => {
 
     const label = (index: number) => {
         const upperBound = index / 6 * max * 100
-        return index === 0 ? `${Math.ceil(upperBound)}%` : `< ${Math.ceil(upperBound)}%`
+        return index === 0 ? `  ${Math.ceil(upperBound)}%` : `< ${Math.ceil(upperBound)}%`
     }
 
     return (
-        <Container>
-            <h3>Percent of County Reported to Have Been Infected</h3>
-            <Row>
+        <Container style={style}>
+            <Column>
                 {[0,1,2,3,4,5,6].map(index => {
                     return (
                         <LabelledValue key={index.toString()}>
@@ -61,7 +62,7 @@ export const Scale = (props: ScaleProps) => {
                         </LabelledValue>
                     )
                 })}
-            </Row>
+            </Column>
         </Container>
     )
 }

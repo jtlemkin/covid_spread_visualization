@@ -5,7 +5,7 @@ import CSS from 'csstype'
 import { Slider } from './Slider'
 import { Scale } from './Scale'
 import moment from 'moment'
-import { Timeline, Place } from './interfaces'
+import { Timeline } from './interfaces'
 
 // A fips number is an identifier for counties, states, and the nation
 
@@ -47,13 +47,18 @@ export const USMap = ({ currentFips, previousFips, setFips, countyData, style}: 
 
     return (
         <div style={style}>
-            <Scale max={countyData.highs.percentInfected}/>
-            <canvas 
-                ref={canvasRef} 
-                width={width} 
-                height={height} 
-                style={{width, maxWidth: '100%'}}>
-            </canvas>
+            <h3>US Covid-19 Infection Rates</h3>
+            <div style={{position: 'relative'}}>
+                <canvas 
+                    ref={canvasRef} 
+                    width={width} 
+                    height={height} 
+                    style={{width, maxWidth: '100%'}}>
+                </canvas>
+                <Scale 
+                    style={{ position: 'absolute', bottom: '10px', right: '10px' }}
+                    max={countyData.highs.percentInfected} />
+            </div>
             <Slider 
                 min={0} 
                 max={countyData.snapshots.length - 1}

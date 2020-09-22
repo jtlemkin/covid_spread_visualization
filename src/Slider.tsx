@@ -5,8 +5,6 @@ import styled from 'styled-components'
 const StyledSlider = styled(ReactSlider)`
     width: 100%;
     height: 42px;
-    margin-top: 25px;
-    margin-bottom: 25px;
 `
 
 const StyledThumb = styled.div`

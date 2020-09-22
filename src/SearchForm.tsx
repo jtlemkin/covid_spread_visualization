@@ -1,17 +1,11 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { SearchForm, ScrollableList } from './ScrollableList'
+import { SearchField, ScrollableList } from './ScrollableList'
 import places from './data/places.json'
-import PropTypes, { InferProps } from "prop-types"
 import { Expandable } from './Expandable'
 import { Place } from './interfaces'
 import PlaceFactory from './PlaceFactory'
-
-const Title = styled.h2`
-  text-align: 'center';
-  font-size: 1.2em;
-  padding-right: 10px;
-`
+import CSS from 'csstype'
 
 const Row = styled.div`
     display: flex;
@@ -22,14 +16,18 @@ const Row = styled.div`
 
 const Container = styled.div`
   width: 100%;
-  background: black;
   color: #f1f1f1;
   display: flex;
   flex-direction: column;
   justify-content: center;
 `
 
-export function Header({selectCounty}: InferProps<typeof Header.propTypes>) {
+interface SearchFormProps {
+    selectCounty: (fips: number) => void,
+    style?: CSS.Properties
+}
+
+export const SearchForm = ({ selectCounty, style }: SearchFormProps) => {
     const [isDropdownShown, setIsDropdownShown] = useState(false)
     const [hasFormBeenClicked, setHasFormBeenClicked] = useState(false)
     const [field, setField] = useState('United States')
@@ -59,10 +57,9 @@ export function Header({selectCounty}: InferProps<typeof Header.propTypes>) {
     )
 
     return (
-        <Container>
+        <Container style={style}>
             <Row>
-                <Title>Covid-19, </Title>
-                <SearchForm field={field} onFocus={onFocus} handleFieldChange={setField} />
+                <SearchField field={field} onFocus={onFocus} handleFieldChange={setField} />
             </Row>
             <Expandable 
                 isExpanded={isDropdownShown} 
@@ -72,8 +69,4 @@ export function Header({selectCounty}: InferProps<typeof Header.propTypes>) {
             </Expandable>
         </Container>
     )
-}
-
-Header.propTypes = {
-    selectCounty: PropTypes.func.isRequired
 }
