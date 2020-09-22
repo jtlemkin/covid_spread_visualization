@@ -15,8 +15,8 @@ function drawMap(
     t: number, 
     snapshot: Snapshot | undefined,
     highs: CovidStatistics | undefined, 
-    selectedPlace: any, 
-    previousPlace: any
+    selectedPlace: Place, 
+    previousPlace: Place
 ) {
     const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
@@ -30,6 +30,28 @@ function drawMap(
     /*path(topojson.mesh(us, us.objects.states as GeometryObject, (a, b) => a !== b))
     context.lineWidth = 0.5
     context.stroke()*/
+
+    console.log(us)
+
+    if (selectedPlace.type === "state") {
+        usUntyped.objects.states.geometries.forEach(geometry => {
+            console.log(parseInt(geometry.id), selectedPlace.fips / 1000)
+        })
+        console.log()
+
+        const selectedStates = usUntyped.objects.states.geometries
+            .filter((geometry: any) => parseInt(geometry.id) === selectedPlace.fips / 1000)
+
+        if (selectedStates.length > 0) {
+            const geometry = (selectedStates[0] as unknown) as GeometryObject
+
+            path(topojson.feature(us, geometry))
+
+            context.lineWidth = 1
+            context.strokeStyle = colors.text.onBackground
+            context.stroke()
+        }
+    }
 
     if (snapshot && highs) {
         usUntyped.objects.counties.geometries.forEach((county) => {
@@ -47,7 +69,6 @@ function drawMap(
                 0
             )*/
             const discreteNormalizedPercentInfected = Math.ceil(normalizedPercentInfected * 5)
-            console.log(discreteNormalizedPercentInfected)
             const countyColor = colors.scale[discreteNormalizedPercentInfected]
             //const countyColor = d3.interpolateYlOrRd(discreteNormalizedPercentInfected)
             //const countyColor = d3.interpolateInferno(invertedDiscreteNormalizedPercentInfected)

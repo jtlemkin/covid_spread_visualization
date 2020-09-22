@@ -2,7 +2,7 @@ import useCSV from './useCSV'
 import { useEffect, useState } from 'react'
 import { Timeline } from '../interfaces'
 import { createTimeline } from './util/createTimeline'
-import { DSVRowArray, DSVRowString } from 'd3'
+import { DSVRowString } from 'd3'
 import { DataEntry } from '../interfaces'
 
 const useCovidData = (fips: number) => {

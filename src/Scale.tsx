@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import * as d3 from 'd3';
 import CSS from 'csstype'
 import colors from './colors'
 
