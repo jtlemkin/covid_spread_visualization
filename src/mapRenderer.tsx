@@ -5,6 +5,7 @@ import usUntyped from './counties-albers-10m.json'
 import cities from './data/cities.json'
 import PlaceFactory from './PlaceFactory'
 import { Snapshot, CovidStatistics, Place, City } from './interfaces'
+import colors from './colors'
 
 const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
 
@@ -21,14 +22,14 @@ function drawMap(
     const us = (usUntyped as unknown) as Topology
 
     // Draw the US
-    path(topojson.feature(us, us.objects.nation as GeometryObject))
+    /*path(topojson.feature(us, us.objects.nation as GeometryObject))
     context.lineWidth = 1
-    context.stroke()
+    context.stroke()*/
 
     // Draw state border
-    path(topojson.mesh(us, us.objects.states as GeometryObject, (a, b) => a !== b))
+    /*path(topojson.mesh(us, us.objects.states as GeometryObject, (a, b) => a !== b))
     context.lineWidth = 0.5
-    context.stroke()
+    context.stroke()*/
 
     if (snapshot && highs) {
         usUntyped.objects.counties.geometries.forEach((county) => {
@@ -45,8 +46,10 @@ function drawMap(
             ) : (
                 0
             )*/
-            const discreteNormalizedPercentInfected = Math.ceil(normalizedPercentInfected * 6) / 6
-            const countyColor = d3.interpolateYlOrRd(discreteNormalizedPercentInfected)
+            const discreteNormalizedPercentInfected = Math.ceil(normalizedPercentInfected * 5)
+            console.log(discreteNormalizedPercentInfected)
+            const countyColor = colors.scale[discreteNormalizedPercentInfected]
+            //const countyColor = d3.interpolateYlOrRd(discreteNormalizedPercentInfected)
             //const countyColor = d3.interpolateInferno(invertedDiscreteNormalizedPercentInfected)
             //const countyColor = d3.interpolateViridis(invertedDiscreteNormalizedPercentInfected)
             //const countyColors = d3.interpolateDiscrete(d3.schemeGreys[7] as string[])
@@ -92,6 +95,7 @@ function drawCitiesLabels(context: CanvasRenderingContext2D, t: number, selected
         context.fillStyle = 'black'
         context.fillText(city.name, x, y - 6 * scalingFactor)
 
+        context.fillStyle = colors.text.onBackground
         context.beginPath()
         context.arc(x, y, 2 * scalingFactor, 0, 2 * Math.PI)
         context.fill()

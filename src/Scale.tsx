@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import * as d3 from 'd3';
 import CSS from 'csstype'
+import colors from './colors'
 
 const Container = styled.div`
     flex: 1;
@@ -41,20 +42,21 @@ interface ScaleProps {
 }
 
 export const Scale = ({ max, style }: ScaleProps) => {
+    const numColors = 5
+
     const color = (index: number) => {
-        const t = index / 6
-        return d3.interpolateYlOrRd(t)
+        return colors.scale[index]
     }
 
     const label = (index: number) => {
-        const upperBound = index / 6 * max * 100
+        const upperBound = index / numColors * max * 100
         return index === 0 ? `  ${Math.ceil(upperBound)}%` : `< ${Math.ceil(upperBound)}%`
     }
 
     return (
         <Container style={style}>
             <Column>
-                {[0,1,2,3,4,5,6].map(index => {
+                {[0,1,2,3,4,5].map(index => {
                     return (
                         <LabelledValue key={index.toString()}>
                             <Box style={{backgroundColor: color(index)}} />

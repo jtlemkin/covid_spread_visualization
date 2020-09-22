@@ -4,6 +4,7 @@ import { Graph } from './Graph'
 import Switch from "react-switch"
 import { DataEntry } from './interfaces'
 import PlaceFactory from './PlaceFactory'
+import colors from './colors'
 
 const Column = styled.div`
     padding: 25px;
@@ -109,13 +110,13 @@ export const GraphDashboard = ({ data, fips }: GraphDashboardProps) => {
                 data={graphingData} 
                 yName='cases' 
                 title="Number of cases" 
-                color={'red'} />
+                color={colors.primary} />
             <Graph 
                 style={{ width: '100%' }}
                 data={graphingData} 
                 yName='deaths' 
                 title="Number of deaths" 
-                color={'blue'}/>
+                color={colors.text.onBackground}/>
         </Column>
     )
 }

@@ -6,6 +6,7 @@ import { Slider } from './Slider'
 import { Scale } from './Scale'
 import moment from 'moment'
 import { Timeline } from './interfaces'
+import colors from './colors'
 
 // A fips number is an identifier for counties, states, and the nation
 
@@ -47,7 +48,7 @@ export const USMap = ({ currentFips, previousFips, setFips, countyData, style}: 
 
     return (
         <div style={style}>
-            <h3>US Covid-19 Infection Rates</h3>
+            <h2 style={{ color: colors.text.onBackground }}> US Covid-19 Infection Rates</h2>
             <div style={{position: 'relative'}}>
                 <canvas 
                     ref={canvasRef} 
