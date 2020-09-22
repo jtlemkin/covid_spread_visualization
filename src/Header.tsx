@@ -4,6 +4,8 @@ import { SearchForm, ScrollableList } from './ScrollableList'
 import places from './data/places.json'
 import PropTypes, { InferProps } from "prop-types"
 import { Expandable } from './Expandable'
+import { Place } from './interfaces'
+import PlaceFactory from './PlaceFactory'
 
 const Title = styled.h2`
   text-align: 'center';
@@ -43,10 +45,17 @@ export function Header({selectCounty}: InferProps<typeof Header.propTypes>) {
         }
     }
 
-    const filteredPlaces = field.length > 0 ? (
-        places.filter(item => item.label.toLowerCase().startsWith(field.toLowerCase()))
-    ) : (
-        []
+    const placesUntyped = (places as any)
+
+    const filteredPlaces = !field.length ? [] : (
+        Object.keys(places)
+            .reduce((places, fips) => {
+                if (placesUntyped[fips].toLowerCase().startsWith(field.toLowerCase())) {
+                    places.push(PlaceFactory(parseInt(fips)))
+                }
+
+                return places
+            }, new Array<Place>())
     )
 
     return (

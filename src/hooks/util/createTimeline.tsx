@@ -1,9 +1,7 @@
 import moment from 'moment';
-import populationsUntyped from '../../data/populations.json';
 import { Fips, CovidStatistics, Snapshot } from '../../interfaces';
 import { DSVRowArray, DSVRowString } from 'd3';
-
-const populations = (populationsUntyped as any);
+import PlaceFactory from '../../PlaceFactory'
 
 function fipsesForRow(row: DSVRowString<string>) {
     if (row.county === "New York City") {
@@ -12,34 +10,6 @@ function fipsesForRow(row: DSVRowString<string>) {
         return [parseInt(row.fips!)]
     }
 }
-
-function convertFipsToKey(fips: number) {
-    if (fips === 36061) {
-        return "NYC"
-    } else if (fips.toString().length < 5) {
-        return `0${fips}`
-    } else {
-        return fips.toString()
-    }
-}
-
-function populationForFipses(fipses: number[]) {
-    // Our populations data doesn't include this county so I add
-    // this here as a special case
-    if (fipses[0] === 2158) {
-        return 8316;
-    }
-
-    return fipses.reduce((sum, fips) => {
-        const p = populations[convertFipsToKey(fips)];
-        if (p) {
-            return sum + p;
-        }
-        else {
-            return sum;
-        }
-    }, 0);
-};
 
 function getStatistics(
     population: number, 
@@ -98,7 +68,8 @@ export function createTimeline(covidData: DSVRowArray) {
             const fipses = fipsesForRow(row)
 
             fipses.forEach(fips => {
-                const population = populationForFipses(fipses)
+                const place = PlaceFactory(fips)
+                const population = place.getPopulation()
                 const numInfected = parseInt(row.cases!)
                 const numDead = parseInt(row.deaths!)
                 const previousSnapshotCountyStatistics = snapshots.length > 0 ? (

@@ -4,7 +4,7 @@ import { Topology, GeometryObject } from 'topojson-specification'
 import usUntyped from './counties-albers-10m.json'
 import cities from './data/cities.json'
 import PlaceFactory from './PlaceFactory'
-import { Snapshot, CovidStatistics } from './interfaces'
+import { Snapshot, CovidStatistics, Place, City } from './interfaces'
 
 const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
 
@@ -80,7 +80,10 @@ function drawCitiesLabels(context: CanvasRenderingContext2D, t: number, selected
             context.fillStyle = "rgba(0,0,0,0)"
         }
 
-        const scalingFactor = d3.interpolate(1 / Math.sqrt(previousPlace.scale), 1 / Math.sqrt(selectedPlace.scale))(t)
+        const previousTransform = previousPlace.getTransform()
+        const selectedTransform = selectedPlace.getTransform()
+
+        const scalingFactor = d3.interpolate(1 / Math.sqrt(previousTransform.scale), 1 / Math.sqrt(selectedTransform.scale))(t)
         const fontSize = 11 * scalingFactor
         context.font = `${fontSize}px Arial`
         context.lineWidth = 1
@@ -95,11 +98,14 @@ function drawCitiesLabels(context: CanvasRenderingContext2D, t: number, selected
     })
 }
 
-function getTransform(selectedPlace: any, previousPlace: any, t: number) {
-    const scales = d3.interpolate(previousPlace.scale, selectedPlace.scale)
+function getTransform(selectedPlace: Place, previousPlace: Place, t: number) {
+    const previousTransform = previousPlace.getTransform()
+    const selectedTransform = selectedPlace.getTransform()
+
+    const scales = d3.interpolate(previousTransform.scale, selectedTransform.scale)
     const translations = d3.interpolate(
-        previousPlace.scaleAdjustedTranslation, 
-        selectedPlace.scaleAdjustedTranslation
+        previousTransform.scaleAdjustedTranslation, 
+        selectedTransform.scaleAdjustedTranslation
     )
 
     // If the selected place has not changed, we don't want to animate
@@ -150,11 +156,4 @@ export const getRenderer = (
 
         context.restore()
     }
-}
-
-interface City {
-    name: string,
-    lat: number,
-    lng: number,
-    county_fips: number,
 }

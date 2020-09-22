@@ -1,6 +1,7 @@
 import React from 'react'
 import * as d3 from 'd3'
 import styled from 'styled-components'
+import { DataEntry } from './interfaces'
 
 const Container = styled.div`
     flex: 1;
@@ -15,7 +16,7 @@ const SVG = styled.svg`
 `
 
 interface GraphProps {
-    data: d3.DSVRowArray<string> | d3.DSVRowString[],
+    data: DataEntry[][],
     yName: string,
     title: string,
     color: string,
@@ -26,15 +27,16 @@ export const Graph = ({ data, yName, title, color }: GraphProps) => {
     const height = 200
     const margin = {top: 20, right: 10, bottom: 30, left: 60}
 
+    // The (d as any) usages are just so that I can refer to fields by string value
     const x = d3.scaleUtc()
-        .domain(d3.extent(data, d => new Date(d.date!)) as [Date, Date])
+        .domain(d3.extent(data.flat(), d => new Date(d.date!)) as [Date, Date])
         .range([margin.left, width - margin.right])
     const y = d3.scaleLinear()
-        .domain([0, d3.max(data, d => parseInt(d[yName]!))!])
+        .domain([0, d3.max(data.flat(), d => (d as any)[yName]!)])
         .range([height - margin.bottom, margin.top])
-    const line = d3.line<d3.DSVRowString<string>>()
+    const line = d3.line<DataEntry>()
         .x(d => x(new Date(d.date!)))
-        .y(d => y(parseInt(d[yName]!)))
+        .y(d => y((d as any)[yName]!))
 
     const xAxis = (g: any) => g
         .call(d3.axisBottom(x).ticks(7).tickSizeOuter(0))
@@ -49,11 +51,24 @@ export const Graph = ({ data, yName, title, color }: GraphProps) => {
         axis && yAxis(d3.select(axis))
     }
 
+    const colors = [color, '#aaa', 'black']
+
     return (
         <Container>
             <h4><u>{title}</u></h4>
             <SVG viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
-                <path d={line(data)!} stroke={color} fill="none" strokeWidth="2" strokeMiterlimit="1"></path>
+                { data.map((lineData, index) => {
+                    return (
+                        <path
+                            key={`${title}line${index}`} 
+                            d={line(lineData)!} 
+                            stroke={colors[index]} 
+                            fill="none" 
+                            strokeWidth="2" 
+                            strokeMiterlimit="1">
+                        </path>
+                    )
+                })}
                 <g ref={xAxisRef} transform={`translate(0, ${height - margin.bottom})`}></g>
                 <g ref={yAxisRef} transform={`translate(${margin.left},0)`}></g>
             </SVG>

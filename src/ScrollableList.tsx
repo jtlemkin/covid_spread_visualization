@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import PropTypes, { InferProps } from "prop-types"
 import styled from 'styled-components'
+import { Place } from './interfaces'
 
 const Scrollable = styled.div`
     height: 100%;
@@ -75,9 +76,9 @@ export function ScrollableList({ data, onClick }: FilterableListProps) {
             <List>
                 {data.map(item => {
                     return (
-                        <li key={item.id + item.label}>
-                            <button onClick={() => { onClick(item.id) }}>
-                                {item.label}
+                        <li key={item.fips + item.name}>
+                            <button onClick={() => { onClick(item.fips) }}>
+                                {item.name}
                             </button>
                         </li>
                     )
@@ -88,13 +89,8 @@ export function ScrollableList({ data, onClick }: FilterableListProps) {
 }
 
 interface FilterableListProps {
-    data: Array<DataPoint>,
+    data: Place[],
     onClick: (id: number) => void
-}
-
-interface DataPoint {
-    label: string,
-    id: number,
 }
 
 ScrollableList.propTypes = {

@@ -4,15 +4,7 @@ import { USMap } from './USMap'
 import { Header } from './Header'
 import useCovidData from './hooks/useCovidData'
 import { Spinner } from './Spinner'
-import { Graph } from './Graph'
-import styled from 'styled-components'
-
-const Row = styled.div`
-  width: 100%;
-  max-width: 1000px;
-  display: flex;
-  flex-direction: row;
-`
+import { GraphDashboard } from './GraphDashboard'
 
 function App() {
   const [previousFips, setPreviousFips] = useState(0)
@@ -35,10 +27,7 @@ function App() {
             currentFips={currentFips}
             countyData={mappingData}
             setFips={setFips} />
-          <Row>
-            <Graph data={graphingData} yName='cases' title="Number of cases in US" color={'red'} />
-            <Graph data={graphingData} yName='deaths' title="Number of deaths in US" color={'blue'}/>
-          </Row>
+          <GraphDashboard data={graphingData} fips={currentFips} />
         </>
       )
     } else {
