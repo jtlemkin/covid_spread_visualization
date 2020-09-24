@@ -102,13 +102,13 @@ export const GraphDashboard = ({ data, fips }: GraphDashboardProps) => {
     const titleForCaseGraph = isRelativeData ? (
         isDailyData ? "Percent Infected Daily" : "Total Percent Infected"
     ) : (
-        isDailyData ? "Number Infected Daily" : "Total Number Infected"
+        isDailyData ? "Daily Infections" : "Total Infections"
     )
 
     const titleForDeathGraph = isRelativeData ? (
-        isDailyData ? "Percent Dying Daily" : "Total Percent Dead"
+        isDailyData ? "Percent Daily Deaths" : "Total Death Percentage"
     ) : (
-        isDailyData ? "Number Dying Daily" : "Total Number Dead"
+        isDailyData ? "Daily Deaths" : "Total Deaths"
     )
 
     return (

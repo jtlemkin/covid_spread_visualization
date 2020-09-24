@@ -43,9 +43,9 @@ function drawMap(
             .filter((geometry: any) => parseInt(geometry.id) === selectedPlace.fips / 1000)
 
         if (selectedStates.length > 0) {
-            const geometry = (selectedStates[0] as unknown) as GeometryObject
+            const geometry = selectedStates as Array<any>
 
-            path(topojson.feature(us, geometry))
+            path(topojson.merge(us, geometry))
 
             context.lineWidth = 1
             context.strokeStyle = colors.text.onBackground
@@ -83,6 +83,7 @@ function drawMap(
             context.fill()
     
             if (selectedPlace.fips === fips) {
+                context.lineWidth = 1
                 context.stroke()
             }
         })
