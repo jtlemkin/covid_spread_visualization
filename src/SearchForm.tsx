@@ -30,7 +30,7 @@ interface SearchFormProps {
 export const SearchForm = ({ selectCounty, style }: SearchFormProps) => {
     const [isDropdownShown, setIsDropdownShown] = useState(false)
     const [hasFormBeenClicked, setHasFormBeenClicked] = useState(false)
-    const [field, setField] = useState('United States')
+    const [field, setField] = useState('')
 
     const onFocus = (isFocused: boolean) => {
         if (!hasFormBeenClicked) {
@@ -62,7 +62,7 @@ export const SearchForm = ({ selectCounty, style }: SearchFormProps) => {
                 <SearchField field={field} onFocus={onFocus} handleFieldChange={setField} />
             </Row>
             <Expandable 
-                isExpanded={isDropdownShown} 
+                isExpanded={isDropdownShown && field.length > 0} 
                 isAnimated={hasFormBeenClicked} 
                 height={100}>
                 <ScrollableList data={filteredPlaces} onClick={selectCounty}/>

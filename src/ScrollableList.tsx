@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import { Place } from './interfaces'
 import CSS from 'csstype'
+import colors from './colors'
 
 const Scrollable = styled.div`
     height: 100%;
@@ -66,11 +67,23 @@ export function SearchField({
     return (
         <form style={{width: '100%', maxWidth: '100%', margin: '2px', boxSizing: 'border-box'}}>
             <label style={{width: '100%'}}>
-                <Input ref={ref} type="text" value={field} onChange={onChange} />
+                <Input ref={ref} type="text" value={field} onChange={onChange} placeholder="Search" results={0} />
             </label>
         </form>
     )
 }
+
+const Button = styled.button`
+    background-color: transparent;
+    border: none;
+    color: ${colors.text.onSurface};
+    width: 80%;
+    border-style: none none solid none;
+    border-width: 1px;
+    border-color: ${colors.text.onSurface}
+    padding-bottom: 10px;
+    padding-top: 10px;
+`
 
 export function ScrollableList({ data, onClick }: ScrollableListProps) {
     return (
@@ -79,9 +92,9 @@ export function ScrollableList({ data, onClick }: ScrollableListProps) {
                 {data.map(item => {
                     return (
                         <li key={item.fips + item.name}>
-                            <button onClick={() => { onClick(item.fips) }}>
+                            <Button onClick={() => { onClick(item.fips) }}>
                                 {item.name}
-                            </button>
+                            </Button>
                         </li>
                     )
                 })}
