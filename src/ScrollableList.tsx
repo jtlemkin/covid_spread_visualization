@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
-import PropTypes, { InferProps } from "prop-types"
 import styled from 'styled-components'
 import { Place } from './interfaces'
+import CSS from 'csstype'
 
 const Scrollable = styled.div`
     height: 100%;
@@ -14,17 +14,26 @@ const Input = styled.input`
     border-radius: 1px;
     font-size: 1.2em;
     width: 100%;
+    max-width: 100%;
 `
 
 const List = styled.ul`
-    padding-inline-start: 0px;  
+    padding-inline-start: 0px; 
 `
+
+interface SearchFieldProps {
+    field: string,
+    handleFieldChange: (value: string) => void,
+    onFocus: (isFocused: boolean) => void,
+    style?: CSS.Properties
+}
 
 export function SearchField({
     field, 
     handleFieldChange,
-    onFocus
-}: InferProps<typeof SearchField.propTypes>) {
+    onFocus,
+    style
+}: SearchFieldProps) {
     const onChange = (event: any) => {
         if (handleFieldChange !== null && handleFieldChange !== undefined) {
             handleFieldChange(event.target.value)
@@ -55,18 +64,12 @@ export function SearchField({
     })
 
     return (
-        <form style={{width: '100%'}}>
+        <form style={{width: '100%', maxWidth: '100%', margin: '2px', boxSizing: 'border-box'}}>
             <label style={{width: '100%'}}>
                 <Input ref={ref} type="text" value={field} onChange={onChange} />
             </label>
         </form>
     )
-}
-
-SearchField.propTypes = {
-    field: PropTypes.string.isRequired,
-    handleFieldChange: PropTypes.func,
-    onFocus: PropTypes.func,
 }
 
 export function ScrollableList({ data, onClick }: ScrollableListProps) {

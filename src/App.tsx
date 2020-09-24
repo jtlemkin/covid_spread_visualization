@@ -8,11 +8,10 @@ import { GraphDashboard } from './GraphDashboard'
 import { AdaptiveLayout } from './AdaptiveLayout'
 import colors from './colors'
 import styled from 'styled-components'
+import { Card } from './Card'
 
 const Container = styled.div`
   text-align: center;
-  height: 100%;
-  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -47,10 +46,14 @@ function App() {
     
       const Detail = () => {
         return (
-          <>
-            <SearchForm style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} selectCounty={setFips}/>
-            <GraphDashboard data={graphingData} fips={currentFips} />
-          </>
+          <div style={{ width: 'calc(100% - 20px)', maxWidth: 'calc(100% - 20px)', marginLeft: '10px', marginRight: '10px', blockSize: 'border-block'}}>
+            <Card>
+              <SearchForm style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} selectCounty={setFips}/>
+            </Card>
+            <Card>
+              <GraphDashboard data={graphingData} fips={currentFips} />
+            </Card>
+          </div>
         )
       }
 

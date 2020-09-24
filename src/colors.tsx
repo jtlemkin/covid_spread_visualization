@@ -1,5 +1,6 @@
 const colors = {
     background: '#e3e2df',
+    surface: '#bdae9c',
     text: {
         onBackground: '#2d231c'
     },
