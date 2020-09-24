@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import * as topojson from 'topojson-client'
 import { Topology, GeometryObject } from 'topojson-specification'
-import usUntyped from './counties-albers-10m.json'
+import usUntyped from './data/counties-albers-10m.json'
 import cities from './data/cities.json'
 import PlaceFactory from './PlaceFactory'
 import { Snapshot, CovidStatistics, Place, City } from './interfaces'

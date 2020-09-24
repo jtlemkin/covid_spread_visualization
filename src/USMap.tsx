@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import useCanvas from './hooks/useCanvas'
 import { getRenderer } from './mapRenderer'
 import CSS from 'csstype'
-import { Slider } from './Slider'
+import { Slider } from './atoms/Slider'
 import { Scale } from './Scale'
 import moment from 'moment'
 import { Timeline } from './interfaces'

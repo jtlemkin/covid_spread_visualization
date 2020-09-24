@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react'
 import styled from 'styled-components'
-import { Place } from './interfaces'
+import { Place } from '../interfaces'
 import CSS from 'csstype'
-import colors from './colors'
+import colors from '../colors'
 
 const Scrollable = styled.div`
     height: 100%;

@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import usUntyped from './counties-albers-10m.json'
+import usUntyped from './data/counties-albers-10m.json'
 import * as topojson from 'topojson-client'
 import { Topology, GeometryObject } from 'topojson-specification'
 import places from './data/places.json'

@@ -1,14 +1,13 @@
 import React, { useState } from 'react'
-import './App.css'
 import { USMap } from './USMap'
 import { SearchForm } from './SearchForm'
 import useCovidData from './hooks/useCovidData'
-import { Spinner } from './Spinner'
+import { Spinner } from './atoms/Spinner'
 import { GraphDashboard } from './GraphDashboard'
 import { AdaptiveLayout } from './AdaptiveLayout'
 import colors from './colors'
 import styled from 'styled-components'
-import { Card } from './Card'
+import { Card } from './atoms/Card'
 
 const Container = styled.div`
   text-align: center;
