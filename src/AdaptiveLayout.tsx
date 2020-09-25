@@ -34,11 +34,11 @@ export const AdaptiveLayout = ({ master, detail }: AdaptiveLayoutProps) => {
 
     return (
         <Fixed height={windowSize.height} width={windowSize.width}>
-            <div style={{ display: 'flex', flexDirection: 'row', maxHeight: '100%' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', maxHeight: '100%', margin: '0 auto' }}>
                 {master}
             </div>
 
-            <div style={{width: '400px', minWidth: '400px', maxHeight: '100%', overflowY: 'scroll'}}>
+            <div style={{ width: '400px', minWidth: '400px', maxHeight: '100%', overflowY: 'scroll' }}>
                 {detail}
             </div>
         </Fixed>

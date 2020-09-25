@@ -17,6 +17,11 @@ export interface DataEntry {
     deaths: number,
 }
 
+export interface Dated {
+    value: number,
+    date: Date
+}
+
 export interface CovidStatistics {
     percentInfected: number,
     percentDead: number,

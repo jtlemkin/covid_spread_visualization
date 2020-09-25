@@ -1,7 +1,7 @@
 import React from 'react'
 import * as d3 from 'd3'
 import styled from 'styled-components'
-import { DataEntry } from './interfaces'
+import { Dated } from './interfaces'
 import CSS from 'csstype'
 
 const Container = styled.div`
@@ -17,28 +17,26 @@ const SVG = styled.svg`
 `
 
 interface GraphProps {
-    data: DataEntry[][],
-    yName: string,
+    data: Dated[][],
     title: string,
     color: string,
     style?: CSS.Properties
 }
 
-export const Graph = ({ data, yName, title, color, style }: GraphProps) => {
+export const Graph = ({ data, title, color, style }: GraphProps) => {
     const width = 400
     const height = 200
     const margin = {top: 20, right: 10, bottom: 30, left: 60}
 
-    // The (d as any) usages are just so that I can refer to fields by string value
     const x = d3.scaleUtc()
-        .domain(d3.extent(data.flat(), d => new Date(d.date!)) as [Date, Date])
+        .domain(d3.extent(data.flat(), d => d.date) as [Date, Date])
         .range([margin.left, width - margin.right])
     const y = d3.scaleLinear()
-        .domain([0, d3.max(data.flat(), d => (d as any)[yName]!)])
+        .domain([0, d3.max(data.flat(), d => d.value)!])
         .range([height - margin.bottom, margin.top])
-    const line = d3.line<DataEntry>()
-        .x(d => x(new Date(d.date!)))
-        .y(d => y((d as any)[yName]!))
+    const line = d3.line<Dated>()
+        .x(d => x(d.date))
+        .y(d => y((d.value)))
 
     const xAxis = (g: any) => g
         .call(d3.axisBottom(x).ticks(7).tickSizeOuter(0))

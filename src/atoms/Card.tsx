@@ -3,7 +3,7 @@ import colors from '../colors'
 
 export const Card = styled.div`
     width: 100%;
-    padding: 2px;
+    padding: 7px;
     margin: 2px;
     margin-bottom: 10px;
     background-color: ${colors.surface};
@@ -11,4 +11,5 @@ export const Card = styled.div`
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
+    border-radius: 2px;
 `
