@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import useCanvas from './hooks/useCanvas'
-import { getRenderer } from './mapRenderer'
+import { getRenderer } from './helpers/mapRenderer'
 import CSS from 'csstype'
 import { Slider } from './atoms/Slider'
 import { Scale } from './Scale'

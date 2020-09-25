@@ -1,11 +1,11 @@
 import * as d3 from 'd3';
 import * as topojson from 'topojson-client'
 import { Topology, GeometryObject } from 'topojson-specification'
-import usUntyped from './data/counties-albers-10m.json'
-import cities from './data/cities.json'
-import PlaceFactory from './PlaceFactory'
-import { Snapshot, CovidStatistics, Place, City } from './interfaces'
-import colors from './colors'
+import usUntyped from '../data/counties-albers-10m.json'
+import cities from '../data/cities.json'
+import PlaceFactory from '../PlaceFactory'
+import { Snapshot, CovidStatistics, Place, City } from '../interfaces'
+import colors from '../colors'
 
 const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
 

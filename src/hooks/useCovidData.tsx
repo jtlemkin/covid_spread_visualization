@@ -1,7 +1,7 @@
 import useCSV from './useCSV'
 import { useEffect, useState } from 'react'
 import { Timeline } from '../interfaces'
-import { createTimeline } from './util/createTimeline'
+import { createTimeline } from '../helpers/createTimeline'
 import { DSVRowString } from 'd3'
 import { DataEntry } from '../interfaces'
 

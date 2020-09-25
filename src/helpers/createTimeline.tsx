@@ -1,7 +1,7 @@
 import moment from 'moment';
-import { Fips, CovidStatistics, Snapshot } from '../../interfaces';
+import { Fips, CovidStatistics, Snapshot } from '../interfaces';
 import { DSVRowArray, DSVRowString } from 'd3';
-import PlaceFactory from '../../PlaceFactory'
+import PlaceFactory from '../PlaceFactory'
 
 function fipsesForRow(row: DSVRowString<string>) {
     if (row.county === "New York City") {
