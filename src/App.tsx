@@ -3,12 +3,13 @@ import { USMap } from './USMap'
 import { SearchForm } from './SearchForm'
 import useCovidData from './hooks/useCovidData'
 import { Spinner } from './atoms/Spinner'
-import { GraphDashboard } from './GraphDashboard'
 import { AdaptiveLayout } from './AdaptiveLayout'
 import colors from './colors'
 import styled from 'styled-components'
 import { Card } from './atoms/Card'
 import { getGraphingData } from './helpers/getGraphingData'
+import { LabelledSwitch } from './LabelledSwitch'
+import { Graph } from './Graph'
 
 const Container = styled.div`
   text-align: center;
@@ -16,6 +17,20 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   background-color: ${ colors.background }
+`
+
+const Row = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+`
+
+const Column = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 `
 
 function App() {
@@ -62,14 +77,46 @@ function App() {
     
       const Detail = () => {
         return (
-          <div style={{ width: 'calc(100% - 20px)', maxWidth: '400px', marginLeft: '10px', marginRight: '10px', blockSize: 'border-block', margin: '0 auto'}}>
+          <div style={{ 
+            width: 'calc(100% - 20px)', 
+            maxWidth: '400px', 
+            marginLeft: '10px', 
+            marginRight: '10px', 
+            blockSize: 'border-block', 
+            margin: '0 auto'
+          }}>
             <Card>
-              <SearchForm style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} selectCounty={setFips}/>
+              <SearchForm 
+                style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} 
+                selectCounty={setFips}/>
             </Card>
             <Card>
-              <GraphDashboard 
-                graphData={graphData}
-                switchData={switchData} />
+              <Row>
+                  {switchData.map(data => {
+                      return (
+                          <LabelledSwitch 
+                              key={`Switch${data.label}`}
+                              label={data.label} 
+                              onChange={data.onValueChange} 
+                              checked={data.value} />
+                      )
+                  })}
+              </Row>
+            </Card>
+            <Card>
+              <Column>
+                {graphData.map(data => {
+                    return (
+                        <Graph
+                            key={`Graph${data.title}`}
+                            style={{ width: '100%' }}
+                            data={data.values}
+                            title={data.title}
+                            color={data.color}
+                            type={data.type} />
+                    )
+                })}
+              </Column>
             </Card>
           </div>
         )
