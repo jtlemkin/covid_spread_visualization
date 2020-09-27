@@ -63,28 +63,30 @@ export function getGraphingData(fips: number, data: DataEntry[][], isDailyData: 
         return {
           value: entry.cases,
           date: new Date(entry.date)
-        };
+        }
       })),
       title: isRelativeData ? (
         isDailyData ? "Percent Infected Daily" : "Total Percent Infected"
       ) : (
           isDailyData ? "Daily Infections" : "Total Infections"
         ),
-      color: colors.primary
+      color: colors.primary,
+      type: isRelativeData ? "Percent" : "Whole"
     },
     {
       values: graphingData.map(lineData => lineData.map(entry => {
         return {
           value: entry.deaths,
           date: new Date(entry.date)
-        };
+        }
       })),
       title: isRelativeData ? (
         isDailyData ? "Percent Daily Deaths" : "Total Death Percentage"
       ) : (
           isDailyData ? "Daily Deaths" : "Total Deaths"
         ),
-      color: colors.text.onSurface
+      color: colors.text.onSurface,
+      type: isRelativeData ? "Percent" : "Whole"
     }
   ];
 

@@ -52,7 +52,6 @@ interface CheckboxProps {
 
 export const Checkbox = ({ isChecked, onChange }: CheckboxProps) => {
     const _onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log("Check!")
         onChange(event.target.checked)
     }
 

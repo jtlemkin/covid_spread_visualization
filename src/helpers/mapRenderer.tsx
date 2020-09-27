@@ -31,14 +31,7 @@ function drawMap(
     context.lineWidth = 0.5
     context.stroke()*/
 
-    console.log(us)
-
     if (selectedPlace.type === "state") {
-        usUntyped.objects.states.geometries.forEach(geometry => {
-            console.log(parseInt(geometry.id), selectedPlace.fips / 1000)
-        })
-        console.log()
-
         const selectedStates = usUntyped.objects.states.geometries
             .filter((geometry: any) => parseInt(geometry.id) === selectedPlace.fips / 1000)
 

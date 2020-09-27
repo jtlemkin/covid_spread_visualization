@@ -38,6 +38,7 @@ interface GraphDashboardProps {
         values: Dated[][],
         title: string,
         color: string,
+        type: string,
     }[]
     switchData: {
         label: string,
@@ -51,16 +52,24 @@ export const GraphDashboard = ({ graphData, switchData }: GraphDashboardProps) =
         <Column>
             <Row>
                 {switchData.map(data => {
-                    return <LabelledSwitch label={data.label} onChange={data.onValueChange} checked={data.value} />
+                    return (
+                        <LabelledSwitch 
+                            key={`Switch${data.label}`}
+                            label={data.label} 
+                            onChange={data.onValueChange} 
+                            checked={data.value} />
+                    )
                 })}
             </Row>
             {graphData.map(data => {
                 return (
                     <Graph
+                        key={`Graph${data.title}`}
                         style={{ width: '100%' }}
                         data={data.values}
                         title={data.title}
-                        color={data.color} />
+                        color={data.color}
+                        type={data.type} />
                 )
             })}
         </Column>
