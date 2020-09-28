@@ -48,6 +48,7 @@ function App() {
 
   const Content = () => {
     if (mappingData !== null && graphingData !== null) {
+
       const Master = () => {
         return (
           <div style={{ flex: 1 }}>

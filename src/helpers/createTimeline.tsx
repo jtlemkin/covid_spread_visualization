@@ -57,7 +57,7 @@ export function createTimeline(covidData: DSVRowArray) {
         return snapshots
     }, new Array<Snapshot<CountyData>>())
 
-    const highs = snapshots.reduce((highs, snapshot) => {
+    const max = snapshots.reduce((highs, snapshot) => {
         snapshot.statistics.forEach((statistics) => {
             const { numInfected, numDead } = statistics
             
@@ -77,5 +77,7 @@ export function createTimeline(covidData: DSVRowArray) {
         numNewlyDead: 0,
     })
 
-    return { snapshots, max: highs } as Timeline<CountyData>;
+    
+
+    return { snapshots, max } as Timeline<CountyData>;
 }

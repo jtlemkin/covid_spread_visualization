@@ -92,10 +92,6 @@ const useCovidData = (fips: number, isDataDaily: boolean, isDataRelative: boolea
             const getPercentage = (timeline: Timeline<number>, index: number, fips: number) => {
                 const num = timeline.snapshots[index].statistics.get(fips)!
                 const population = PlaceFactory(fips).getPopulation()
-
-                if (num / population > 0.2) {
-                    console.log("What???", fips, num, population, num / population)
-                }
     
                 return num / population
             }

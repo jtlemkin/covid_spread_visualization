@@ -4,7 +4,7 @@ import { Topology, GeometryObject } from 'topojson-specification'
 import usUntyped from '../data/counties-albers-10m.json'
 import cities from '../data/cities.json'
 import PlaceFactory from '../PlaceFactory'
-import { Snapshot, CountyData, Place, City } from '../interfaces'
+import { Snapshot, Place, City } from '../interfaces'
 import colors from '../colors'
 
 const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
@@ -13,8 +13,9 @@ const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
 function drawMap(
     context: CanvasRenderingContext2D, 
     t: number, 
-    snapshot: Snapshot<number> | undefined,
-    max: number | undefined, 
+    snapshot: Snapshot<number>,
+    max: number,
+    percentile: number,
     selectedPlace: Place, 
     previousPlace: Place
 ) {
@@ -47,16 +48,21 @@ function drawMap(
     }
 
     if (snapshot && max) {
+        // Get 90th percentile of values
         usUntyped.objects.counties.geometries.forEach((county) => {
             const fips = parseInt(county.id)
             const value: number | undefined = snapshot.statistics.get(fips)
             const normalizedValue = value !== undefined ? (
-                value / max
+                value / percentile
             ) : ( 
                 0
             )
-            const discreteNormalizedValue = Math.ceil(normalizedValue * 5)
-            const countyColor = colors.scale[discreteNormalizedValue]
+            const colorIndex = normalizedValue < 1 ? (
+                Math.ceil(normalizedValue * 4)
+            ) : (
+                5
+            )
+            const countyColor = colors.scale[colorIndex]
     
             context.beginPath()
             path(topojson.feature(us, county as GeometryObject))
@@ -137,8 +143,9 @@ function getTransform(selectedPlace: Place, previousPlace: Place, t: number) {
 export const getRenderer = (
     selectedFips: number, 
     previousFips: number,
-    snapshot: Snapshot<number> | undefined,
-    max: number | undefined
+    snapshot: Snapshot<number>,
+    max: number,
+    percentile: number
 ) => {
     return (context: CanvasRenderingContext2D, t: number) => {
         context.lineJoin = "round"
@@ -159,7 +166,7 @@ export const getRenderer = (
 
         context.clearRect(0, 0, context.canvas.clientWidth, context.canvas.clientHeight)
 
-        drawMap(context, t, snapshot, max, selectedPlace, previousPlace)
+        drawMap(context, t, snapshot, max, percentile, selectedPlace, previousPlace)
         drawCitiesLabels(context, t, selectedPlace, previousPlace)
 
         context.restore()

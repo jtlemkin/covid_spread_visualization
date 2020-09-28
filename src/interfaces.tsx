@@ -2,7 +2,7 @@ export type Fips = number
 
 export interface Timeline<T> {
     snapshots: Snapshot<T>[],
-    max: T
+    max: T,
 }
 
 export interface Snapshot<T> {

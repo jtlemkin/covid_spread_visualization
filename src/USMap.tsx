@@ -24,12 +24,27 @@ export const USMap = ({ currentFips, previousFips, setFips, countyData, style}: 
     
     const [selectedSnapshotIndex, setSelectedSnapshotIndex] = useState(countyData.snapshots.length - 1)
 
+    const allSortedValues = countyData.snapshots.map(snapshot => {
+        const values: number[] = []
+        
+        snapshot.statistics.forEach(value => {
+          values.push(value)
+        })
+
+        return values
+      })
+        .flat()
+        .sort()
+
+    const percentile = allSortedValues[Math.floor(allSortedValues.length * 0.95)]
+
     const canvasRef = useCanvas(
         getRenderer(
             currentFips, 
             previousFips, 
-            countyData?.snapshots[selectedSnapshotIndex!], 
-            countyData?.max
+            countyData.snapshots[selectedSnapshotIndex!], 
+            countyData.max,
+            percentile
         ),
         countyData !== null
     )
