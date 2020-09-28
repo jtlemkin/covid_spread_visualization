@@ -14,7 +14,7 @@ interface USMapProps {
     currentFips: number,
     previousFips: number,
     setFips: (newFips: number) => void
-    countyData: Timeline
+    countyData: Timeline<number>
     style?: CSS.Properties
 }
 
@@ -29,7 +29,7 @@ export const USMap = ({ currentFips, previousFips, setFips, countyData, style}: 
             currentFips, 
             previousFips, 
             countyData?.snapshots[selectedSnapshotIndex!], 
-            countyData?.highs
+            countyData?.max
         ),
         countyData !== null
     )
@@ -58,7 +58,7 @@ export const USMap = ({ currentFips, previousFips, setFips, countyData, style}: 
                 </canvas>
                 <Scale 
                     style={{ position: 'absolute', bottom: '10px', right: '10px' }}
-                    max={countyData.highs.percentInfected} />
+                    max={countyData.max} />
             </div>
             <Slider 
                 min={0} 

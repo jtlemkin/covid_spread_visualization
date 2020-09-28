@@ -42,9 +42,9 @@ function App() {
     setSelectedFips(newFip)
   }
   
-  const [mappingData, graphingData] = useCovidData(currentFips)
   const [areGraphsDaily, setAreGraphsDaily] = useState(false)
   const [areGraphsRelative, setAreGraphsRelative] = useState(false)
+  const [mappingData, graphingData] = useCovidData(currentFips, areGraphsDaily, areGraphsRelative)
 
   const Content = () => {
     if (mappingData !== null && graphingData !== null) {

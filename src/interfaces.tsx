@@ -1,13 +1,18 @@
 export type Fips = number
 
-export interface Timeline {
-    snapshots: Snapshot[],
-    highs: CovidStatistics
+export interface Timeline<T> {
+    snapshots: Snapshot<T>[],
+    max: T
 }
 
-export interface Snapshot {
+export interface Snapshot<T> {
     timestamp: number,
-    statistics: Map <Fips, CovidStatistics>
+    statistics: Map <Fips, T>
+}
+
+export interface CountyData {
+    numInfected: number,
+    numDead: number,
 }
 
 export interface DataEntry {
@@ -20,13 +25,6 @@ export interface DataEntry {
 export interface Dated {
     value: number,
     date: Date
-}
-
-export interface CovidStatistics {
-    percentInfected: number,
-    percentDead: number,
-    percentNewlyInfected: number,
-    percentNewlyDead: number,
 }
 
 export interface Place {
