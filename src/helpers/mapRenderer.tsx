@@ -28,9 +28,9 @@ function drawMap(
     context.stroke()*/
 
     // Draw state border
-    /*path(topojson.mesh(us, us.objects.states as GeometryObject, (a, b) => a !== b))
+    path(topojson.mesh(us, us.objects.states as GeometryObject, (a, b) => a !== b))
     context.lineWidth = 0.5
-    context.stroke()*/
+    context.stroke()
 
     if (selectedPlace.type === "state") {
         const selectedStates = usUntyped.objects.states.geometries
@@ -47,35 +47,43 @@ function drawMap(
         }
     }
 
-    if (snapshot && max) {
-        // Get 90th percentile of values
-        usUntyped.objects.counties.geometries.forEach((county) => {
-            const fips = parseInt(county.id)
-            const value: number | undefined = snapshot.statistics.get(fips)
-            const normalizedValue = value !== undefined ? (
-                value / percentile
-            ) : ( 
-                0
-            )
-            const colorIndex = normalizedValue < 1 ? (
-                Math.ceil(normalizedValue * 4)
-            ) : (
-                5
-            )
-            const countyColor = colors.scale[colorIndex]
-    
-            context.beginPath()
-            path(topojson.feature(us, county as GeometryObject))
-    
-            context.fillStyle = countyColor
-            context.fill()
-    
-            if (selectedPlace.fips === fips) {
-                context.lineWidth = 1
-                context.stroke()
-            }
-        })
-    }
+    usUntyped.objects.counties.geometries.forEach((county) => {
+        const fips = parseInt(county.id)
+        const value: number | undefined = snapshot.statistics.get(fips)
+        const normalizedValue = value !== undefined ? (
+            value / percentile
+        ) : ( 
+            0
+        )
+
+        const colorIndex = normalizedValue > 1 ? (
+            colors.scale.length - 1
+        ) : (
+            Math.ceil(normalizedValue * (colors.scale.length - 1))
+        )
+        const countyColor = colors.scale[colorIndex]
+
+        if (fips === 4003) {
+            console.log("CASES", value)
+            console.log("PERCENTILE", percentile)
+            console.log("NORMAL", normalizedValue)
+            console.log("COLORS", colors.scale.length)
+            console.log("Num", normalizedValue * colors.scale.length - 1)
+            console.log("INDEX", colorIndex)
+            console.log()
+        }
+
+        context.beginPath()
+        path(topojson.feature(us, county as GeometryObject))
+
+        context.fillStyle = countyColor
+        context.fill()
+
+        if (selectedPlace.fips === fips) {
+            context.lineWidth = 1
+            context.stroke()
+        }
+    })
 }
 
 function drawCitiesLabels(context: CanvasRenderingContext2D, t: number, selectedPlace: any, previousPlace: any) {

@@ -13,41 +13,17 @@ import colors from './colors'
 interface USMapProps {
     currentFips: number,
     previousFips: number,
-    setFips: (newFips: number) => void
-    countyData: Timeline<number>
-    style?: CSS.Properties
+    setFips: (newFips: number) => void,
+    countyData: Timeline<number>,
+    percentile: number,
+    style?: CSS.Properties,
 }
 
-export const USMap = ({ currentFips, previousFips, setFips, countyData, style}: USMapProps) => {
+export const USMap = ({ currentFips, previousFips, setFips, countyData, percentile, style}: USMapProps) => {
     const width = 975 * window.devicePixelRatio
     const height = 610 * window.devicePixelRatio
     
     const [selectedSnapshotIndex, setSelectedSnapshotIndex] = useState(countyData.snapshots.length - 1)
-    const [allSortedValues, setAllSortedValues] = useState<number[]>([])
-
-    useEffect(() => {
-        const newAllSortedValues = countyData.snapshots.map(snapshot => {
-            const values: number[] = []
-            
-            snapshot.statistics.forEach(value => {
-              values.push(value)
-            })
-    
-            return values
-          })
-            .flat()
-            .sort((a, b) => a - b)
-
-        setAllSortedValues(newAllSortedValues)
-
-        const percentileIndex = Math.floor(newAllSortedValues.length * 0.98)
-        const percentile = newAllSortedValues[percentileIndex]
-
-        console.log("PERCENTILE", percentile)
-    }, [])
-
-    const percentileIndex = Math.floor(allSortedValues.length * 0.98)
-    const percentile = allSortedValues[percentileIndex]
 
     const canvasRef = useCanvas(
         getRenderer(

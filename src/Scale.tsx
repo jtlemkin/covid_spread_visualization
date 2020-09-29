@@ -43,7 +43,7 @@ interface ScaleProps {
 }
 
 export const Scale = ({ max, percentile, style }: ScaleProps) => {
-    const numColors = 6
+    const numColors = colors.scale.length
 
     const color = (index: number) => {
         return colors.scale[index]
@@ -74,7 +74,7 @@ export const Scale = ({ max, percentile, style }: ScaleProps) => {
     return (
         <Container style={style}>
             <Column>
-                {[0,1,2,3,4,5].map(index => {
+                {Array.from({length: numColors}, (x, i) => i).map(index => {
                     return (
                         <LabelledValue key={index.toString()}>
                             <Label>{label(index)}</Label>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { USMap } from './USMap'
 import { SearchForm } from './SearchForm'
 import useCovidData from './hooks/useCovidData'
@@ -45,10 +45,32 @@ function App() {
   const [areGraphsDaily, setAreGraphsDaily] = useState(false)
   const [areGraphsRelative, setAreGraphsRelative] = useState(false)
   const [mappingData, graphingData] = useCovidData(currentFips, areGraphsDaily, areGraphsRelative)
+  const [percentile, setPercentile] = useState<number | null>(null) // This percentile is used to scale the colors of the map
+
+  useEffect(() => {
+    if (mappingData === null) {
+      return
+    }
+
+    const sortedValues = mappingData.snapshots.map(snapshot => {
+        const values: number[] = []
+        
+        snapshot.statistics.forEach(value => {
+          values.push(value)
+        })
+
+        return values
+      })
+        .flat()
+        .sort((a, b) => a - b)
+
+    const percentileIndex = Math.floor(sortedValues.length * 0.997)
+    const percentile = sortedValues[percentileIndex]
+    setPercentile(percentile)
+  }, [mappingData])
 
   const Content = () => {
-    if (mappingData !== null && graphingData !== null) {
-
+    if (mappingData !== null && graphingData !== null && percentile !== null) {
       const Master = () => {
         return (
           <div style={{ flex: 1 }}>
@@ -57,6 +79,7 @@ function App() {
               previousFips={previousFips} 
               currentFips={currentFips}
               countyData={mappingData}
+              percentile={percentile}
               setFips={setFips} />
           </div>
         )
