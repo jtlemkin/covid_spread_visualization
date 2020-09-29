@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useCanvas from './hooks/useCanvas'
 import { getRenderer } from './helpers/mapRenderer'
 import CSS from 'csstype'
@@ -23,20 +23,31 @@ export const USMap = ({ currentFips, previousFips, setFips, countyData, style}: 
     const height = 610 * window.devicePixelRatio
     
     const [selectedSnapshotIndex, setSelectedSnapshotIndex] = useState(countyData.snapshots.length - 1)
+    const [allSortedValues, setAllSortedValues] = useState<number[]>([])
 
-    const allSortedValues = countyData.snapshots.map(snapshot => {
-        const values: number[] = []
-        
-        snapshot.statistics.forEach(value => {
-          values.push(value)
-        })
+    useEffect(() => {
+        const newAllSortedValues = countyData.snapshots.map(snapshot => {
+            const values: number[] = []
+            
+            snapshot.statistics.forEach(value => {
+              values.push(value)
+            })
+    
+            return values
+          })
+            .flat()
+            .sort((a, b) => a - b)
 
-        return values
-      })
-        .flat()
-        .sort()
+        setAllSortedValues(newAllSortedValues)
 
-    const percentile = allSortedValues[Math.floor(allSortedValues.length * 0.95)]
+        const percentileIndex = Math.floor(newAllSortedValues.length * 0.98)
+        const percentile = newAllSortedValues[percentileIndex]
+
+        console.log("PERCENTILE", percentile)
+    }, [])
+
+    const percentileIndex = Math.floor(allSortedValues.length * 0.98)
+    const percentile = allSortedValues[percentileIndex]
 
     const canvasRef = useCanvas(
         getRenderer(
@@ -73,7 +84,8 @@ export const USMap = ({ currentFips, previousFips, setFips, countyData, style}: 
                 </canvas>
                 <Scale 
                     style={{ position: 'absolute', bottom: '10px', right: '10px' }}
-                    max={countyData.max} />
+                    max={countyData.max}
+                    percentile={percentile} />
             </div>
             <Slider 
                 min={0} 

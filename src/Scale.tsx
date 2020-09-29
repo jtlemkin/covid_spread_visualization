@@ -18,6 +18,7 @@ const LabelledValue = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: flex-end;
     margin-top: -10px;
     margin-bottom: -10px;
 `
@@ -28,7 +29,7 @@ const Box = styled.div`
     border-color: black;
     border-width: 1px;
     border-style: solid;
-    margin-right: 5px;
+    margin-left: 5px;
 `
 
 const Label = styled.p`
@@ -37,19 +38,37 @@ const Label = styled.p`
 
 interface ScaleProps {
     max: number,
+    percentile: number,
     style?: CSS.Properties
 }
 
-export const Scale = ({ max, style }: ScaleProps) => {
-    const numColors = 5
+export const Scale = ({ max, percentile, style }: ScaleProps) => {
+    const numColors = 6
 
     const color = (index: number) => {
         return colors.scale[index]
     }
 
+    const labelValueForIndex = (index: number) => {
+        return ((index - 1) / (numColors - 1) * percentile)
+    }
+
     const label = (index: number) => {
-        const upperBound = index / numColors * max * 100
-        return index === 0 ? `  ${Math.ceil(upperBound)}%` : `< ${Math.ceil(upperBound)}%`
+        // Here we make the assumption that if the max number we are looking at is less
+        // than one that we are actually viewing percentages
+        if (max <= 1) {
+            if (index === 0) {
+                return '0%'
+            } else {
+                return `> ${(labelValueForIndex(index) * 100).toPrecision(2)}%`
+            }
+        } else {
+            if (index === 0) {
+                return 0
+            } else if (index < numColors) {
+                return `> ${labelValueForIndex(index).toPrecision(2)}`
+            }
+        }
     }
 
     return (
@@ -58,8 +77,8 @@ export const Scale = ({ max, style }: ScaleProps) => {
                 {[0,1,2,3,4,5].map(index => {
                     return (
                         <LabelledValue key={index.toString()}>
-                            <Box style={{backgroundColor: color(index)}} />
                             <Label>{label(index)}</Label>
+                            <Box style={{backgroundColor: color(index)}} />
                         </LabelledValue>
                     )
                 })}
