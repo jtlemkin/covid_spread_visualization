@@ -22,33 +22,6 @@ function drawMap(
     const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
 
-    console.log("DRAW")
-
-    // Draw the US
-    path(topojson.feature(us, us.objects.nation as GeometryObject))
-    context.lineWidth = 1
-    context.stroke()
-
-    // Draw state border
-    path(topojson.mesh(us, us.objects.states as GeometryObject, (a, b) => a !== b))
-    context.lineWidth = 0.5
-    context.stroke()
-
-    if (selectedPlace.type === "state") {
-        const selectedStates = usUntyped.objects.states.geometries
-            .filter((geometry: any) => parseInt(geometry.id) === selectedPlace.fips / 1000)
-
-        if (selectedStates.length > 0) {
-            const geometry = selectedStates as Array<any>
-
-            path(topojson.merge(us, geometry))
-
-            context.lineWidth = 1
-            context.strokeStyle = colors.text.onBackground
-            context.stroke()
-        }
-    }
-
     usUntyped.objects.counties.geometries.forEach((county) => {
         const fips = parseInt(county.id)
         const value: number | undefined = snapshot.statistics.get(fips)
@@ -65,50 +38,66 @@ function drawMap(
         )
         const countyColor = colors.scale[colorIndex]
 
-        context.beginPath()
-        path(topojson.feature(us, county as GeometryObject))
+        context.lineWidth = 0.1
 
-        context.fillStyle = countyColor
-        context.fill()
+        if (selectedPlace.contains(fips) || previousPlace.contains(fips)) {
+            if (selectedPlace.contains(fips) && previousPlace.contains(fips)) {
+                context.fillStyle = countyColor
+                context.strokeStyle = colors.text.onBackground
+            } else if (selectedPlace.contains(fips)) {
+                context.fillStyle = d3.interpolate(colors.background, countyColor)(t)
+                context.strokeStyle = d3.interpolate(colors.background, colors.text.onBackground)(t)
+            } else {
+                context.fillStyle = d3.interpolate(countyColor, colors.background)(t)
+                context.strokeStyle = d3.interpolate(colors.text.onBackground, colors.background)(t)
+            }
 
-        if (selectedPlace.fips === fips) {
-            context.lineWidth = 1
+            context.beginPath()
+            path(topojson.feature(us, county as GeometryObject))
+            context.fill()
+            context.strokeStyle = 'black'
             context.stroke()
         }
     })
 }
 
-function drawCitiesLabels(context: CanvasRenderingContext2D, t: number, selectedPlace: any, previousPlace: any) {
+function drawCitiesLabels(context: CanvasRenderingContext2D, t: number, selectedPlace: Place, previousPlace: Place) {
     cities.forEach((city: City) => {
         const [x, y] = projection([city.lng, city.lat])!
         context.textAlign = "center"
 
-        if (selectedPlace.contains(city.county_fips) && previousPlace.contains(city.county_fips)) {
-            context.fillStyle = "black"
-        } else if (selectedPlace.contains(city.county_fips) && !previousPlace.contains(city.county_fips)) {
-            context.fillStyle = d3.interpolateString("rgba(0,0,0,0)", "rgba(0,0,0,1)")(t)
-        } else if (!selectedPlace.contains(city.county_fips) && previousPlace.contains(city.county_fips)) {
-            context.fillStyle = d3.interpolateString("rgba(0,0,0,1)", "rgba(0,0,0,0)")(t)
-        } else {
-            context.fillStyle = "rgba(0,0,0,0)"
+        if (selectedPlace.contains(city.county_fips) || previousPlace.contains(city.county_fips)) {
+            let lineColor = "rgba(0,0,0,0)"
+            let outlineColor = "rgba(1,1,1,0)"
+            if (selectedPlace.contains(city.county_fips) && previousPlace.contains(city.county_fips)) {
+                lineColor = 'black'
+                outlineColor = 'white'
+            } else if (selectedPlace.contains(city.county_fips) && !previousPlace.contains(city.county_fips)) {
+                lineColor = d3.interpolateString("rgba(0,0,0,0)", "rgba(0,0,0,1)")(t)
+                outlineColor = d3.interpolateString("rgba(1,1,1,0)", "rgba(1,1,1,1)")(t)
+            } else if (!selectedPlace.contains(city.county_fips) && previousPlace.contains(city.county_fips)) {
+                lineColor = d3.interpolateString("rgba(0,0,0,1)", "rgba(0,0,0,0)")(t)
+                outlineColor = d3.interpolateString("rgba(1,1,1,1)", "rgba(1,1,1,0)")(t)
+            }
+
+            const previousTransform = previousPlace.getTransform()
+            const selectedTransform = selectedPlace.getTransform()
+
+            const scalingFactor = d3.interpolate(1 / Math.sqrt(previousTransform.scale), 1 / Math.sqrt(selectedTransform.scale))(t)
+            const fontSize = 11 * scalingFactor
+
+            context.font = `${fontSize}px Arial`
+            context.lineWidth = 0.5
+            context.strokeStyle = outlineColor
+            context.strokeText(city.name, x, y - 6 * scalingFactor)
+            context.fillStyle = lineColor
+            context.fillText(city.name, x, y - 6 * scalingFactor)
+
+            context.fillStyle = lineColor
+            context.beginPath()
+            context.arc(x, y, 2 * scalingFactor, 0, 2 * Math.PI)
+            context.fill()
         }
-
-        const previousTransform = previousPlace.getTransform()
-        const selectedTransform = selectedPlace.getTransform()
-
-        const scalingFactor = d3.interpolate(1 / Math.sqrt(previousTransform.scale), 1 / Math.sqrt(selectedTransform.scale))(t)
-        const fontSize = 11 * scalingFactor
-        context.font = `${fontSize}px Arial`
-        context.lineWidth = 1
-        context.strokeStyle = "white"
-        context.strokeText(city.name, x, y - 6 * scalingFactor)
-        context.fillStyle = 'black'
-        context.fillText(city.name, x, y - 6 * scalingFactor)
-
-        context.fillStyle = colors.text.onBackground
-        context.beginPath()
-        context.arc(x, y, 2 * scalingFactor, 0, 2 * Math.PI)
-        context.fill()
     })
 }
 
@@ -151,15 +140,9 @@ export const getRenderer = (
 
         const transform = getTransform(selectedPlace, previousPlace, t)
 
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height)
         context.save()
-
-        context.clearRect(0, 0, context.canvas.clientWidth, context.canvas.clientHeight)
-
-        if (transform) {
-            context.transform(transform.a, transform.b, transform.c, transform.d, transform.e, transform.f)
-        }
-
-        context.clearRect(0, 0, context.canvas.clientWidth, context.canvas.clientHeight)
+        context.transform(transform.a, transform.b, transform.c, transform.d, transform.e, transform.f)
 
         drawMap(context, t, snapshot, max, percentile, selectedPlace, previousPlace)
         drawCitiesLabels(context, t, selectedPlace, previousPlace)

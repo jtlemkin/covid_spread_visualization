@@ -24,7 +24,7 @@ const useCanvas = (draw: (context: CanvasRenderingContext2D, t: number) => void,
                 const ease = d3.easeQuadIn
 
                 const timer = d3.timer(elapsed => {
-                    const duration = 750
+                    const duration = 600
                     const t = Math.min(1, ease(elapsed / duration))
 
                     draw(context, t)

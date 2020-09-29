@@ -67,8 +67,6 @@ const App = () => {
     return sortedValues[percentileIndex]
   }, [mappingData])
 
-  console.log("APP RENDER", areGraphsDaily, areGraphsRelative, mappingData, graphingData, percentile)
-
   const Content = () => {
     if (mappingData !== null && graphingData !== null && percentile !== undefined) {
       const Master = () => {
