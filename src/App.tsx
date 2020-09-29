@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import { USMap } from './USMap'
 import { SearchForm } from './SearchForm'
 import useCovidData from './hooks/useCovidData'
@@ -33,7 +33,7 @@ const Column = styled.div`
   width: 100%;
 `
 
-function App() {
+const App = () => {
   const [previousFips, setPreviousFips] = useState(0)
   const [currentFips, setSelectedFips] = useState(0)
 
@@ -45,9 +45,8 @@ function App() {
   const [areGraphsDaily, setAreGraphsDaily] = useState(false)
   const [areGraphsRelative, setAreGraphsRelative] = useState(true)
   const [mappingData, graphingData] = useCovidData(currentFips, areGraphsDaily, areGraphsRelative)
-  const [percentile, setPercentile] = useState<number | null>(null) // This percentile is used to scale the colors of the map
 
-  useEffect(() => {
+  const percentile = useMemo(() => {
     if (mappingData === null) {
       return
     }
@@ -65,12 +64,13 @@ function App() {
         .sort((a, b) => a - b)
 
     const percentileIndex = Math.floor(sortedValues.length * 0.997)
-    const percentile = sortedValues[percentileIndex]
-    setPercentile(percentile)
+    return sortedValues[percentileIndex]
   }, [mappingData])
 
+  console.log("APP RENDER", areGraphsDaily, areGraphsRelative, mappingData, graphingData, percentile)
+
   const Content = () => {
-    if (mappingData !== null && graphingData !== null && percentile !== null) {
+    if (mappingData !== null && graphingData !== null && percentile !== undefined) {
       const Master = () => {
         return (
           <div style={{ flex: 1 }}>
@@ -79,8 +79,7 @@ function App() {
               previousFips={previousFips} 
               currentFips={currentFips}
               countyData={mappingData}
-              percentile={percentile}
-              setFips={setFips} />
+              percentile={percentile} />
           </div>
         )
       }

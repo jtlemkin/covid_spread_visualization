@@ -13,13 +13,12 @@ import colors from './colors'
 interface USMapProps {
     currentFips: number,
     previousFips: number,
-    setFips: (newFips: number) => void,
     countyData: Timeline<number>,
     percentile: number,
     style?: CSS.Properties,
 }
 
-export const USMap = ({ currentFips, previousFips, setFips, countyData, percentile, style}: USMapProps) => {
+export const USMap = React.memo(({ currentFips, previousFips, countyData, percentile, style}: USMapProps) => {
     const width = 975 * window.devicePixelRatio
     const height = 610 * window.devicePixelRatio
     
@@ -33,7 +32,7 @@ export const USMap = ({ currentFips, previousFips, setFips, countyData, percenti
             countyData.max,
             percentile
         ),
-        countyData !== null
+        currentFips !== previousFips
     )
 
     // The map is animated whenever the current fips is different than the previous fips
@@ -41,7 +40,6 @@ export const USMap = ({ currentFips, previousFips, setFips, countyData, percenti
     // animation does not play
     const onSliderChange = (newSnapshotIndex: number | number[] | undefined | null) => {
         setSelectedSnapshotIndex(newSnapshotIndex as number)
-        setFips(currentFips)
     }
 
     const labelForIndex = (index: number) => {
@@ -71,4 +69,4 @@ export const USMap = ({ currentFips, previousFips, setFips, countyData, percenti
                 label={labelForIndex} />
         </div>
     )
-}
+})

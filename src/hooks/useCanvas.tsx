@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react'
 import * as d3 from 'd3'
 
-const useCanvas = (draw: (context: CanvasRenderingContext2D, t: number) => void, isVisible: boolean) => {
+const useCanvas = (draw: (context: CanvasRenderingContext2D, t: number) => void, shouldAnimate: boolean) => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     // Scale canvas to be retina resolution
@@ -13,25 +13,29 @@ const useCanvas = (draw: (context: CanvasRenderingContext2D, t: number) => void,
             const ratio = window.devicePixelRatio
             context.scale(ratio, ratio)
         }
-    }, [isVisible])
+    }, [])
 
     useEffect(() => {
         const canvas = canvasRef.current
         const context = canvas?.getContext('2d')
 
         if (canvas && context) {
-            const ease = d3.easeQuadIn
+            if (shouldAnimate) {
+                const ease = d3.easeQuadIn
 
-            const timer = d3.timer(elapsed => {
-                const duration = 750
-                const t = Math.min(1, ease(elapsed / duration))
+                const timer = d3.timer(elapsed => {
+                    const duration = 750
+                    const t = Math.min(1, ease(elapsed / duration))
 
-                draw(context, t)
+                    draw(context, t)
 
-                if (t === 1) {
-                    timer.stop()
-                }
-            })
+                    if (t === 1) {
+                        timer.stop()
+                    }
+                })
+            } else {
+                draw(context, 1)
+            }
         }
     }, [draw])
 

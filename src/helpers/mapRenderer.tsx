@@ -22,10 +22,12 @@ function drawMap(
     const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
 
+    console.log("DRAW")
+
     // Draw the US
-    /*path(topojson.feature(us, us.objects.nation as GeometryObject))
+    path(topojson.feature(us, us.objects.nation as GeometryObject))
     context.lineWidth = 1
-    context.stroke()*/
+    context.stroke()
 
     // Draw state border
     path(topojson.mesh(us, us.objects.states as GeometryObject, (a, b) => a !== b))
@@ -120,18 +122,13 @@ function getTransform(selectedPlace: Place, previousPlace: Place, t: number) {
         selectedTransform.scaleAdjustedTranslation
     )
 
-    // If the selected place has not changed, we don't want to animate
-    // showing the same place. Setting t := 1 effectively prevents the animation
-    // from happening
-    const _t = selectedPlace === previousPlace ? 1 : t
-
     const transformParams = {
-        a: scales(_t),
+        a: scales(t),
         b: 0,
         c: 0,
-        d: scales(_t),
-        e: translations(_t)[0],
-        f: translations(_t)[1],
+        d: scales(t),
+        e: translations(t)[0],
+        f: translations(t)[1],
     }
 
     return transformParams
