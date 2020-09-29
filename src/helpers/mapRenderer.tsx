@@ -55,7 +55,6 @@ function drawMap(
             context.beginPath()
             path(topojson.feature(us, county as GeometryObject))
             context.fill()
-            context.strokeStyle = 'black'
             context.stroke()
         }
     })
