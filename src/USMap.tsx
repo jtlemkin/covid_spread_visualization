@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import useCanvas from './hooks/useCanvas'
 import { getRenderer } from './helpers/mapRenderer'
 import CSS from 'csstype'

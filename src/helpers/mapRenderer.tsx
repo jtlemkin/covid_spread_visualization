@@ -63,16 +63,6 @@ function drawMap(
         )
         const countyColor = colors.scale[colorIndex]
 
-        if (fips === 4003) {
-            console.log("CASES", value)
-            console.log("PERCENTILE", percentile)
-            console.log("NORMAL", normalizedValue)
-            console.log("COLORS", colors.scale.length)
-            console.log("Num", normalizedValue * colors.scale.length - 1)
-            console.log("INDEX", colorIndex)
-            console.log()
-        }
-
         context.beginPath()
         path(topojson.feature(us, county as GeometryObject))
 

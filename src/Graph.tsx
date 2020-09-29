@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import * as d3 from 'd3'
 import styled from 'styled-components'
 import { Dated } from './interfaces'
@@ -63,19 +63,19 @@ export const Graph = ({ data, title, color, type, style }: GraphProps) => {
 
     const svgRef = useRef<SVGSVGElement | null>(null)
 
-    const bisect = (mx: any) => {
-        const bisect = d3.bisector((d: Dated) => d.date).left;
-        const date = x.invert(mx)
-        const values = data.map(lineData => {
-            const index = bisect(lineData, date, 1)
-            const a = lineData[index - 1];
-            const b = lineData[index];
-            return b && (date.valueOf() - a.date.valueOf() > b.date.valueOf() - date.valueOf()) ? b : a;
-        })
-        return values
-    }
-
     useEffect(() => {
+        const bisect = (mx: any) => {
+            const bisect = d3.bisector((d: Dated) => d.date).left;
+            const date = x.invert(mx)
+            const values = data.map(lineData => {
+                const index = bisect(lineData, date, 1)
+                const a = lineData[index - 1];
+                const b = lineData[index];
+                return b && (date.valueOf() - a.date.valueOf() > b.date.valueOf() - date.valueOf()) ? b : a;
+            })
+            return values
+        }
+
         const svgElement = d3.select(svgRef.current!)
 
         const tooltip = svgElement.append("g")
@@ -174,7 +174,7 @@ const callout = (g: any, value: string) => {
           .style("font-weight", (_: any, i: any) => i ? null : "bold")
           .text((d: any) => d));
   
-    const {x, y, width: w, height: h} = text.node().getBBox();
+    const {y, width: w, height: h} = text.node().getBBox();
   
     text.attr("transform", `translate(${-w / 2},${15 - y})`);
     path.attr("d", `M${-w / 2 - 10},5H-5l5,-5l5,5H${w / 2 + 10}v${h + 20}h-${w + 20}z`);

@@ -43,7 +43,7 @@ function App() {
   }
   
   const [areGraphsDaily, setAreGraphsDaily] = useState(false)
-  const [areGraphsRelative, setAreGraphsRelative] = useState(false)
+  const [areGraphsRelative, setAreGraphsRelative] = useState(true)
   const [mappingData, graphingData] = useCovidData(currentFips, areGraphsDaily, areGraphsRelative)
   const [percentile, setPercentile] = useState<number | null>(null) // This percentile is used to scale the colors of the map
 
