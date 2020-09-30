@@ -34,7 +34,6 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
             currentFips, 
             previousFips, 
             countyData.snapshots[selectedSnapshotIndex!], 
-            countyData.max,
             percentile
         ),
         currentFips !== previousFips

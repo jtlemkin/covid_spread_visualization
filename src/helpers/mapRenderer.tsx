@@ -9,14 +9,12 @@ import colors from '../colors'
 
 const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
 
-// Draws a single frame of the map
-function drawMap(
-    context: CanvasRenderingContext2D, 
-    t: number, 
+function drawCounties(
+    context: CanvasRenderingContext2D,
     snapshot: Snapshot<number>,
-    max: number,
+    t: number,
     percentile: number,
-    selectedPlace: Place, 
+    selectedPlace: Place,
     previousPlace: Place
 ) {
     const path = d3.geoPath(null, context)
@@ -58,6 +56,74 @@ function drawMap(
             context.stroke()
         }
     })
+}
+
+function drawStates(
+    context: CanvasRenderingContext2D,
+    t: number,
+    selectedPlace: Place,
+    previousPlace: Place
+) {
+    const path = d3.geoPath(null, context)
+    const us = (usUntyped as unknown) as Topology
+
+    usUntyped.objects.states.geometries.forEach(state => {
+        const fips = parseInt(state.id)
+
+        context.lineWidth = 0.2
+
+        if (selectedPlace.contains(fips) || previousPlace.contains(fips)) {
+            if (selectedPlace.contains(fips) && previousPlace.contains(fips)) {
+                context.strokeStyle = colors.text.onBackground
+            } else if (selectedPlace.contains(fips)) {
+                context.strokeStyle = d3.interpolate(colors.background, colors.text.onBackground)(t)
+            } else {
+                context.strokeStyle = d3.interpolate(colors.text.onBackground, colors.background)(t)
+            }
+
+            context.beginPath()
+            path(topojson.feature(us, state as GeometryObject))
+            context.stroke()
+        }
+    })
+}
+
+function drawNation(
+    context: CanvasRenderingContext2D,
+    t: number,
+    selectedPlace: Place,
+    previousPlace: Place
+) {
+    const path = d3.geoPath(null, context)
+    const us = (usUntyped as unknown) as Topology
+
+    context.lineWidth = 0.5
+    if (selectedPlace.fips === 0 || previousPlace.fips === 0) {
+        if (selectedPlace.fips === 0 && previousPlace.fips === 0) {
+            context.strokeStyle = colors.text.onBackground
+        } else if (selectedPlace.fips === 0) {
+            context.strokeStyle = d3.interpolate(colors.background, colors.text.onBackground)(t)
+        } else {
+            context.strokeStyle = d3.interpolate(colors.text.onBackground, colors.background)(t)
+        }
+
+        path(topojson.feature(us, us.objects.nation))
+        context.stroke()
+    }
+}
+
+// Draws a single frame of the map
+function drawMap(
+    context: CanvasRenderingContext2D, 
+    t: number, 
+    snapshot: Snapshot<number>,
+    percentile: number,
+    selectedPlace: Place, 
+    previousPlace: Place
+) {
+    drawCounties(context, snapshot, t, percentile, selectedPlace, previousPlace)
+    drawStates(context, t, selectedPlace, previousPlace)
+    drawNation(context, t, selectedPlace, previousPlace)
 }
 
 function drawCitiesLabels(context: CanvasRenderingContext2D, t: number, selectedPlace: Place, previousPlace: Place) {
@@ -127,7 +193,6 @@ export const getRenderer = (
     selectedFips: number, 
     previousFips: number,
     snapshot: Snapshot<number>,
-    max: number,
     percentile: number
 ) => {
     return (context: CanvasRenderingContext2D, t: number) => {
@@ -143,7 +208,7 @@ export const getRenderer = (
         context.save()
         context.transform(transform.a, transform.b, transform.c, transform.d, transform.e, transform.f)
 
-        drawMap(context, t, snapshot, max, percentile, selectedPlace, previousPlace)
+        drawMap(context, t, snapshot, percentile, selectedPlace, previousPlace)
         drawCitiesLabels(context, t, selectedPlace, previousPlace)
 
         context.restore()
