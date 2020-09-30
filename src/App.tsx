@@ -77,6 +77,7 @@ const App = () => {
               previousFips={previousFips} 
               currentFips={currentFips}
               countyData={mappingData}
+              setFips={setFips}
               percentile={percentile} />
           </div>
         )

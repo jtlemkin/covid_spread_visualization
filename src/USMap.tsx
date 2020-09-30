@@ -15,10 +15,11 @@ interface USMapProps {
     previousFips: number,
     countyData: Timeline<number>,
     percentile: number,
+    setFips: (newFips: number) => void,
     style?: CSS.Properties,
 }
 
-export const USMap = React.memo(({ currentFips, previousFips, countyData, percentile, style}: USMapProps) => {
+export const USMap = React.memo(({ currentFips, previousFips, countyData, percentile, setFips, style}: USMapProps) => {
     const width = 975 * window.devicePixelRatio
     const height = 610 * window.devicePixelRatio
     
@@ -40,6 +41,7 @@ export const USMap = React.memo(({ currentFips, previousFips, countyData, percen
     // animation does not play
     const onSliderChange = (newSnapshotIndex: number | number[] | undefined | null) => {
         setSelectedSnapshotIndex(newSnapshotIndex as number)
+        setFips(currentFips)
     }
 
     const labelForIndex = (index: number) => {
