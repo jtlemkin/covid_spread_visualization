@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import CSS from 'csstype'
 
 const HiddenCheckbox = styled.input.attrs({ type: 'checkbox' })`
     border: 0;
@@ -47,16 +48,17 @@ const CheckboxContainer = styled.label`
 
 interface CheckboxProps {
     isChecked: boolean,
-    onChange: (isChecked: boolean) => void
+    onChange: (isChecked: boolean) => void,
+    style?: CSS.Properties
 }
 
-export const Checkbox = ({ isChecked, onChange }: CheckboxProps) => {
+export const Checkbox = ({ isChecked, onChange, style }: CheckboxProps) => {
     const _onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         onChange(event.target.checked)
     }
 
     return (
-        <CheckboxContainer>
+        <CheckboxContainer style={style}>
             <HiddenCheckbox checked={isChecked} onChange={_onChange} />
             <StyledCheckbox checked={isChecked} >
                 <Icon viewBox="0 0 24 24">

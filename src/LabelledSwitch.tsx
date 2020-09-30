@@ -17,8 +17,8 @@ interface LabelledSwitchProps {
 export const LabelledSwitch = ({ label, onChange, checked }: LabelledSwitchProps) => {
     return (
         <Row>
-            <p style={{ paddingRight: '5px', paddingLeft: '5px' }}>{label}</p>
-            <Checkbox onChange={onChange} isChecked={checked} />
+            <p style={{ paddingRight: '5px', paddingLeft: '5px', flex: 1 }}>{label}</p>
+            <Checkbox onChange={onChange} isChecked={checked} style={{flex: 1}} />
         </Row>
     );
 };

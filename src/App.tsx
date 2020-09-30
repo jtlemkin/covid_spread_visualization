@@ -85,11 +85,11 @@ const App = () => {
 
       const switchData = [
         {
-          label: "View Daily?",
+          label: "View Daily Numbers?",
           value: areGraphsDaily,
           onValueChange: setAreGraphsDaily
         }, {
-          label: "View Relative?",
+          label: "View County Percentages?",
           value: areGraphsRelative,
           onValueChange: setAreGraphsRelative
         }
