@@ -19,6 +19,7 @@ const SVG = styled.svg`
     border-style: solid;
     border-color: ${colors.text.onSurface};
     border-width: 1px;
+    background: ${colors.background};
 `
 
 interface GraphProps {
@@ -142,7 +143,9 @@ function formatValues(values: Dated[], type: string) {
         if (values.length === 1) {
             return str
         } else {
-            return `${labels[index]}: ${str}`
+            // This little bit of arithmetic is so that if we're just looking at the state and nation data
+            // The labels are "state", "us" instead of "county", "state"
+            return `${labels[index + 3 - values.length]}: ${str}`
         }
     })
     return formatted.join('\n')

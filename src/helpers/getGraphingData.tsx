@@ -85,7 +85,7 @@ export function getGraphingData(fips: number, data: DataEntry[][], isDailyData: 
       ) : (
           isDailyData ? "Daily Deaths" : "Total Deaths"
         ),
-      color: colors.text.onSurface,
+      color: colors.primary,
       type: isRelativeData ? "Percent" : "Whole"
     }
   ];
