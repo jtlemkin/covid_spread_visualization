@@ -7,6 +7,9 @@ import { Scale } from './Scale'
 import moment from 'moment'
 import { Timeline } from './interfaces'
 import colors from './colors'
+import { faSearchMinus } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import PlaceFactory from './helpers/PlaceFactory'
 
 // A fips number is an identifier for counties, states, and the nation
 
@@ -63,6 +66,12 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
                     style={{ position: 'absolute', bottom: '10px', right: '10px' }}
                     max={countyData.max}
                     percentile={percentile} />
+                { PlaceFactory(currentFips).type !== 'nation' && 
+                    <FontAwesomeIcon 
+                        style={{position: 'absolute', top: '10px', right: '10px', height: '20px', width: '20px', cursor: 'pointer'}}
+                        onClick={() => { setFips(PlaceFactory(currentFips).getOwner()!.fips) }} 
+                        icon={faSearchMinus}/>
+                }
             </div>
             <Slider 
                 min={0} 

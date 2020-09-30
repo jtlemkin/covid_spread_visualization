@@ -4,7 +4,7 @@ import { CountyData, Timeline, Snapshot } from '../interfaces'
 import { createTimeline } from '../helpers/createTimeline'
 import { DSVRowString } from 'd3'
 import { DataEntry } from '../interfaces'
-import PlaceFactory from '../PlaceFactory'
+import PlaceFactory from '../helpers/PlaceFactory'
 
 const useCovidData = (fips: number, isDataDaily: boolean, isDataRelative: boolean) => {
     const countiesData = useCSV('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv')

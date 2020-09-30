@@ -4,7 +4,7 @@ import { SearchField, ScrollableList } from './atoms/ScrollableList'
 import places from './data/places.json'
 import { Expandable } from './atoms/Expandable'
 import { Place } from './interfaces'
-import PlaceFactory from './PlaceFactory'
+import PlaceFactory from './helpers/PlaceFactory'
 import CSS from 'csstype'
 
 const Row = styled.div`

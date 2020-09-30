@@ -10,7 +10,7 @@ import { Card } from './atoms/Card'
 import { getGraphingData } from './helpers/getGraphingData'
 import { LabelledSwitch } from './LabelledSwitch'
 import { Graph } from './Graph'
-import PlaceFactory from './PlaceFactory'
+import PlaceFactory from './helpers/PlaceFactory'
 
 const Container = styled.div`
   text-align: center;

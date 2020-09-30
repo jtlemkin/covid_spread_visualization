@@ -1,6 +1,6 @@
 import colors from '../colors';
 import { DataEntry } from '../interfaces';
-import PlaceFactory from '../PlaceFactory';
+import PlaceFactory from './PlaceFactory';
 
 export function getGraphingData(fips: number, data: DataEntry[][], isDailyData: boolean, isRelativeData: boolean) {
   const [countyData, stateData, nationData] = data;
