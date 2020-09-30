@@ -50,7 +50,7 @@ export function getGraphingData(fips: number, data: DataEntry[][], isDailyData: 
           return {
             ...dataEntry,
             cases: dataEntry.cases - lineData[index - 1].cases,
-            deaths: dataEntry.cases - lineData[index - 1].cases
+            deaths: dataEntry.deaths - lineData[index - 1].deaths
           };
         }
       });

@@ -10,6 +10,7 @@ import { Card } from './atoms/Card'
 import { getGraphingData } from './helpers/getGraphingData'
 import { LabelledSwitch } from './LabelledSwitch'
 import { Graph } from './Graph'
+import PlaceFactory from './PlaceFactory'
 
 const Container = styled.div`
   text-align: center;
@@ -67,6 +68,17 @@ const App = () => {
     return sortedValues[percentileIndex]
   }, [mappingData])
 
+  const title = () => {
+    const place = PlaceFactory(currentFips).name.toLowerCase()
+      .split(' ')
+      .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+      .join(' ')
+    const daily = areGraphsDaily ? 'Daily' : ''
+    const unit = areGraphsRelative ? 'Rates' : 'Numbers'
+
+    return `Reported ${daily} ${place} Covid-19 ${unit}`
+  }
+
   const Content = () => {
     if (mappingData !== null && graphingData !== null && percentile !== undefined) {
       const Master = () => {
@@ -74,6 +86,7 @@ const App = () => {
           <div style={{ flex: 1 }}>
             <USMap 
               style={{paddingLeft: '50px', paddingRight: '50px', maxWidth: '1000px'}} 
+              title={title()}
               previousFips={previousFips} 
               currentFips={currentFips}
               countyData={mappingData}
@@ -96,6 +109,8 @@ const App = () => {
       ]
 
       const graphData = getGraphingData(currentFips, graphingData, areGraphsDaily, areGraphsRelative)
+
+      console.log("GRAPH DATA", graphData)
     
       const Detail = () => {
         return (

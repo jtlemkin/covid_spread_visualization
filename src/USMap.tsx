@@ -11,6 +11,7 @@ import colors from './colors'
 // A fips number is an identifier for counties, states, and the nation
 
 interface USMapProps {
+    title: string,
     currentFips: number,
     previousFips: number,
     countyData: Timeline<number>,
@@ -19,7 +20,7 @@ interface USMapProps {
     style?: CSS.Properties,
 }
 
-export const USMap = React.memo(({ currentFips, previousFips, countyData, percentile, setFips, style}: USMapProps) => {
+export const USMap = React.memo(({ title, currentFips, previousFips, countyData, percentile, setFips, style}: USMapProps) => {
     const width = 975 * window.devicePixelRatio
     const height = 610 * window.devicePixelRatio
     
@@ -50,7 +51,7 @@ export const USMap = React.memo(({ currentFips, previousFips, countyData, percen
 
     return (
         <div style={style}>
-            <h2 style={{ color: colors.text.onBackground }}> US Covid-19 Infection Rates</h2>
+            <h2 style={{ color: colors.text.onBackground }}>{title}</h2>
             <div style={{position: 'relative'}}>
                 <canvas 
                     ref={canvasRef} 
