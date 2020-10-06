@@ -44,8 +44,8 @@ export const Graph = ({ data, title, color, type, style }: GraphProps) => {
         .domain([0, d3.max(data.flat(), d => d.value)!])
         .range([height - margin.bottom, margin.top])
     const line = d3.line<Dated>()
-        .x(d => x(d.date))
-        .y(d => y((d.value)))
+        .x(d => x(d.date)!)
+        .y(d => y(d.value)!)
 
     const xAxis = (g: any) => g
         .call(d3.axisBottom(x).ticks(6).tickSizeOuter(0))
