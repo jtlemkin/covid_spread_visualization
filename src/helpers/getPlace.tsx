@@ -17,7 +17,7 @@ export default function getPlace(
         topojson.feature(us, (us as any).objects.counties) as unknown as FeatureCollection<Geometry, GeoJsonProperties>
     )
 
-    console.log("US", us)
+    //console.log("US", us)
 
     if (pos) {
         for (const feature of places.features) {
