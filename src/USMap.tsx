@@ -78,8 +78,8 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
         const pointAsMatrix = (new DOMMatrix()).translate(pos.x, pos.y)
         const targetPointHoldingMatrix = nationalMatrix.multiply(currentMatrix.inverse()).multiply(pointAsMatrix)
 
-        console.log("Pp", [pos.x, pos.y])
-        console.log("P", [targetPointHoldingMatrix.e, targetPointHoldingMatrix.f])
+        //console.log("Pp", [pos.x, pos.y])
+        //console.log("P", [targetPointHoldingMatrix.e, targetPointHoldingMatrix.f])
 
         return [targetPointHoldingMatrix.e, targetPointHoldingMatrix.f] as [number, number]
     }
