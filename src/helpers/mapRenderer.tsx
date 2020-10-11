@@ -1,13 +1,13 @@
 import * as d3 from 'd3';
 import * as topojson from 'topojson-client'
 import { Topology, GeometryObject } from 'topojson-specification'
-import usUntyped from '../data/us-10m.json'
+import usUntyped from '../data/counties-albers-10m.json'
 import cities from '../data/cities.json'
 import PlaceFactory from './PlaceFactory'
 import { Snapshot, Place, City } from '../interfaces'
 import colors from '../colors'
 
-const projection = d3.geoAlbersUsa().scale(1280).translate([480, 300])
+const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
 
 function drawCounties(
     context: CanvasRenderingContext2D,
@@ -17,11 +17,11 @@ function drawCounties(
     selectedPlace: Place,
     previousPlace: Place
 ) {
-    const path = d3.geoPath(projection, context)
+    const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
 
     usUntyped.objects.counties.geometries.forEach((county) => {
-        const fips = parseInt(county.properties.ADMIN_FIPS)
+        const fips = parseInt(county.id)
         const value: number | undefined = snapshot.statistics.get(fips)
         const normalizedValue = value !== undefined ? (
             value / percentile
@@ -64,7 +64,7 @@ function drawStates(
     selectedPlace: Place,
     previousPlace: Place
 ) {
-    const path = d3.geoPath(projection, context)
+    const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
 
     usUntyped.objects.states.geometries.forEach(state => {
@@ -94,7 +94,7 @@ function drawNation(
     selectedPlace: Place,
     previousPlace: Place
 ) {
-    const path = d3.geoPath(projection, context)
+    const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
 
     context.lineWidth = 0.5
@@ -204,13 +204,14 @@ export const getRenderer = (
 
         const transform = getTransform(selectedPlace, previousPlace, t)
 
+        //console.log("OG", transform)
+
+        context.restore()
         context.clearRect(0, 0, context.canvas.width, context.canvas.height)
         context.save()
         context.transform(transform.a, transform.b, transform.c, transform.d, transform.e, transform.f)
 
         drawMap(context, t, snapshot, percentile, selectedPlace, previousPlace)
         drawCitiesLabels(context, t, selectedPlace, previousPlace)
-
-        context.restore()
     }
 }

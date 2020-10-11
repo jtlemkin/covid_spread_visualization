@@ -109,8 +109,6 @@ const App = () => {
       ]
 
       const graphData = getGraphingData(currentFips, graphingData, areGraphsDaily, areGraphsRelative)
-
-      console.log("GRAPH DATA", graphData)
     
       const Detail = () => {
         return (

@@ -10,6 +10,8 @@ import colors from './colors'
 import { faSearchMinus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import PlaceFactory from './helpers/PlaceFactory'
+import getPlace from './helpers/getPlace'
+import * as d3 from 'd3'
 
 // A fips number is an identifier for counties, states, and the nation
 
@@ -51,6 +53,49 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
         return moment(countyData!.snapshots[index].timestamp).format('ll')
     }
 
+    const getCanvasPoint = (event: React.PointerEvent<HTMLCanvasElement>) => {
+        const canvas = event.currentTarget
+        const m = canvas.getContext("2d")!.getTransform()
+        const mi = m.inverse()
+
+        const rect = canvas.getBoundingClientRect()
+
+        const pos = new DOMPoint(
+            (event.clientX - rect.left) / canvasRef.current!.clientWidth * 975, 
+            (event.clientY - rect.top) / canvasRef.current!.clientHeight * 610
+        )
+
+        const nationalTransform = PlaceFactory(0).getTransform()
+        const nationalMatrix = new DOMMatrix(
+            [nationalTransform.scale, 0, 0, nationalTransform.scale, ...nationalTransform.scaleAdjustedTranslation]
+        )
+
+        const currentTransform = PlaceFactory(currentFips).getTransform()
+        const currentMatrix = (new DOMMatrix(
+            [currentTransform.scale, 0, 0, currentTransform.scale, ...currentTransform.scaleAdjustedTranslation]
+        ))
+
+        const pointAsMatrix = (new DOMMatrix()).translate(pos.x, pos.y)
+        const targetPointHoldingMatrix = nationalMatrix.multiply(currentMatrix.inverse()).multiply(pointAsMatrix)
+
+        console.log("Pp", [pos.x, pos.y])
+        console.log("P", [targetPointHoldingMatrix.e, targetPointHoldingMatrix.f])
+
+        return [targetPointHoldingMatrix.e, targetPointHoldingMatrix.f] as [number, number]
+    }
+
+    const onPointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
+        const type = PlaceFactory(currentFips).type
+        const childType = type === "state" ? "county" : "state"
+        const pos = getCanvasPoint(event)
+
+        const selectedFips = getPlace(pos, currentFips, childType)
+
+        if (selectedFips !== null) {
+            setFips(selectedFips)
+        }
+    }
+ 
     return (
         <div style={style}>
             <h2 style={{ color: colors.text.onBackground }}>{title}</h2>
@@ -58,7 +103,8 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
                 <canvas 
                     ref={canvasRef} 
                     width={width} 
-                    height={height} 
+                    height={height}
+                    onPointerDown={onPointerDown} 
                     style={{width, maxWidth: '100%'}}>
                 </canvas>
                 <Scale 
