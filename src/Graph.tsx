@@ -16,10 +16,12 @@ const Container = styled.div`
 
 const SVG = styled.svg`
     width: 100%;
-    border-style: solid;
-    border-color: ${colors.text.onSurface};
-    border-width: 1px;
-    background: ${colors.background};
+    background: white;
+    border-radius: 2px;
+`
+
+const Title = styled.p`
+    color: ${colors.text.onSurface};
 `
 
 interface GraphProps {
@@ -33,7 +35,7 @@ interface GraphProps {
 export const Graph = ({ data, title, color, type, style }: GraphProps) => {
     const width = 400
     const height = 200
-    const margin = {top: 20, right: 20, bottom: 30, left: 40}
+    const margin = {top: 20, right: 30, bottom: 30, left: 40}
 
     const formatType: string = type === "Percent" ? ".2%" : ".0s"
 
@@ -95,7 +97,7 @@ export const Graph = ({ data, title, color, type, style }: GraphProps) => {
     return (
         <Container 
             style={style} >
-            <p><u><b>{title}</b></u></p>
+            <Title><u><b>{title}</b></u></Title>
             <SVG 
                 viewBox={`0 0 ${width} ${height}`} 
                 preserveAspectRatio="xMidYMid meet" 

@@ -47,3 +47,8 @@ export interface City {
     lng: number,
     county_fips: number,
 }
+
+export interface LabelledColor {
+    color: string,
+    label: string,
+}

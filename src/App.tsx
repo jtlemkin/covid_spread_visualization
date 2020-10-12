@@ -1,16 +1,16 @@
 import React, { useState, useMemo } from 'react'
 import { USMap } from './USMap'
-import { SearchForm } from './SearchForm'
 import useCovidData from './hooks/useCovidData'
 import { Spinner } from './atoms/Spinner'
 import { AdaptiveLayout } from './AdaptiveLayout'
 import colors from './colors'
-import styled from 'styled-components'
-import { Card } from './atoms/Card'
 import { getGraphingData } from './helpers/getGraphingData'
+import PlaceFactory from './helpers/PlaceFactory'
+import { CardList } from './CardList'
 import { LabelledSwitch } from './LabelledSwitch'
 import { Graph } from './Graph'
-import PlaceFactory from './helpers/PlaceFactory'
+import { SearchForm } from './SearchForm'
+import styled from 'styled-components'
 
 const Container = styled.div`
   text-align: center;
@@ -96,6 +96,40 @@ const App = () => {
         )
       }
 
+      const Control = () => {
+        return (
+          <CardList>
+            <SearchForm 
+              style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} 
+              selectCounty={setFips}/>
+            <Row>
+                {switchData.map(data => {
+                    return (
+                        <LabelledSwitch 
+                            key={`Switch${data.label}`}
+                            label={data.label} 
+                            onChange={data.onValueChange} 
+                            checked={data.value} />
+                    )
+                })}
+            </Row>
+            <Column>
+              {graphData.map(data => {
+                  return (
+                      <Graph
+                          key={`Graph${data.title}`}
+                          style={{ width: '100%' }}
+                          data={data.values}
+                          title={data.title}
+                          color={data.color}
+                          type={data.type} />
+                  )
+              })}
+            </Column>
+          </CardList>
+        )
+      }
+
       const switchData = [
         {
           label: "View Daily Numbers?",
@@ -109,55 +143,8 @@ const App = () => {
       ]
 
       const graphData = getGraphingData(currentFips, graphingData, areGraphsDaily, areGraphsRelative)
-    
-      const Detail = () => {
-        return (
-          <div style={{ 
-            width: 'calc(100% - 20px)', 
-            maxWidth: '400px', 
-            marginLeft: '10px', 
-            marginRight: '10px', 
-            blockSize: 'border-block', 
-            margin: '0 auto'
-          }}>
-            <Card>
-              <SearchForm 
-                style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} 
-                selectCounty={setFips}/>
-            </Card>
-            <Card>
-              <Row>
-                  {switchData.map(data => {
-                      return (
-                          <LabelledSwitch 
-                              key={`Switch${data.label}`}
-                              label={data.label} 
-                              onChange={data.onValueChange} 
-                              checked={data.value} />
-                      )
-                  })}
-              </Row>
-            </Card>
-            <Card>
-              <Column>
-                {graphData.map(data => {
-                    return (
-                        <Graph
-                            key={`Graph${data.title}`}
-                            style={{ width: '100%' }}
-                            data={data.values}
-                            title={data.title}
-                            color={data.color}
-                            type={data.type} />
-                    )
-                })}
-              </Column>
-            </Card>
-          </div>
-        )
-      }
 
-      return <AdaptiveLayout master={<Master />} detail={<Detail />} />
+      return <AdaptiveLayout master={<Master />} detail={<Control />} />
     } else {
       return <Spinner />
     }

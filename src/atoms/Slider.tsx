@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactSlider from 'react-slider'
 import styled from 'styled-components'
+import colors from '../colors'
 
 const StyledSlider = styled(ReactSlider)`
     width: 100%;
@@ -20,16 +21,19 @@ const Bar = styled.div`
     width: 3px;
     cursor: grab;
     background-color: black;
+    background-color: ${colors.text.onBackground};
 `
 
 const StyledTrack = styled.div`
     height: 2px;
     background: black;
     top: 14px;
+    background-color: ${colors.text.onBackground};
 `
 
 const Label = styled.div`
     font-size: 1em;
+    color: ${colors.text.onBackground};
 `
 
 interface SliderProps {

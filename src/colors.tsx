@@ -1,13 +1,13 @@
 const colors = {
-    background: '#F2F2F2',
-    surface: '#D9D9D9',
+    background: 'white',
+    surface: '#DCDCDC',
     text: {
-        onBackground: '#0D0D0D',
-        onSurface: '#0D0D0D',
+        onBackground: 'black',
+        onSurface: 'black',
     },
-    primary: '#8C1F1F',
+    primary: '#bd0026',
     scale: ['#ffffb2', '#fecc5c', '#fd8d3c', '#f03b20', '#bd0026']
-    //scale: ['#FDE1C4','#FBA588','#E46E57','#BD3D30','#8C0D14']
+    //scale: ['#F2E4C9','#D99C52','#BF5F0B','#A6341B','#400707']
 }
 
 export default colors

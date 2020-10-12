@@ -2,9 +2,9 @@ import React, { useState, useCallback } from 'react';
 import { getRenderer } from './helpers/mapRenderer'
 import CSS from 'csstype'
 import { Slider } from './atoms/Slider'
-import { Scale } from './Scale'
+import { Legend } from './Legend'
 import moment from 'moment'
-import { Timeline } from './interfaces'
+import { Timeline, LabelledColor } from './interfaces'
 import colors from './colors'
 import { faSearchMinus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -12,6 +12,7 @@ import PlaceFactory from './helpers/PlaceFactory'
 import getPlace from './helpers/getPlace'
 import getCanvasPoint from './helpers/getCanvasPoint'
 import { Canvas } from './Canvas'
+import getScaleLabel from './helpers/getScaleLabel'
 
 // A fips number is an identifier for counties, states, and the nation
 
@@ -61,13 +62,16 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
             setFips(selectedFips)
         }
     }, [currentFips])
+
+    const legendLabelledColors = colors.scale.map((color, i) => {
+        const label = getScaleLabel(i, countyData.max, percentile)
+        return { color, label } as LabelledColor
+    })
  
     return (
         <div style={style}>
             <h2 style={{ color: colors.text.onBackground, marginBottom: 10 }}>{title}</h2>
-            <Scale 
-                max={countyData.max}
-                percentile={percentile} />
+            <Legend labelledColors={legendLabelledColors} />
             <div style={{position: 'relative'}}>
                 <Canvas 
                     width={width} 
