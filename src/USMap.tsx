@@ -64,7 +64,10 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
  
     return (
         <div style={style}>
-            <h2 style={{ color: colors.text.onBackground }}>{title}</h2>
+            <h2 style={{ color: colors.text.onBackground, marginBottom: 10 }}>{title}</h2>
+            <Scale 
+                max={countyData.max}
+                percentile={percentile} />
             <div style={{position: 'relative'}}>
                 <Canvas 
                     width={width} 
@@ -73,10 +76,6 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
                     onPress={setPressedFips} 
                     isAnimated={currentFips != previousFips}
                     style={{width: `${width}px`, maxWidth: '100%'}}/>
-                <Scale 
-                    style={{ position: 'absolute', bottom: '10px', right: '10px' }}
-                    max={countyData.max}
-                    percentile={percentile} />
                 { PlaceFactory(currentFips).type !== 'nation' && 
                     <FontAwesomeIcon 
                         style={{position: 'absolute', top: '10px', right: '10px', height: '20px', width: '20px', cursor: 'pointer'}}

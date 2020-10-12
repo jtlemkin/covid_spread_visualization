@@ -3,37 +3,30 @@ import styled from 'styled-components'
 import CSS from 'csstype'
 import colors from './colors'
 
-const Container = styled.div`
-    flex: 1;
-    flex-direction: column-reverse;
-`
-
-const Column = styled.div`
-    flex: 1;
+const Row = styled.div`
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-items: space-evenly;
+    max-width: 600px;
+    margin: auto;
 `
 
 const LabelledValue = styled.div`
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-    margin-top: -10px;
-    margin-bottom: -10px;
+    flex-direction: column-reverse;
+    flex: 1;
+    margin-left: 2.5px;
+    margin-right: 2.5px;
 `
 
 const Box = styled.div`
     height: 10px;
-    width: 30px;
-    border-color: black;
-    border-width: 1px;
-    border-style: solid;
-    margin-left: 5px;
+    width: 100%;
 `
 
 const Label = styled.p`
     font-size: 0.75em;
+    padding-top: 2px;
 `
 
 interface ScaleProps {
@@ -72,8 +65,8 @@ export const Scale = ({ max, percentile, style }: ScaleProps) => {
     }
 
     return (
-        <Container style={style}>
-            <Column>
+        <div style={style}>
+            <Row>
                 {Array.from({length: numColors}, (x, i) => i).map(index => {
                     return (
                         <LabelledValue key={index.toString()}>
@@ -82,7 +75,7 @@ export const Scale = ({ max, percentile, style }: ScaleProps) => {
                         </LabelledValue>
                     )
                 })}
-            </Column>
-        </Container>
+            </Row>
+        </div>
     )
 }

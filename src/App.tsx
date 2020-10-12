@@ -85,7 +85,7 @@ const App = () => {
         return (
           <div style={{ flex: 1 }}>
             <USMap 
-              style={{paddingLeft: '50px', paddingRight: '50px', maxWidth: '1000px'}} 
+              style={{maxWidth: '875px'}} 
               title={title()}
               previousFips={previousFips} 
               currentFips={currentFips}
