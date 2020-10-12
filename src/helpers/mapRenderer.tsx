@@ -21,6 +21,9 @@ function drawCounties(
     const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
 
+    context.lineWidth = 0.2
+    context.strokeStyle = colors.background
+
     usUntyped.objects.counties.geometries.forEach((county) => {
         const fips = parseInt(county.id)
         const value: number | undefined = snapshot.statistics.get(fips)
@@ -37,18 +40,16 @@ function drawCounties(
         )
         const countyColor = colors.scale[colorIndex]
 
-        context.lineWidth = 0.1
-
         if (selectedPlace.contains(fips) || previousPlace.contains(fips)) {
             if (selectedPlace.contains(fips) && previousPlace.contains(fips)) {
                 context.fillStyle = countyColor
-                context.strokeStyle = colors.text.onBackground
+                //context.strokeStyle = colors.text.onBackground
             } else if (selectedPlace.contains(fips)) {
                 context.fillStyle = d3.interpolate(colors.background, countyColor)(t)
-                context.strokeStyle = d3.interpolate(colors.background, colors.text.onBackground)(t)
+                //context.strokeStyle = d3.interpolate(colors.background, colors.text.onBackground)(t)
             } else {
                 context.fillStyle = d3.interpolate(countyColor, colors.background)(t)
-                context.strokeStyle = d3.interpolate(colors.text.onBackground, colors.background)(t)
+                //context.strokeStyle = d3.interpolate(colors.text.onBackground, colors.background)(t)
             }
 
             context.beginPath()
@@ -67,21 +68,14 @@ function drawStates(
 ) {
     const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
+    context.strokeStyle = colors.background
 
     usUntyped.objects.states.geometries.forEach(state => {
         const fips = parseInt(state.id)
 
-        context.lineWidth = 0.25
+        context.lineWidth = 1
 
         if (selectedPlace.contains(fips) || previousPlace.contains(fips)) {
-            if (selectedPlace.contains(fips) && previousPlace.contains(fips)) {
-                context.strokeStyle = colors.text.onBackground
-            } else if (selectedPlace.contains(fips)) {
-                context.strokeStyle = d3.interpolate(colors.background, colors.text.onBackground)(t)
-            } else {
-                context.strokeStyle = d3.interpolate(colors.text.onBackground, colors.background)(t)
-            }
-
             context.beginPath()
             path(topojson.feature(us, state as GeometryObject))
             context.stroke()
@@ -98,7 +92,7 @@ function drawNation(
     const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
 
-    context.lineWidth = 0.5
+    context.lineWidth = 1
     if (selectedPlace.fips === 0 || previousPlace.fips === 0) {
         if (selectedPlace.fips === 0 && previousPlace.fips === 0) {
             context.strokeStyle = colors.text.onBackground
@@ -124,7 +118,7 @@ function drawMap(
 ) {
     drawCounties(context, snapshot, t, percentile, selectedPlace, previousPlace)
     drawStates(context, t, selectedPlace, previousPlace)
-    drawNation(context, t, selectedPlace, previousPlace)
+    //drawNation(context, t, selectedPlace, previousPlace)
 }
 
 function drawCitiesLabels(
@@ -153,10 +147,10 @@ function drawCitiesLabels(
             }
 
             const scalingFactor = 1 / currentScale
-            const fontSize = 11 * scalingFactor
+            const fontSize = 14 * scalingFactor
 
             context.font = `${fontSize}px Arial`
-            context.lineWidth = 0.5
+            context.lineWidth = 2 * scalingFactor
             context.strokeStyle = outlineColor
             context.strokeText(city.name, x, y - 6 * scalingFactor)
             context.fillStyle = lineColor
