@@ -1,5 +1,4 @@
-import React, { useState, useMemo } from 'react';
-import useCanvas from './hooks/useCanvas'
+import React, { useState, useCallback } from 'react';
 import { getRenderer } from './helpers/mapRenderer'
 import CSS from 'csstype'
 import { Slider } from './atoms/Slider'
@@ -12,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import PlaceFactory from './helpers/PlaceFactory'
 import getPlace from './helpers/getPlace'
 import getCanvasPoint from './helpers/getCanvasPoint'
+import { Canvas } from './Canvas'
 
 // A fips number is an identifier for counties, states, and the nation
 
@@ -31,17 +31,12 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
     
     const [selectedSnapshotIndex, setSelectedSnapshotIndex] = useState(countyData.snapshots.length - 1)
 
-    const renderer = getRenderer(
+    const renderer = useCallback(getRenderer(
         currentFips, 
         previousFips, 
         countyData.snapshots[selectedSnapshotIndex!], 
         percentile
-    )
-
-    const canvasRef = useCanvas(
-        renderer,
-        currentFips !== previousFips
-    )
+    ), [currentFips, previousFips, selectedSnapshotIndex, percentile])
 
     // The map is animated whenever the current fips is different than the previous fips
     // We want to update the current and previous fips to be the same so that the transition
@@ -55,7 +50,7 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
         return moment(countyData!.snapshots[index].timestamp).format('ll')
     }
 
-    const onPointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const setPressedFips = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
         const type = PlaceFactory(currentFips).type
         const childType = type === "state" ? "county" : "state"
         const pos = getCanvasPoint(event, currentFips)
@@ -65,19 +60,19 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
         if (selectedFips !== null) {
             setFips(selectedFips)
         }
-    }
+    }, [currentFips])
  
     return (
         <div style={style}>
             <h2 style={{ color: colors.text.onBackground }}>{title}</h2>
             <div style={{position: 'relative'}}>
-                <canvas 
-                    ref={canvasRef} 
+                <Canvas 
                     width={width} 
-                    height={height}
-                    onPointerDown={onPointerDown} 
-                    style={{width, maxWidth: '100%'}}>
-                </canvas>
+                    height={height} 
+                    renderFunc={renderer}
+                    onPress={setPressedFips} 
+                    isAnimated={currentFips != previousFips}
+                    style={{width: `${width}px`, maxWidth: '100%'}}/>
                 <Scale 
                     style={{ position: 'absolute', bottom: '10px', right: '10px' }}
                     max={countyData.max}
