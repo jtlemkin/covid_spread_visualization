@@ -102,7 +102,7 @@ const App = () => {
           value: areGraphsDaily,
           onValueChange: setAreGraphsDaily
         }, {
-          label: "View County Percentages?",
+          label: "View Percentages?",
           value: areGraphsRelative,
           onValueChange: setAreGraphsRelative
         }
