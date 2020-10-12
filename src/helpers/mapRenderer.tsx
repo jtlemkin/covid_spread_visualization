@@ -133,17 +133,17 @@ function drawCitiesLabels(
         context.textAlign = "center"
 
         if (selectedPlace.contains(city.county_fips) || previousPlace.contains(city.county_fips)) {
-            let lineColor = "rgba(0,0,0,0)"
+            let fillColor = "rgba(0,0,0,0)"
             let outlineColor = "rgba(1,1,1,0)"
             if (selectedPlace.contains(city.county_fips) && previousPlace.contains(city.county_fips)) {
-                lineColor = 'black'
+                fillColor = 'black'
                 outlineColor = 'white'
             } else if (selectedPlace.contains(city.county_fips) && !previousPlace.contains(city.county_fips)) {
-                lineColor = d3.interpolateString("rgba(0,0,0,0)", "rgba(0,0,0,1)")(t)
-                outlineColor = d3.interpolateString("rgba(1,1,1,0)", "rgba(1,1,1,1)")(t)
+                fillColor = d3.interpolate(colors.background, "black")(t)
+                outlineColor = d3.interpolate(colors.background, "white")(t)
             } else if (!selectedPlace.contains(city.county_fips) && previousPlace.contains(city.county_fips)) {
-                lineColor = d3.interpolateString("rgba(0,0,0,1)", "rgba(0,0,0,0)")(t)
-                outlineColor = d3.interpolateString("rgba(1,1,1,1)", "rgba(1,1,1,0)")(t)
+                fillColor = d3.interpolate("black", colors.background)(t)
+                outlineColor = d3.interpolate("white", colors.background)(t)
             }
 
             const scalingFactor = 1 / currentScale
@@ -153,10 +153,10 @@ function drawCitiesLabels(
             context.lineWidth = 2 * scalingFactor
             context.strokeStyle = outlineColor
             context.strokeText(city.name, x, y - 6 * scalingFactor)
-            context.fillStyle = lineColor
+            context.fillStyle = fillColor
             context.fillText(city.name, x, y - 6 * scalingFactor)
 
-            context.fillStyle = lineColor
+            context.fillStyle = fillColor
             context.beginPath()
             context.arc(x, y, 2 * scalingFactor, 0, 2 * Math.PI)
             context.fill()
