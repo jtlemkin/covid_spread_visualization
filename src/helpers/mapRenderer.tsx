@@ -3,8 +3,9 @@ import * as topojson from 'topojson-client'
 import { Topology, GeometryObject } from 'topojson-specification'
 import usUntyped from '../data/counties-albers-10m.json'
 import cities from '../data/cities.json'
+import getTransform from './getTransform'
 import PlaceFactory from './PlaceFactory'
-import { Snapshot, Place, City } from '../interfaces'
+import { Snapshot, Place, City, Transform } from '../interfaces'
 import colors from '../colors'
 
 const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
@@ -126,7 +127,13 @@ function drawMap(
     drawNation(context, t, selectedPlace, previousPlace)
 }
 
-function drawCitiesLabels(context: CanvasRenderingContext2D, t: number, selectedPlace: Place, previousPlace: Place) {
+function drawCitiesLabels(
+    context: CanvasRenderingContext2D, 
+    t: number, 
+    selectedPlace: Place, 
+    previousPlace: Place, 
+    currentScale: number
+) {
     cities.forEach((city: City) => {
         const [x, y] = projection([city.lng, city.lat])!
         context.textAlign = "center"
@@ -145,10 +152,7 @@ function drawCitiesLabels(context: CanvasRenderingContext2D, t: number, selected
                 outlineColor = d3.interpolateString("rgba(1,1,1,1)", "rgba(1,1,1,0)")(t)
             }
 
-            const previousTransform = previousPlace.getTransform()
-            const selectedTransform = selectedPlace.getTransform()
-
-            const scalingFactor = d3.interpolate(1 / Math.sqrt(previousTransform.scale), 1 / Math.sqrt(selectedTransform.scale))(t)
+            const scalingFactor = 1 / currentScale
             const fontSize = 11 * scalingFactor
 
             context.font = `${fontSize}px Arial`
@@ -166,10 +170,7 @@ function drawCitiesLabels(context: CanvasRenderingContext2D, t: number, selected
     })
 }
 
-function getTransform(selectedPlace: Place, previousPlace: Place, t: number) {
-    const previousTransform = previousPlace.getTransform()
-    const selectedTransform = selectedPlace.getTransform()
-
+function interpolateTransforms(previousTransform: Transform, selectedTransform: Transform, t: number) {
     const scales = d3.interpolate(previousTransform.scale, selectedTransform.scale)
     const translations = d3.interpolate(
         previousTransform.scaleAdjustedTranslation, 
@@ -195,23 +196,24 @@ export const getRenderer = (
     snapshot: Snapshot<number>,
     percentile: number
 ) => {
+    const previousTransform = getTransform(previousFips)
+    const selectedTransform = getTransform(selectedFips)
+
     return (context: CanvasRenderingContext2D, t: number) => {
         context.lineJoin = "round"
         context.lineCap = "round"
 
-        const selectedPlace = PlaceFactory(selectedFips)
-        const previousPlace = PlaceFactory(previousFips)
-
-        const transform = getTransform(selectedPlace, previousPlace, t)
-
-        //console.log("OG", transform)
+        const transform = interpolateTransforms(previousTransform, selectedTransform, t)
 
         context.restore()
         context.clearRect(0, 0, context.canvas.width, context.canvas.height)
         context.save()
         context.transform(transform.a, transform.b, transform.c, transform.d, transform.e, transform.f)
 
+        const selectedPlace = PlaceFactory(selectedFips)
+        const previousPlace = PlaceFactory(previousFips)
+
         drawMap(context, t, snapshot, percentile, selectedPlace, previousPlace)
-        drawCitiesLabels(context, t, selectedPlace, previousPlace)
+        drawCitiesLabels(context, t, selectedPlace, previousPlace, transform.a) //transform.a is the current transform scale
     }
 }

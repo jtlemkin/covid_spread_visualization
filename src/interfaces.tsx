@@ -32,7 +32,6 @@ export interface Place {
     name: string,
     type: string,
     getPopulation: () => number,
-    getTransform: () => Transform,
     contains: (otherFips: number) => boolean,
     getOwner: () => Place | null,
 }
