@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react'
 import * as d3 from 'd3'
 import styled from 'styled-components'
-import { Dated } from './interfaces'
+import { Dated, LabelledColor } from './interfaces'
 import CSS from 'csstype'
 import colors from './colors'
+import { Legend } from './Legend'
 
 const Container = styled.div`
     flex: 1;
@@ -27,12 +28,11 @@ const Title = styled.p`
 interface GraphProps {
     data: Dated[][],
     title: string,
-    color: string,
     type: string,
     style?: CSS.Properties
 }
 
-export const Graph = ({ data, title, color, type, style }: GraphProps) => {
+export const Graph = ({ data, title, type, style }: GraphProps) => {
     const width = 400
     const height = 200
     const margin = {top: 20, right: 30, bottom: 30, left: 40}
@@ -62,7 +62,8 @@ export const Graph = ({ data, title, color, type, style }: GraphProps) => {
         axis && yAxis(d3.select(axis))
     }
 
-    const colors = [color, '#aaa', 'black']
+    const lineColors = colors.scale.slice(colors.scale.length - 3)
+    console.log("COLORS", lineColors)
 
     const svgRef = useRef<SVGSVGElement | null>(null)
 
@@ -94,10 +95,16 @@ export const Graph = ({ data, title, color, type, style }: GraphProps) => {
         svgElement.on("touchend mouseleave", () => tooltip.call(callout, null))
     }, [])
 
+    const legendLabelledColors = ["county", "state", "nation"].map((label, i) => {
+        const color = lineColors[i]
+        return {label, color} as LabelledColor
+    })
+
     return (
         <Container 
             style={style} >
             <Title><u><b>{title}</b></u></Title>
+            <Legend labelledColors={legendLabelledColors} />
             <SVG 
                 viewBox={`0 0 ${width} ${height}`} 
                 preserveAspectRatio="xMidYMid meet" 
@@ -107,7 +114,7 @@ export const Graph = ({ data, title, color, type, style }: GraphProps) => {
                         <path
                             key={`${title}line${index}`} 
                             d={line(lineData)!} 
-                            stroke={colors[index]} 
+                            stroke={lineColors[2 - index]} 
                             fill="none" 
                             strokeWidth="2" 
                             strokeMiterlimit="1">

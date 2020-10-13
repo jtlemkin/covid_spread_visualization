@@ -121,7 +121,6 @@ const App = () => {
                           style={{ width: '100%' }}
                           data={data.values}
                           title={data.title}
-                          color={data.color}
                           type={data.type} />
                   )
               })}

@@ -17,16 +17,20 @@ const LabelledValue = styled.div`
     flex: 1;
     margin-left: 2.5px;
     margin-right: 2.5px;
+    align-items: center;
 `
 
 const Box = styled.div`
     height: 10px;
     width: 100%;
+    border-color: #D3D3D3;
+    border-width: 0.5px;
+    border-style: solid;
 `
 
 const Label = styled.p`
     font-size: 0.75em;
-    padding-top: 2px;
+    margin-top: 2px;
 `
 
 interface LegendProps {

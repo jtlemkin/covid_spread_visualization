@@ -12,7 +12,7 @@ const Scrollable = styled.div`
 
 const Input = styled.input`
     border-color: black;
-    border-radius: 1px;
+    border-radius: 0.5px;
     font-size: 1.2em;
     width: 100%;
     max-width: 100%;
