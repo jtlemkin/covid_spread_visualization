@@ -23,6 +23,7 @@ const SVG = styled.svg`
 
 const Title = styled.p`
     color: ${colors.text.onSurface};
+    font-weight: 700;
 `
 
 interface GraphProps {
@@ -63,7 +64,6 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
     }
 
     const lineColors = colors.scale.slice(colors.scale.length - 3)
-    console.log("COLORS", lineColors)
 
     const svgRef = useRef<SVGSVGElement | null>(null)
 
@@ -103,7 +103,7 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
     return (
         <Container 
             style={style} >
-            <Title><u><b>{title}</b></u></Title>
+            <Title>{title}</Title>
             <Legend labelledColors={legendLabelledColors} />
             <SVG 
                 viewBox={`0 0 ${width} ${height}`} 

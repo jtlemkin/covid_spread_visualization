@@ -10,8 +10,8 @@ const Row = styled.div`
 `
 
 const Label = styled.p`
-    padding-right: 5px;
-    padding-left: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
     flex: 1;
     color: ${colors.text.onSurface};
 `

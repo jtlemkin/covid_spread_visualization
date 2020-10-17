@@ -6,7 +6,7 @@ import { DSVRowString } from 'd3'
 import { DataEntry } from '../interfaces'
 import PlaceFactory from '../helpers/PlaceFactory'
 
-const useCovidData = (fips: number, isDataDaily: boolean, isDataRelative: boolean) => {
+const useCovidData = (fips: number, isDataDaily: boolean, isDataRelative: boolean, isDataDeath: boolean) => {
     const countiesData = useCSV('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv')
     const nationData = useCSV('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv')
     const statesData = useCSV('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv')
@@ -60,7 +60,8 @@ const useCovidData = (fips: number, isDataDaily: boolean, isDataRelative: boolea
             const newStatistics = new Map<number, number>()
 
             snapshot.statistics.forEach((countyData, fips) => {
-                newStatistics.set(fips, countyData.numInfected)
+                const value = isDataDeath ? countyData.numDead : countyData.numInfected
+                newStatistics.set(fips, value)
             })
 
             return { timestamp: snapshot.timestamp, statistics: newStatistics } as Snapshot<number>
@@ -101,7 +102,7 @@ const useCovidData = (fips: number, isDataDaily: boolean, isDataRelative: boolea
 
         setMappingData(newMappingData)
 
-    }, [absoluteMappingData, isDataDaily, isDataRelative])
+    }, [absoluteMappingData, isDataDaily, isDataRelative, isDataDeath])
 
     // Get data for graphs
     useEffect(() => {

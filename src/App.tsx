@@ -27,11 +27,11 @@ const Row = styled.div`
     width: 100%;
 `
 
-const Column = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
+const PaddedBackground = styled.div`
+  height: 100%;
+  max-height: 100%;
+  background-color: ${colors.background};
+  padding-top: 10px;
 `
 
 const App = () => {
@@ -45,7 +45,8 @@ const App = () => {
   
   const [areGraphsDaily, setAreGraphsDaily] = useState(false)
   const [areGraphsRelative, setAreGraphsRelative] = useState(true)
-  const [mappingData, graphingData] = useCovidData(currentFips, areGraphsDaily, areGraphsRelative)
+  const [areGraphsValuesDeath, setAreGraphsValuesDeath] = useState(false)
+  const [mappingData, graphingData] = useCovidData(currentFips, areGraphsDaily, areGraphsRelative, areGraphsValuesDeath)
 
   const percentile = useMemo(() => {
     if (mappingData === null) {
@@ -75,15 +76,18 @@ const App = () => {
       .join(' ')
     const daily = areGraphsDaily ? 'Daily' : ''
     const unit = areGraphsRelative ? 'Rates' : 'Numbers'
+    const death = areGraphsValuesDeath ? 'Death' : ''
 
-    return `Reported ${daily} ${place} Covid-19 ${unit}`
+    return `Reported ${daily} ${place} Covid-19 ${death} ${unit}`
   }
+
+  const indexOfChartToShow = areGraphsValuesDeath ? 1 : 0
 
   const Content = () => {
     if (mappingData !== null && graphingData !== null && percentile !== undefined) {
       const Master = () => {
         return (
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, paddingRight: 10, paddingLeft: 10 }}>
             <USMap 
               style={{maxWidth: '875px'}} 
               title={title()}
@@ -98,46 +102,45 @@ const App = () => {
 
       const Control = () => {
         return (
-          <CardList>
-            <SearchForm 
-              style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} 
-              selectCounty={setFips}/>
-            <Row>
-                {switchData.map(data => {
-                    return (
-                        <LabelledSwitch 
-                            key={`Switch${data.label}`}
-                            label={data.label} 
-                            onChange={data.onValueChange} 
-                            checked={data.value} />
-                    )
-                })}
-            </Row>
-            <Column>
-              {graphData.map(data => {
-                  return (
-                      <Graph
-                          key={`Graph${data.title}`}
-                          style={{ width: '100%' }}
-                          data={data.values}
-                          title={data.title}
-                          type={data.type} />
-                  )
-              })}
-            </Column>
-          </CardList>
+          <PaddedBackground>
+            <CardList>
+              <SearchForm 
+                style={{ width: '100%', paddingTop: '10px', paddingBottom: '10px', boxSizing: 'border-box' }} 
+                selectCounty={setFips}/>
+              <Row>
+                  {switchData.map(data => {
+                      return (
+                          <LabelledSwitch 
+                              key={`Switch${data.label}`}
+                              label={data.label} 
+                              onChange={data.onValueChange} 
+                              checked={data.value} />
+                      )
+                  })}
+              </Row>
+              <Graph
+                  style={{ width: '100%' }}
+                  data={graphData[indexOfChartToShow].values}
+                  title={graphData[indexOfChartToShow].title}
+                  type={graphData[indexOfChartToShow].type} />
+            </CardList>
+          </PaddedBackground>
         )
       }
 
       const switchData = [
         {
-          label: "View Daily Numbers?",
+          label: "Daily",
           value: areGraphsDaily,
           onValueChange: setAreGraphsDaily
         }, {
-          label: "View Percentages?",
+          label: "Percentages",
           value: areGraphsRelative,
           onValueChange: setAreGraphsRelative
+        }, {
+          label: "Deaths",
+          value: areGraphsValuesDeath,
+          onValueChange: setAreGraphsValuesDeath,
         }
       ]
 

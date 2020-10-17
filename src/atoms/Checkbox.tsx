@@ -32,6 +32,8 @@ const StyledCheckbox = styled.div<StyledCheckboxProps>`
     background-color: white;
     border-color: black;
     border-radius: 3px;
+    border-width: 1px;
+    border-style: solid;
     transition: all 150ms;
     ${HiddenCheckbox}:focus + & {
         box-shadow: 0 0 0 3px black;
