@@ -136,22 +136,24 @@ const App = () => {
         )
       }
 
+      // The variable x is never used, we just include it so that the 
+      // function types match
       const switchData = [
         {
           label1: "Total Data",
           label2: "Daily Data",
           value: areGraphsTotal,
-          onValueChange: setAreGraphsTotal
+          onValueChange: (x: boolean) => setAreGraphsTotal(!areGraphsTotal)
         }, {
           label1: "Per Capita Data",
           label2: "Absolute Data",
           value: areGraphsRelative,
-          onValueChange: setAreGraphsRelative
+          onValueChange: (x: boolean) => setAreGraphsRelative(!areGraphsRelative)
         }, {
           label1: "Case Data",
           label2: "Death Data",
           value: areGraphsValuesCases,
-          onValueChange: setAreGraphsValuesCases,
+          onValueChange: (x: boolean) => setAreGraphsValuesCases(!areGraphsValuesCases),
         }
       ]
 
