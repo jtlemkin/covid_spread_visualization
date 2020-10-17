@@ -43,6 +43,7 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
     const x = d3.scaleUtc()
         .domain(d3.extent(data.flat(), d => d.date) as [Date, Date])
         .range([margin.left, width - margin.right])
+        .nice()
     const y = d3.scaleLinear()
         .domain([0, d3.max(data.flat(), d => d.value)!])
         .range([height - margin.bottom, margin.top])
@@ -50,8 +51,10 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
         .x(d => x(d.date)!)
         .y(d => y(d.value)!)
 
+    const dateParser = d3.timeFormat("%b")
+
     const xAxis = (g: any) => g
-        .call(d3.axisBottom(x).ticks(6).tickSizeOuter(0))
+        .call(d3.axisBottom(x).ticks(6).tickFormat(dateParser as any).tickSizeOuter(0))
 
     const yAxis = (g: any) => g
         .call(d3.axisLeft(y).ticks(4).tickFormat(d3.format(formatType)))
