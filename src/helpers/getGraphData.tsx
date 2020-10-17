@@ -42,7 +42,10 @@ export function getGraphData(fips: number, data: DataEntry[][], isTotalData: boo
     });
   }
 
+  console.log("DAILY", !isTotalData)
+
   if (!isTotalData) {
+    console.log("I shouldn't run!")
     graphingData = graphingData.map(lineData => {
       return lineData.map((dataEntry, index) => {
         if (index === 0) {
@@ -67,9 +70,9 @@ export function getGraphData(fips: number, data: DataEntry[][], isTotalData: boo
         }
       })),
       title: isRelativeData ? (
-        isTotalData ? "Percent Infected Daily" : "Total Percent Infected"
+        isTotalData ? "Total Percent Infected" : "Percent Infected Daily"
       ) : (
-          isTotalData ? "Daily Infections" : "Total Infections"
+          isTotalData ? "Total Infections" : "Daily Infections"
         ),
       color: colors.primary,
       type: isRelativeData ? "Percent" : "Whole"
@@ -82,9 +85,9 @@ export function getGraphData(fips: number, data: DataEntry[][], isTotalData: boo
         }
       })),
       title: isRelativeData ? (
-        isTotalData ? "Percent Daily Deaths" : "Total Death Percentage"
+        isTotalData ? "Total Death Percentage" : "Percent Daily Deaths"
       ) : (
-          isTotalData ? "Daily Deaths" : "Total Deaths"
+          isTotalData ? "Total Deaths" : "Percent Daily Deaths"
         ),
       color: colors.primary,
       type: isRelativeData ? "Percent" : "Whole"

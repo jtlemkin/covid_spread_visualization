@@ -76,9 +76,9 @@ const App = () => {
       .split(' ')
       .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
       .join(' ')
-    const daily = areGraphsTotal ? 'Daily' : ''
+    const daily = areGraphsTotal ? '' : 'Daily'
     const unit = areGraphsRelative ? 'Rates' : 'Numbers'
-    const death = areGraphsValuesCases ? 'Death' : ''
+    const death = areGraphsValuesCases ? '' : 'Death'
 
     return `Reported ${daily} ${place} Covid-19 ${death} ${unit}`
   }

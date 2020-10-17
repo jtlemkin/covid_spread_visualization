@@ -6,30 +6,32 @@ import { DSVRowString } from 'd3'
 import { DataEntry } from '../interfaces'
 import PlaceFactory from '../helpers/PlaceFactory'
 
-const useCovidData = (fips: number, isDataTotal: boolean, isDataRelative: boolean, isDataCases: boolean) => {
+const useCovidData = (selectedFips: number, isDataTotal: boolean, isDataRelative: boolean, isDataCases: boolean) => {
     const countiesData = useCSV('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv')
     const nationData = useCSV('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv')
     const statesData = useCSV('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv')
 
-    const [absoluteMappingData, setAbsoluteMappingData] = useState<Timeline<CountyData> | null>(null)
+    const [timeline, setTimeline] = useState<Timeline<CountyData> | null>(null)
     const [mappingData, setMappingData] = useState<Timeline<number> | null>(null)
     const [graphingData, setGraphingData] = useState<DataEntry[][] | null>(null)
 
     // Get data for maps
     useEffect(() => {
         if (countiesData && nationData && statesData) {
-            const timeline = createTimeline(countiesData)
-            setAbsoluteMappingData(timeline)
+            const newTimeline = createTimeline(countiesData)
+            setTimeline(newTimeline)
         }
 
     }, [countiesData, nationData, statesData])
 
     // Format mapping data based on parameters
     useEffect(() => {
-        if (!absoluteMappingData) {
+        if (!timeline) {
             return
         }
 
+        // This is a generic function for performing some function on every
+        // value found in a Map in the timeline
         const updateTimeline = (
             timeline: Timeline<number>, 
             newValueFun: (timeline: Timeline<number>, index: number, fips: number) => number
@@ -56,7 +58,7 @@ const useCovidData = (fips: number, isDataTotal: boolean, isDataRelative: boolea
         }
 
         // Initialize mapping data
-        const snapshots = absoluteMappingData.snapshots.map(snapshot => {
+        const snapshots = timeline.snapshots.map(snapshot => {
             const newStatistics = new Map<number, number>()
 
             snapshot.statistics.forEach((countyData, fips) => {
@@ -66,7 +68,7 @@ const useCovidData = (fips: number, isDataTotal: boolean, isDataRelative: boolea
 
             return { timestamp: snapshot.timestamp, statistics: newStatistics } as Snapshot<number>
         })
-        const max = absoluteMappingData.max.numInfected
+        const max = timeline.max.numInfected
         let newMappingData: Timeline<number> = { snapshots, max }
 
         if (!isDataTotal) {
@@ -102,40 +104,34 @@ const useCovidData = (fips: number, isDataTotal: boolean, isDataRelative: boolea
 
         setMappingData(newMappingData)
 
-    }, [absoluteMappingData, isDataTotal, isDataRelative, isDataCases])
+    }, [timeline, isDataTotal, isDataRelative, isDataCases])
 
-    // Get data for graphs
+    // Get data for graphs, this does not do any transformations on the
+    // graphing data based on the parameters selected
     useEffect(() => {
         if (!countiesData || !nationData || !statesData) {
             return
         }
 
-        const typeRow = (row: DSVRowString<string>) => {
+        const formatRow = (row: DSVRowString<string>, type: string) => {
             return {
                 date: row['date']!,
-                fips: parseInt(row['fips']!),
+                fips: type == "state" ? parseInt(row['fips']!) * 1000 : parseInt(row['fips']!),
                 cases: parseInt(row['cases']!),
                 deaths: parseInt(row['deaths']!),
             } as DataEntry
         }
 
-        const _nationData = nationData.map(typeRow)
+        const _nationData = nationData.map(row => formatRow(row, "nation"))
         const stateData = statesData
-            .filter(row => parseInt(row.fips!) === Math.floor(fips / 1000))
-            .map(row => {
-                return {
-                    date: row['date']!,
-                    fips: parseInt(row['fips']!) * 1000,
-                    cases: parseInt(row['cases']!),
-                    deaths: parseInt(row['deaths']!),
-                } as DataEntry
-            })
+            .filter(row => parseInt(row.fips!) === Math.floor(selectedFips / 1000))
+            .map(row => formatRow(row, "state"))
         const countyData = countiesData
-            .filter(row => parseInt(row.fips!) === fips)
-            .map(typeRow)
+            .filter(row => parseInt(row.fips!) === selectedFips)
+            .map(row => formatRow(row, "county"))
 
         setGraphingData([countyData, stateData, _nationData])
-    }, [countiesData, nationData, statesData, fips])
+    }, [countiesData, nationData, statesData, selectedFips])
 
     const returnValue: [Timeline<number> | null, DataEntry[][] | null] = [mappingData, graphingData]
     return returnValue
