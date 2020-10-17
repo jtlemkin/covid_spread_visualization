@@ -4,7 +4,7 @@ import useCovidData from './hooks/useCovidData'
 import { Spinner } from './atoms/Spinner'
 import { AdaptiveLayout } from './AdaptiveLayout'
 import colors from './colors'
-import { getGraphingData } from './helpers/getGraphingData'
+import { getGraphData } from './helpers/getGraphData'
 import PlaceFactory from './helpers/PlaceFactory'
 import { CardList } from './CardList'
 import { RadioButtons } from './RadioButtons'
@@ -53,6 +53,8 @@ const App = () => {
       return
     }
 
+    // Sort the snapshots so that we can find a percentile that will
+    // be used for displaying the values
     const sortedValues = mappingData.snapshots.map(snapshot => {
         const values: number[] = []
         
@@ -81,7 +83,11 @@ const App = () => {
     return `Reported ${daily} ${place} Covid-19 ${death} ${unit}`
   }
 
-  const indexOfChartToShow = areGraphsValuesCases ? 1 : 0
+  // The getGraphData function returns a tuple, the first index
+  // contains graph data for cases and the second deaths
+  // The getGraphData otherwise controls whether that data is daily
+  // and whether it is aggregated
+  const indexOfChartToShow = areGraphsValuesCases ? 0 : 1
 
   const Content = () => {
     if (mappingData !== null && graphingData !== null && percentile !== undefined) {
@@ -149,7 +155,7 @@ const App = () => {
         }
       ]
 
-      const graphData = getGraphingData(currentFips, graphingData, areGraphsTotal, areGraphsRelative)
+      const graphData = getGraphData(currentFips, graphingData, areGraphsTotal, areGraphsRelative)
 
       return <AdaptiveLayout master={<Master />} detail={<Control />} />
     } else {

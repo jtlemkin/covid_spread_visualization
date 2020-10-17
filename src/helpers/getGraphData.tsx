@@ -2,7 +2,8 @@ import colors from '../colors';
 import { DataEntry } from '../interfaces';
 import PlaceFactory from './PlaceFactory';
 
-export function getGraphingData(fips: number, data: DataEntry[][], isDailyData: boolean, isRelativeData: boolean) {
+// The data either contains case data or death data
+export function getGraphData(fips: number, data: DataEntry[][], isTotalData: boolean, isRelativeData: boolean) {
   const [countyData, stateData, nationData] = data;
   const selectedPlaceType = fips === 0 ? "nation" : (fips % 1000 === 0 ? "state" : "county");
 
@@ -41,7 +42,7 @@ export function getGraphingData(fips: number, data: DataEntry[][], isDailyData: 
     });
   }
 
-  if (isDailyData) {
+  if (!isTotalData) {
     graphingData = graphingData.map(lineData => {
       return lineData.map((dataEntry, index) => {
         if (index === 0) {
@@ -66,9 +67,9 @@ export function getGraphingData(fips: number, data: DataEntry[][], isDailyData: 
         }
       })),
       title: isRelativeData ? (
-        isDailyData ? "Percent Infected Daily" : "Total Percent Infected"
+        isTotalData ? "Percent Infected Daily" : "Total Percent Infected"
       ) : (
-          isDailyData ? "Daily Infections" : "Total Infections"
+          isTotalData ? "Daily Infections" : "Total Infections"
         ),
       color: colors.primary,
       type: isRelativeData ? "Percent" : "Whole"
@@ -81,9 +82,9 @@ export function getGraphingData(fips: number, data: DataEntry[][], isDailyData: 
         }
       })),
       title: isRelativeData ? (
-        isDailyData ? "Percent Daily Deaths" : "Total Death Percentage"
+        isTotalData ? "Percent Daily Deaths" : "Total Death Percentage"
       ) : (
-          isDailyData ? "Daily Deaths" : "Total Deaths"
+          isTotalData ? "Daily Deaths" : "Total Deaths"
         ),
       color: colors.primary,
       type: isRelativeData ? "Percent" : "Whole"
