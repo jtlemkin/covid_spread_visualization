@@ -59,7 +59,10 @@ export const SearchForm = ({ selectCounty, style }: SearchFormProps) => {
     return (
         <Container style={style}>
             <Row>
-                <SearchField field={field} onFocus={onFocus} handleFieldChange={setField} />
+                <SearchField 
+                    field={field} onFocus={onFocus} 
+                    placeholder='Search Places'
+                    handleFieldChange={setField} />
             </Row>
             <Expandable 
                 isExpanded={isDropdownShown && field.length > 0} 

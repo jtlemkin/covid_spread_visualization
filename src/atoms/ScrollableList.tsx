@@ -24,13 +24,15 @@ const List = styled.ul`
 
 interface SearchFieldProps {
     field: string,
+    placeholder: string,
     handleFieldChange: (value: string) => void,
     onFocus: (isFocused: boolean) => void,
     style?: CSS.Properties
 }
 
 export function SearchField({
-    field, 
+    field,
+    placeholder,
     handleFieldChange,
     onFocus,
     style
@@ -67,7 +69,7 @@ export function SearchField({
     return (
         <form style={{width: '100%', maxWidth: '100%', margin: '2px', boxSizing: 'border-box'}}>
             <label style={{width: '100%'}}>
-                <Input ref={ref} type="text" value={field} onChange={onChange} placeholder="Search" results={0} />
+                <Input ref={ref} type="text" value={field} onChange={onChange} placeholder={placeholder} results={0} />
             </label>
         </form>
     )
