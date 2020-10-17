@@ -6,7 +6,7 @@ import { DSVRowString } from 'd3'
 import { DataEntry } from '../interfaces'
 import PlaceFactory from '../helpers/PlaceFactory'
 
-const useCovidData = (fips: number, isDataDaily: boolean, isDataRelative: boolean, isDataDeath: boolean) => {
+const useCovidData = (fips: number, isDataTotal: boolean, isDataRelative: boolean, isDataCases: boolean) => {
     const countiesData = useCSV('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv')
     const nationData = useCSV('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv')
     const statesData = useCSV('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv')
@@ -60,7 +60,7 @@ const useCovidData = (fips: number, isDataDaily: boolean, isDataRelative: boolea
             const newStatistics = new Map<number, number>()
 
             snapshot.statistics.forEach((countyData, fips) => {
-                const value = isDataDeath ? countyData.numDead : countyData.numInfected
+                const value = isDataCases ? countyData.numInfected : countyData.numDead
                 newStatistics.set(fips, value)
             })
 
@@ -69,7 +69,7 @@ const useCovidData = (fips: number, isDataDaily: boolean, isDataRelative: boolea
         const max = absoluteMappingData.max.numInfected
         let newMappingData: Timeline<number> = { snapshots, max }
 
-        if (isDataDaily) {
+        if (!isDataTotal) {
             const getDelta = (timeline: Timeline<number>, index: number, fips: number) => {
                 const num = timeline.snapshots[index].statistics.get(fips)!
     
@@ -102,7 +102,7 @@ const useCovidData = (fips: number, isDataDaily: boolean, isDataRelative: boolea
 
         setMappingData(newMappingData)
 
-    }, [absoluteMappingData, isDataDaily, isDataRelative, isDataDeath])
+    }, [absoluteMappingData, isDataTotal, isDataRelative, isDataCases])
 
     // Get data for graphs
     useEffect(() => {

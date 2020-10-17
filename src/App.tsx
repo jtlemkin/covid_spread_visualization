@@ -7,7 +7,7 @@ import colors from './colors'
 import { getGraphingData } from './helpers/getGraphingData'
 import PlaceFactory from './helpers/PlaceFactory'
 import { CardList } from './CardList'
-import { LabelledSwitch } from './LabelledSwitch'
+import { RadioButtons } from './RadioButtons'
 import { Graph } from './Graph'
 import { SearchForm } from './SearchForm'
 import styled from 'styled-components'
@@ -20,9 +20,9 @@ const Container = styled.div`
   background-color: ${ colors.background }
 `
 
-const Row = styled.div`
+const Column = styled.div`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     width: 100%;
 `
@@ -43,10 +43,10 @@ const App = () => {
     setSelectedFips(newFip)
   }
   
-  const [areGraphsDaily, setAreGraphsDaily] = useState(false)
+  const [areGraphsTotal, setAreGraphsTotal] = useState(true)
   const [areGraphsRelative, setAreGraphsRelative] = useState(true)
-  const [areGraphsValuesDeath, setAreGraphsValuesDeath] = useState(false)
-  const [mappingData, graphingData] = useCovidData(currentFips, areGraphsDaily, areGraphsRelative, areGraphsValuesDeath)
+  const [areGraphsValuesCases, setAreGraphsValuesCases] = useState(true)
+  const [mappingData, graphingData] = useCovidData(currentFips, areGraphsTotal, areGraphsRelative, areGraphsValuesCases)
 
   const percentile = useMemo(() => {
     if (mappingData === null) {
@@ -74,14 +74,14 @@ const App = () => {
       .split(' ')
       .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
       .join(' ')
-    const daily = areGraphsDaily ? 'Daily' : ''
+    const daily = areGraphsTotal ? 'Daily' : ''
     const unit = areGraphsRelative ? 'Rates' : 'Numbers'
-    const death = areGraphsValuesDeath ? 'Death' : ''
+    const death = areGraphsValuesCases ? 'Death' : ''
 
     return `Reported ${daily} ${place} Covid-19 ${death} ${unit}`
   }
 
-  const indexOfChartToShow = areGraphsValuesDeath ? 1 : 0
+  const indexOfChartToShow = areGraphsValuesCases ? 1 : 0
 
   const Content = () => {
     if (mappingData !== null && graphingData !== null && percentile !== undefined) {
@@ -107,17 +107,19 @@ const App = () => {
               <SearchForm 
                 style={{ width: '100%', paddingTop: '10px', paddingBottom: '10px', boxSizing: 'border-box' }} 
                 selectCounty={setFips}/>
-              <Row>
+              <Column>
                   {switchData.map(data => {
                       return (
-                          <LabelledSwitch 
-                              key={`Switch${data.label}`}
-                              label={data.label} 
+                          <RadioButtons 
+                              key={`Switch${data.label1}${data.label2}`}
+                              label1={data.label1} 
+                              label2={data.label2}
                               onChange={data.onValueChange} 
-                              checked={data.value} />
+                              firstChecked={data.value}
+                              style={{width: '100%'}} />
                       )
                   })}
-              </Row>
+              </Column>
               <Graph
                   style={{ width: '100%' }}
                   data={graphData[indexOfChartToShow].values}
@@ -130,21 +132,24 @@ const App = () => {
 
       const switchData = [
         {
-          label: "Daily",
-          value: areGraphsDaily,
-          onValueChange: setAreGraphsDaily
+          label1: "Total Data",
+          label2: "Daily Data",
+          value: areGraphsTotal,
+          onValueChange: setAreGraphsTotal
         }, {
-          label: "Percentages",
+          label1: "Per Capita Data",
+          label2: "Absolute Data",
           value: areGraphsRelative,
           onValueChange: setAreGraphsRelative
         }, {
-          label: "Deaths",
-          value: areGraphsValuesDeath,
-          onValueChange: setAreGraphsValuesDeath,
+          label1: "Case Data",
+          label2: "Death Data",
+          value: areGraphsValuesCases,
+          onValueChange: setAreGraphsValuesCases,
         }
       ]
 
-      const graphData = getGraphingData(currentFips, graphingData, areGraphsDaily, areGraphsRelative)
+      const graphData = getGraphingData(currentFips, graphingData, areGraphsTotal, areGraphsRelative)
 
       return <AdaptiveLayout master={<Master />} detail={<Control />} />
     } else {
