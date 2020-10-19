@@ -48,7 +48,10 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
     }
 
     const labelForIndex = (index: number) => {
-        return moment(countyData!.snapshots[index].timestamp).format('ll')
+        const SECONDS_TO_MILLIS = 1000
+        const timestamp = countyData!.snapshots[index].timestamp
+        const date = new Date(timestamp * SECONDS_TO_MILLIS)
+        return date.toLocaleDateString()
     }
 
     const setPressedFips = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
@@ -78,7 +81,7 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
                     height={height} 
                     renderFunc={renderer}
                     onPress={setPressedFips} 
-                    isAnimated={currentFips != previousFips}
+                    isAnimated={currentFips !== previousFips}
                     style={{width: `${width}px`, maxWidth: '100%'}}/>
                 { PlaceFactory(currentFips).type !== 'nation' && 
                     <FontAwesomeIcon 

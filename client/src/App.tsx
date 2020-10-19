@@ -58,8 +58,8 @@ const App = () => {
     const sortedValues = mappingData.snapshots.map(snapshot => {
         const values: number[] = []
         
-        snapshot.statistics.forEach(value => {
-          values.push(value)
+        Object.values(snapshot.statistics).forEach((value: unknown) => {
+          values.push(value as number)
         })
 
         return values

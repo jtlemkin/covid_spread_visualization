@@ -2,7 +2,6 @@ import getTransform from './getTransform'
 
 const getCanvasPoint = (event: React.PointerEvent<HTMLCanvasElement>, currentFips: number) => {
     const canvas = event.currentTarget
-    const m = canvas.getContext("2d")!.getTransform()
 
     const rect = canvas.getBoundingClientRect()
 

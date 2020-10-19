@@ -1,7 +1,6 @@
 import useCSV from './useCSV'
 import { useEffect, useState } from 'react'
 import { CountyData, Timeline, Snapshot } from '../interfaces'
-import { createTimeline } from '../helpers/createTimeline'
 import { DSVRowString } from 'd3'
 import { DataEntry } from '../interfaces'
 import PlaceFactory from '../helpers/PlaceFactory'
@@ -17,12 +16,12 @@ const useCovidData = (selectedFips: number, isDataTotal: boolean, isDataRelative
 
     // Get data for maps
     useEffect(() => {
-        if (countiesData && nationData && statesData) {
-            const newTimeline = createTimeline(countiesData)
-            setTimeline(newTimeline)
-        }
-
-    }, [countiesData, nationData, statesData])
+        fetch("/timeline")
+            .then(res => res.json())
+            .then(newTimeline => {
+                setTimeline(newTimeline)
+            })
+    }, [])
 
     // Format mapping data based on parameters
     useEffect(() => {
@@ -36,15 +35,16 @@ const useCovidData = (selectedFips: number, isDataTotal: boolean, isDataRelative
             timeline: Timeline<number>, 
             newValueFun: (timeline: Timeline<number>, index: number, fips: number) => number
         ) => {
-            const snapshots: Snapshot<number>[] = []
+            const snapshots: Snapshot[] = []
             let max = 0
 
             timeline.snapshots.forEach((snapshot, index) => {
-                const newStatistics = new Map<number, number>()
+                const newStatistics: any = {}
 
-                snapshot.statistics.forEach((num, fips) => {
+                Object.keys(snapshot.statistics).forEach(fipsString => {
+                    const fips = parseInt(fipsString)
                     const newValue = newValueFun(timeline, index, fips)
-                    newStatistics.set(fips, newValue)
+                    newStatistics[fips] = newValue
 
                     if (newValue > max) {
                         max = newValue
@@ -59,14 +59,16 @@ const useCovidData = (selectedFips: number, isDataTotal: boolean, isDataRelative
 
         // Initialize mapping data
         const snapshots = timeline.snapshots.map(snapshot => {
-            const newStatistics = new Map<number, number>()
+            const newStatistics: any = {}
 
-            snapshot.statistics.forEach((countyData, fips) => {
+            Object.entries(snapshot.statistics).forEach(keyValue => {
+                const fips = keyValue[0]
+                const countyData = keyValue[1] as CountyData
                 const value = isDataCases ? countyData.numInfected : countyData.numDead
-                newStatistics.set(fips, value)
+                newStatistics[fips] = value
             })
 
-            return { timestamp: snapshot.timestamp, statistics: newStatistics } as Snapshot<number>
+            return { timestamp: snapshot.timestamp, statistics: newStatistics } as Snapshot
         })
         const max = timeline.max.numInfected
         let newMappingData: Timeline<number> = { snapshots, max }
@@ -93,7 +95,7 @@ const useCovidData = (selectedFips: number, isDataTotal: boolean, isDataRelative
 
         if (isDataRelative) {
             const getPercentage = (timeline: Timeline<number>, index: number, fips: number) => {
-                const num = timeline.snapshots[index].statistics.get(fips)!
+                const num = timeline.snapshots[index].statistics[fips.toString()]
                 const population = PlaceFactory(fips).getPopulation()
     
                 return num / population
@@ -101,6 +103,8 @@ const useCovidData = (selectedFips: number, isDataTotal: boolean, isDataRelative
 
             newMappingData = updateTimeline(newMappingData, getPercentage)
         }
+
+        console.log("NEW MAPPING DATA", newMappingData)
 
         setMappingData(newMappingData)
 
@@ -116,7 +120,7 @@ const useCovidData = (selectedFips: number, isDataTotal: boolean, isDataRelative
         const formatRow = (row: DSVRowString<string>, type: string) => {
             return {
                 date: row['date']!,
-                fips: type == "state" ? parseInt(row['fips']!) * 1000 : parseInt(row['fips']!),
+                fips: type === "state" ? parseInt(row['fips']!) * 1000 : parseInt(row['fips']!),
                 cases: parseInt(row['cases']!),
                 deaths: parseInt(row['deaths']!),
             } as DataEntry

@@ -12,7 +12,7 @@ const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
 
 function drawCounties(
     context: CanvasRenderingContext2D,
-    snapshot: Snapshot<number>,
+    snapshot: Snapshot,
     t: number,
     percentile: number,
     selectedPlace: Place,
@@ -26,7 +26,7 @@ function drawCounties(
 
     usUntyped.objects.counties.geometries.forEach((county) => {
         const fips = parseInt(county.id)
-        const value: number | undefined = snapshot.statistics.get(fips)
+        const value: number | undefined = snapshot.statistics[fips.toString()]
         const normalizedValue = value !== undefined ? (
             value / percentile
         ) : ( 
@@ -83,7 +83,7 @@ function drawStates(
     })
 }
 
-function drawNation(
+/*function drawNation(
     context: CanvasRenderingContext2D,
     t: number,
     selectedPlace: Place,
@@ -105,13 +105,13 @@ function drawNation(
         path(topojson.feature(us, us.objects.nation))
         context.stroke()
     }
-}
+}*/
 
 // Draws a single frame of the map
 function drawMap(
     context: CanvasRenderingContext2D, 
     t: number, 
-    snapshot: Snapshot<number>,
+    snapshot: Snapshot,
     percentile: number,
     selectedPlace: Place, 
     previousPlace: Place
@@ -187,7 +187,7 @@ function interpolateTransforms(previousTransform: Transform, selectedTransform: 
 export const getRenderer = (
     selectedFips: number, 
     previousFips: number,
-    snapshot: Snapshot<number>,
+    snapshot: Snapshot,
     percentile: number
 ) => {
     const previousTransform = getTransform(previousFips)

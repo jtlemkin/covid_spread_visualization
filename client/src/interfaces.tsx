@@ -1,13 +1,13 @@
 export type Fips = number
 
 export interface Timeline<T> {
-    snapshots: Snapshot<T>[],
+    snapshots: Snapshot[],
     max: T,
 }
 
-export interface Snapshot<T> {
+export interface Snapshot {
     timestamp: number,
-    statistics: Map <Fips, T>
+    statistics: any
 }
 
 export interface CountyData {
