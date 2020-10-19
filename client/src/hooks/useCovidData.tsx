@@ -75,12 +75,12 @@ const useCovidData = (selectedFips: number, isDataTotal: boolean, isDataRelative
 
         if (!isDataTotal) {
             const getDelta = (timeline: Timeline<number>, index: number, fips: number) => {
-                const num = timeline.snapshots[index].statistics.get(fips)!
+                const num = timeline.snapshots[index].statistics[fips.toString()]!
     
                 if (index === 0) {
                     return num
                 } else {
-                    const lastNum = timeline.snapshots[index - 1].statistics.get(fips)
+                    const lastNum = timeline.snapshots[index - 1].statistics[fips.toString()]
     
                     if (lastNum !== undefined) {
                         return num - lastNum
@@ -103,8 +103,6 @@ const useCovidData = (selectedFips: number, isDataTotal: boolean, isDataRelative
 
             newMappingData = updateTimeline(newMappingData, getPercentage)
         }
-
-        console.log("NEW MAPPING DATA", newMappingData)
 
         setMappingData(newMappingData)
 
