@@ -52,3 +52,5 @@ export interface LabelledColor {
     color: string,
     label: string,
 }
+
+type Result = [number, string]

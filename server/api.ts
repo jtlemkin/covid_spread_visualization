@@ -14,7 +14,7 @@ router.get('/timeline', function(req: any, res: any, next: any) {
 })
 
 router.get('/search/:str', function(req: any, res: any, next: any) {
-  res.json(JSON.stringify(resultsFor(req.params.str)))
+  res.json(resultsFor(req.params.str))
 })
 
 module.exports = router;

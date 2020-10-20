@@ -1,10 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { SearchField, ScrollableList } from './atoms/ScrollableList'
-import places from './data/places.json'
 import { Expandable } from './atoms/Expandable'
-import { Place } from './interfaces'
-import PlaceFactory from './helpers/PlaceFactory'
 import CSS from 'csstype'
 
 const Row = styled.div`
@@ -31,6 +28,7 @@ export const SearchForm = ({ selectCounty, style }: SearchFormProps) => {
     const [isDropdownShown, setIsDropdownShown] = useState(false)
     const [hasFormBeenClicked, setHasFormBeenClicked] = useState(false)
     const [field, setField] = useState('')
+    const [results, setResults] = useState<Result[]>([])
 
     const onFocus = (isFocused: boolean) => {
         if (!hasFormBeenClicked) {
@@ -43,18 +41,37 @@ export const SearchForm = ({ selectCounty, style }: SearchFormProps) => {
         }
     }
 
-    const placesUntyped = (places as any)
+    useEffect(() => {
+        const controller = new AbortController()
+        const { signal } = controller
 
-    const filteredPlaces = !field.length ? [] : (
-        Object.keys(places)
-            .reduce((places, fips) => {
-                if (placesUntyped[fips].toLowerCase().startsWith(field.toLowerCase())) {
-                    places.push(PlaceFactory(parseInt(fips)))
+        if (field) {
+            fetch(`/search/${field}`, { signal })
+                .then(res => res.json())
+                .then((searchResults: Result[]) => {
+                    console.log("RESULTS", searchResults)
+                    setResults(searchResults)
+                })
+
+            return () => {
+                if (controller) {
+                    controller.abort()
                 }
+            }
+        } else if (results) {
+            setResults([])
+        }
+    }, [field])
 
-                return places
-            }, new Array<Place>())
-    )
+    const onButtonClick = (name: string) => {
+        const place = results.find(result => result[0] === name)
+
+        if (place) {
+            selectCounty(place[1])
+        }
+    }
+
+    const names = results.map(result => result[0])
 
     return (
         <Container style={style}>
@@ -68,8 +85,10 @@ export const SearchForm = ({ selectCounty, style }: SearchFormProps) => {
                 isExpanded={isDropdownShown && field.length > 0} 
                 isAnimated={hasFormBeenClicked} 
                 height={100}>
-                <ScrollableList data={filteredPlaces} onClick={selectCounty}/>
+                <ScrollableList data={names} onClick={onButtonClick}/>
             </Expandable>
         </Container>
     )
 }
+
+type Result = [string, number]

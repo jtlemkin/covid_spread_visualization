@@ -91,11 +91,11 @@ export function ScrollableList({ data, onClick }: ScrollableListProps) {
     return (
         <Scrollable>
             <List>
-                {data.map(item => {
+                {data.map((item: string, index) => {
                     return (
-                        <li key={item.fips + item.name}>
-                            <Button onClick={() => { onClick(item.fips) }}>
-                                {item.name}
+                        <li key={`${item}${index}`}>
+                            <Button onClick={() => { onClick(item) }}>
+                                {item}
                             </Button>
                         </li>
                     )
@@ -106,6 +106,6 @@ export function ScrollableList({ data, onClick }: ScrollableListProps) {
 }
 
 interface ScrollableListProps {
-    data: Place[],
-    onClick: (id: number) => void
+    data: string[],
+    onClick: (item: string) => void
 }
