@@ -35,8 +35,8 @@ interface GraphProps {
 
 export const Graph = ({ data, title, type, style }: GraphProps) => {
     const width = 400
-    const height = 200
-    const margin = {top: 20, right: 30, bottom: 30, left: 40}
+    const height = 270
+    const margin = {top: 20, right: 30, bottom: 70, left: 55}
 
     const formatType: string = type === "Percent" ? ".2%" : ".0s"
 
