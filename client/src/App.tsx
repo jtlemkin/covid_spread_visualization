@@ -113,6 +113,7 @@ const App = () => {
               <SearchForm 
                 style={{ width: '100%', paddingTop: '10px', paddingBottom: '10px', boxSizing: 'border-box' }} 
                 selectCounty={setFips}/>
+
               <Column>
                   {switchData.map(data => {
                       return (
@@ -126,11 +127,13 @@ const App = () => {
                       )
                   })}
               </Column>
+
               <Graph
                   style={{ width: '100%' }}
                   data={graphData[indexOfChartToShow].values}
                   title={graphData[indexOfChartToShow].title}
                   type={graphData[indexOfChartToShow].type} />
+
               <div style={{textAlign: 'left'}}>
                 <h4>How To Use</h4>
                 <p>This is a map for visualizing and predicting the spread of COVID-19.</p>
@@ -138,6 +141,13 @@ const App = () => {
                 <p>Click on the map to zoom into the states and counties that you wish to see data for. </p> 
                 <p>Additionally you can search for cities, states and counties in the search places bar.</p>
                 <p>Drag the timeline at the bottom of the map to see the changing COVID-19 numbers over time. </p>
+              </div>
+
+              <div style={{textAlign: 'left'}}>
+                <h4>Acknowledgments</h4>
+                <p>COVID-19 Predictions Provided by Houman Homayoun of UC Davis and Sai Manoj of George Mason University</p>
+                <p>Designed and Developed by James Lemkin</p>
+                <p>Data provided from the New York Times</p>
               </div>
             </CardList>
           </PaddedBackground>
