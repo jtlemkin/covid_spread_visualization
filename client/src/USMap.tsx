@@ -72,7 +72,7 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
  
     return (
         <div style={style}>
-            <h2 style={{ color: colors.text.onBackground, marginBottom: 10 }}>{title}</h2>
+            <h2 style={{ color: colors.text.onBackground, marginBottom: 5, marginTop: 5 }}>{title}</h2>
             <Legend labelledColors={legendLabelledColors} />
             <div style={{position: 'relative'}}>
                 <Canvas 
