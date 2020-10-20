@@ -15,7 +15,7 @@ export const Spinner = () => {
 
     return (
         <animated.div style={rotation} >
-            <FontAwesomeIcon icon={faSpinner} />
+            <FontAwesomeIcon icon={faSpinner} size="5x"/>
         </animated.div>
     )
 }

@@ -3,7 +3,7 @@ import useWindowSize from './hooks/useWindowSize'
 
 type AdaptiveLayoutProps = {
     master: ReactNode,
-    detail: ReactNode,
+    detail?: ReactNode,
 }
 
 type FixedProps = {
@@ -34,13 +34,15 @@ export const AdaptiveLayout = ({ master, detail }: AdaptiveLayoutProps) => {
 
     return (
         <Fixed height={windowSize.height} width={windowSize.width}>
-            <div style={{ display: 'flex', flexDirection: 'row', maxHeight: '100%', margin: '0 auto' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', maxHeight: '100%', margin: 'auto' }}>
                 {master}
             </div>
 
-            <div style={{ width: '400px', minWidth: '400px', maxHeight: '100%', overflowY: 'scroll' }}>
-                {detail}
-            </div>
+            {detail && 
+                <div style={{ width: '400px', minWidth: '400px', maxHeight: '100%', overflowY: 'scroll' }}>
+                    {detail}
+                </div>
+            }
         </Fixed>
     )
 }
