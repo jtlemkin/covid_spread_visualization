@@ -80,7 +80,7 @@ const App = () => {
     const unit = areGraphsRelative ? 'Rates' : 'Numbers'
     const death = areGraphsValuesCases ? '' : 'Death'
 
-    return `Reported ${daily} ${place} Covid-19 ${death} ${unit}`
+    return `Reported ${daily} ${place} COVID-19 ${death} ${unit}`
   }
 
   // The getGraphData function returns a tuple, the first index
@@ -131,6 +131,14 @@ const App = () => {
                   data={graphData[indexOfChartToShow].values}
                   title={graphData[indexOfChartToShow].title}
                   type={graphData[indexOfChartToShow].type} />
+              <div style={{textAlign: 'left'}}>
+                <h4>How To Use</h4>
+                <p>This is a map for visualizing and predicting the spread of COVID-19.</p>
+                <p>By default it shows the percent of counties infected since the start of the pandemic, but there are options you can toggle that change this.</p>
+                <p>Click on the map to zoom into the states and counties that you wish to see data for. </p> 
+                <p>Additionally you can search for cities, states and counties in the search places bar.</p>
+                <p>Drag the timeline at the bottom of the map to see the changing COVID-19 numbers over time. </p>
+              </div>
             </CardList>
           </PaddedBackground>
         )
