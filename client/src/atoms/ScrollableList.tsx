@@ -1,7 +1,5 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { Place } from '../interfaces'
-import CSS from 'csstype'
 import colors from '../colors'
 
 const Scrollable = styled.div`
@@ -27,17 +25,22 @@ interface SearchFieldProps {
     placeholder: string,
     handleFieldChange: (value: string) => void,
     onFocus: (isFocused: boolean) => void,
-    style?: CSS.Properties
 }
+
+// Having a global is probably very very bad with components
+// however at the time being, there should only ever be one
+// search field at a time
+const WAIT_INTERVAL = 1000
 
 export function SearchField({
     field,
     placeholder,
     handleFieldChange,
     onFocus,
-    style
 }: SearchFieldProps) {
-    const onChange = (event: any) => {
+    const [internalField, setInternalField] = useState(field)
+
+    const onChange = (event: any) => { 
         if (handleFieldChange !== null && handleFieldChange !== undefined) {
             handleFieldChange(event.target.value)
         }
@@ -69,7 +72,7 @@ export function SearchField({
     return (
         <form style={{width: '100%', maxWidth: '100%', margin: '2px', boxSizing: 'border-box'}}>
             <label style={{width: '100%'}}>
-                <Input ref={ref} type="text" value={field} onChange={onChange} placeholder={placeholder} results={0} />
+                <Input ref={ref} type="text" value={internalField} onChange={onChange} placeholder={placeholder} results={0} />
             </label>
         </form>
     )

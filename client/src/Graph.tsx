@@ -69,7 +69,7 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
         axis && yAxis(d3.select(axis))
     }
 
-    const lineColors = colors.scale.slice(colors.scale.length - 3)
+    const lineColors = colors.graph
 
     const svgRef = useRef<SVGSVGElement | null>(null)
 
