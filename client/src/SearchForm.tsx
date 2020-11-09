@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { SearchField, ScrollableList } from './atoms/ScrollableList'
 import { Expandable } from './atoms/Expandable'
 import CSS from 'csstype'
+import useFetch from './hooks/useFetch'
 
 const Row = styled.div`
     display: flex;
@@ -41,27 +42,9 @@ export const SearchForm = ({ selectCounty, style }: SearchFormProps) => {
         }
     }
 
-    useEffect(() => {
-        const controller = new AbortController()
-        const { signal } = controller
-
-        if (field) {
-            fetch(`/search/${field}`, { signal })
-                .then(res => res.json())
-                .then((searchResults: Result[]) => {
-                    console.log("RESULTS", searchResults)
-                    setResults(searchResults)
-                })
-
-            return () => {
-                if (controller) {
-                    controller.abort()
-                }
-            }
-        } else if (results) {
-            setResults([])
-        }
-    }, [field])
+    useFetch(`/search/${field}`, (results: Result[]) => {
+        setResults(results)
+    })
 
     const onButtonClick = (name: string) => {
         const place = results.find(result => result[0] === name)
@@ -78,7 +61,7 @@ export const SearchForm = ({ selectCounty, style }: SearchFormProps) => {
             <Row>
                 <SearchField 
                     field={field} onFocus={onFocus} 
-                    placeholder='Search Places'
+                    placeholder='Search Places to View'
                     handleFieldChange={setField} />
             </Row>
             <Expandable 

@@ -19,7 +19,6 @@ const Half = styled.div`
 `
 
 const Label = styled.p`
-    margin-left: 10px;
     margin-right: 10px;
     flex: 1;
     color: ${colors.text.onSurface};

@@ -25,6 +25,7 @@ const Column = styled.div`
     flex-direction: column;
     align-items: center;
     width: 100%;
+    text-align: left;
 `
 
 const PaddedBackground = styled.div`
@@ -32,6 +33,15 @@ const PaddedBackground = styled.div`
   max-height: 100%;
   background-color: ${colors.background};
   padding-top: 10px;
+`
+
+const CardHeader = styled.h4`
+  width: 100%;
+  border-bottom-style: solid;
+  border-bottom-color: black;
+  border-bottom-width: thin;
+  margin-top: 10px;
+  margin-bottom: 5px;
 `
 
 const App = () => {
@@ -115,6 +125,9 @@ const App = () => {
                 selectCounty={setFips}/>
 
               <Column>
+                  <CardHeader style={{alignSelf: 'flex-start'}}>
+                    I Want to View Data as...
+                  </CardHeader>
                   {switchData.map(data => {
                       return (
                           <RadioButtons 
@@ -135,7 +148,7 @@ const App = () => {
                   type={graphData[indexOfChartToShow].type} />
 
               <div style={{textAlign: 'left'}}>
-                <h4>How To Use</h4>
+                <CardHeader>How To Use</CardHeader>
                 <p>This is a map for visualizing and predicting the spread of COVID-19.</p>
                 <p>By default it shows the percent of counties infected since the start of the pandemic, but there are options you can toggle that change this.</p>
                 <p>Click on the map to zoom into the states and counties that you wish to see data for. </p> 
@@ -144,7 +157,7 @@ const App = () => {
               </div>
 
               <div style={{textAlign: 'left'}}>
-                <h4>Acknowledgments</h4>
+                <CardHeader>Acknowledgments</CardHeader>
                 <p>COVID-19 Predictions Provided by Houman Homayoun of UC Davis and Sai Manoj of George Mason University</p>
                 <p>Designed and Developed by James Lemkin</p>
                 <p>Data provided from the New York Times</p>
@@ -163,13 +176,13 @@ const App = () => {
           value: areGraphsTotal,
           onValueChange: (x: boolean) => setAreGraphsTotal(!areGraphsTotal)
         }, {
-          label1: "Per Capita Data",
-          label2: "Absolute Data",
+          label1: "Percentages of County",
+          label2: "Total in County",
           value: areGraphsRelative,
           onValueChange: (x: boolean) => setAreGraphsRelative(!areGraphsRelative)
         }, {
-          label1: "Case Data",
-          label2: "Death Data",
+          label1: "Infections",
+          label2: "Deaths",
           value: areGraphsValuesCases,
           onValueChange: (x: boolean) => setAreGraphsValuesCases(!areGraphsValuesCases),
         }

@@ -24,6 +24,9 @@ const SVG = styled.svg`
 const Title = styled.p`
     color: ${colors.text.onSurface};
     font-weight: 700;
+    border-bottom-color: black;
+    border-bottom-style: solid;
+    border-bottom-width: thin;
 `
 
 interface GraphProps {

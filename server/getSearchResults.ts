@@ -20,7 +20,10 @@ function startIndex(str: string) {
         // mid is going start with the string, however there may be places
         // before it that also start with that string
         let offset = 0
-        while(mid - offset >= 0 && searchResults[mid - offset][0].toLowerCase().startsWith(str)) {
+        while (
+            mid - offset >= 0 && 
+            searchResults[mid - offset][0].toLowerCase().startsWith(str)
+        ) {
             offset += 1
         }
         return mid - offset + 1
