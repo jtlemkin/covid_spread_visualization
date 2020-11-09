@@ -72,7 +72,7 @@ function drawStates(
     usUntyped.objects.states.geometries.forEach(state => {
         const fips = parseInt(state.id)
 
-        context.lineWidth = 1
+        context.lineWidth = 1.75
 
         if (selectedPlace.contains(fips) || previousPlace.contains(fips)) {
             context.beginPath()
