@@ -56,6 +56,7 @@ const App = () => {
   const [areGraphsTotal, setAreGraphsTotal] = useState(true)
   const [areGraphsRelative, setAreGraphsRelative] = useState(true)
   const [areGraphsValuesCases, setAreGraphsValuesCases] = useState(true)
+  const [areGraphsPredictions, setAreGraphsPredictions] = useState(true)
   const [mappingData, graphingData] = useCovidData(currentFips, areGraphsTotal, areGraphsRelative, areGraphsValuesCases)
 
   const percentile = useMemo(() => {
@@ -82,6 +83,7 @@ const App = () => {
   }, [mappingData])
 
   const title = () => {
+    const descriptor = areGraphsPredictions ? "Predicted" : "Reported"
     const place = PlaceFactory(currentFips).name.toLowerCase()
       .split(' ')
       .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
@@ -90,7 +92,7 @@ const App = () => {
     const unit = areGraphsRelative ? 'Rates' : 'Numbers'
     const death = areGraphsValuesCases ? '' : 'Death'
 
-    return `Reported ${daily} ${place} COVID-19 ${death} ${unit}`
+    return `${descriptor} ${daily} ${place} COVID-19 ${death} ${unit}`
   }
 
   // The getGraphData function returns a tuple, the first index
@@ -123,6 +125,18 @@ const App = () => {
               <SearchForm 
                 style={{ width: '100%', paddingTop: '10px', paddingBottom: '10px', boxSizing: 'border-box' }} 
                 selectCounty={setFips}/>
+
+              <Column>
+                <CardHeader style={{alignSelf: 'flex-start'}}>
+                  I Want to View...
+                </CardHeader>
+                <RadioButtons 
+                  label1={"Predictions"} 
+                  label2={"Historical"} 
+                  onChange={toggleAreGraphsPredictions}
+                  firstChecked={areGraphsPredictions}
+                  style={{width: '100%'}}/>
+              </Column>
 
               <Column>
                   <CardHeader style={{alignSelf: 'flex-start'}}>
@@ -187,6 +201,8 @@ const App = () => {
           onValueChange: (x: boolean) => setAreGraphsValuesCases(!areGraphsValuesCases),
         }
       ]
+
+      const toggleAreGraphsPredictions = (x: boolean) => setAreGraphsPredictions(!areGraphsPredictions)
 
       const graphData = getGraphData(currentFips, graphingData, areGraphsTotal, areGraphsRelative)
 
