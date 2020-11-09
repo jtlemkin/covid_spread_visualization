@@ -106,6 +106,8 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
         return {label, color} as LabelledColor
     })
 
+    console.log("LINE DATA", data)
+
     return (
         <Container 
             style={style} >
@@ -116,11 +118,14 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
                 preserveAspectRatio="xMidYMid meet" 
                 ref={svgRef}>
                 { data.map((lineData, index) => {
+                    const lineColorIndex = colors.graph.length - data.length + index
+                    console.log("LCI", lineColorIndex)
+
                     return (
                         <path
                             key={`${title}line${index}`} 
                             d={line(lineData)!} 
-                            stroke={lineColors[2 - index]} 
+                            stroke={lineColors[lineColorIndex]} 
                             fill="none" 
                             strokeWidth="2" 
                             strokeMiterlimit="1">

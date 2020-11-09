@@ -64,9 +64,8 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
     }
 
     const labelForIndex = (index: number) => {
-        const SECONDS_TO_MILLIS = 1000
         const timestamp = countyData!.snapshots[index].timestamp
-        const date = new Date(timestamp * SECONDS_TO_MILLIS)
+        const date = new Date(timestamp)
         return date.toLocaleDateString()
     }
 
