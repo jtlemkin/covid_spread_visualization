@@ -18,7 +18,7 @@ router.get('/search/:str', function(req: any, res: any, next: any) {
   res.json(resultsFor(req.params.str))
 })
 
-router.get('/places/:fips', function(req: any, res: any, next: any) {
+router.get('/cities/:fips', function(req: any, res: any, next: any) {
   res.json(placesFor(req.params.fips))
 })
 

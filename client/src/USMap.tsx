@@ -3,7 +3,7 @@ import { getRenderer } from './helpers/mapRenderer'
 import CSS from 'csstype'
 import { Slider } from './atoms/Slider'
 import { Legend } from './Legend'
-import { Timeline, LabelledColor } from './interfaces'
+import { Timeline, LabelledColor, City } from './interfaces'
 import colors from './colors'
 import { faSearchMinus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -12,6 +12,7 @@ import getPlace from './helpers/getPlace'
 import getCanvasPoint from './helpers/getCanvasPoint'
 import { Canvas } from './Canvas'
 import getScaleLabel from './helpers/getScaleLabel'
+import useFetch from './hooks/useFetch';
 
 // A fips number is an identifier for counties, states, and the nation
 
@@ -30,13 +31,29 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
     const height = 610 * window.devicePixelRatio
     
     const [selectedSnapshotIndex, setSelectedSnapshotIndex] = useState(countyData.snapshots.length - 1)
+    const [cities, setCities] = useState<City[]>([])
+
+    useFetch(`/cities/${currentFips}`, (result: any) => {
+        const parsed: City[] = result.map((a: any) => {
+            return {
+                name: a[0].split(',')[0],
+                lat: a[2],
+                lng: a[3],
+                county_fips: a[1]
+            } as City
+        })
+        
+        setCities(parsed);
+        setFips(currentFips);
+    })
 
     const renderer = useCallback(getRenderer(
         currentFips, 
         previousFips, 
         countyData.snapshots[selectedSnapshotIndex!], 
-        percentile
-    ), [currentFips, previousFips, selectedSnapshotIndex, percentile])
+        percentile,
+        cities
+    ), [currentFips, previousFips, selectedSnapshotIndex, percentile, cities])
 
     // The map is animated whenever the current fips is different than the previous fips
     // We want to update the current and previous fips to be the same so that the transition

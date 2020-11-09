@@ -2,7 +2,6 @@ import * as d3 from 'd3';
 import * as topojson from 'topojson-client'
 import { Topology, GeometryObject } from 'topojson-specification'
 import usUntyped from '../data/counties-albers-10m.json'
-import cities from '../data/cities.json'
 import getTransform from './getTransform'
 import PlaceFactory from './PlaceFactory'
 import { Snapshot, Place, City, Transform } from '../interfaces'
@@ -126,7 +125,8 @@ function drawCitiesLabels(
     t: number, 
     selectedPlace: Place, 
     previousPlace: Place, 
-    currentScale: number
+    currentScale: number,
+    cities: City[]
 ) {
     cities.forEach((city: City) => {
         const [x, y] = projection([city.lng, city.lat])!
@@ -147,7 +147,7 @@ function drawCitiesLabels(
             }
 
             const scalingFactor = 1 / currentScale
-            const fontSize = 14 * scalingFactor
+            const fontSize = 16 * scalingFactor
 
             context.font = `${fontSize}px Arial`
             context.lineWidth = 2 * scalingFactor
@@ -188,7 +188,8 @@ export const getRenderer = (
     selectedFips: number, 
     previousFips: number,
     snapshot: Snapshot,
-    percentile: number
+    percentile: number,
+    cities: City[]
 ) => {
     const previousTransform = getTransform(previousFips)
     const selectedTransform = getTransform(selectedFips)
@@ -208,6 +209,6 @@ export const getRenderer = (
         const previousPlace = PlaceFactory(previousFips)
 
         drawMap(context, t, snapshot, percentile, selectedPlace, previousPlace)
-        drawCitiesLabels(context, t, selectedPlace, previousPlace, transform.a) //transform.a is the current transform scale
+        drawCitiesLabels(context, t, selectedPlace, previousPlace, transform.a, cities) //transform.a is the current transform scale
     }
 }
