@@ -27,5 +27,11 @@ yarn-error.log*
 *.csv
 
 server/timeline.json
+server/timeline_contact_tracing.json
+server/timeline_contact_tracing.json
+server/timeline_mandatory_masking.json
+server/timeline_mask.json
+server/timeline_social_distance.json
+server/timeline_strict_social_distance.json
 
 parsing

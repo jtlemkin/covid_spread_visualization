@@ -7,6 +7,7 @@ import schedule = require('node-schedule');
 
 var apiRouter = require('./api');
 import updateTimeline from './updateTimeline'
+import getPredictions from './getPredictions'
 
 var app = express();
 const port = process.env.PORT || 5000;
@@ -17,7 +18,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//updateTimeline();
+updateTimeline();
+//getPredictions();
 
 app.use('/', apiRouter);
 

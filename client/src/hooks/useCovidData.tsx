@@ -1,5 +1,6 @@
 import useCSV from './useCSV'
-import { useEffect, useState } from 'react'
+import useFetch from './useFetch'
+import { useState, useEffect } from 'react'
 import { CountyData, Timeline, Snapshot } from '../interfaces'
 import { DSVRowString } from 'd3'
 import { DataEntry } from '../interfaces'
@@ -15,13 +16,10 @@ const useCovidData = (selectedFips: number, isDataTotal: boolean, isDataRelative
     const [graphingData, setGraphingData] = useState<DataEntry[][] | null>(null)
 
     // Get data for maps
-    useEffect(() => {
-        fetch("/timeline")
-            .then(res => res.json())
-            .then(newTimeline => {
-                setTimeline(newTimeline)
-            })
-    }, [])
+    useFetch('/timeline', (newTimeline) => {
+        setTimeline(newTimeline)
+        console.log("TIMELINE", newTimeline)
+    })
 
     // Format mapping data based on parameters
     useEffect(() => {

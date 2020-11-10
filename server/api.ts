@@ -14,6 +14,26 @@ router.get('/timeline', function(req: any, res: any, next: any) {
   res.sendFile(__dirname + "/timeline.json");
 })
 
+router.get('/timeline/contact_tracing', function(req: any, res: any, next: any) {
+  res.sendFile(__dirname + "/timeline_contact_tracing.json");
+})
+
+router.get('/timeline/mandatory_mask', function(req: any, res: any, next: any) {
+  res.sendFile(__dirname + "/timeline_mandatory_masking.json");
+})
+
+router.get('/timeline/mask', function(req: any, res: any, next: any) {
+  res.sendFile(__dirname + "/timeline_mask.json");
+})
+
+router.get('/timeline/social_distance', function(req: any, res: any, next: any) {
+  res.sendFile(__dirname + "/timeline_social_distance.json");
+})
+
+router.get('/timeline/strict_social_distance', function(req: any, res: any, next: any) {
+  res.sendFile(__dirname + "/timeline_strict_social_distance.json");
+})
+
 router.get('/search/:str', function(req: any, res: any, next: any) {
   res.json(resultsFor(req.params.str))
 })
