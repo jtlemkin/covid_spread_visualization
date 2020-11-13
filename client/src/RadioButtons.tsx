@@ -8,18 +8,20 @@ const Row = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
+    flex-wrap: wrap;
 `
 
 const Half = styled.div`
     display: flex;
     flex: 1;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     flex-direction: row;
+    margin: 10px;
+    max-width: 50%;
 `
 
 const Label = styled.p`
-    margin-right: 10px;
     flex: 1;
     color: ${colors.text.onSurface};
     text-align: start;
@@ -47,8 +49,7 @@ export const RadioButtons = ({ labels, onChange, checkedIndex, style }: RadioBut
                         <Label>{label}</Label>
                         <Checkbox 
                             onChange={updateCheckedIndexIfChecked} 
-                            isChecked={index === checkedIndex} 
-                            style={{flex: 1}} />
+                            isChecked={index === checkedIndex} />
                     </Half>
                 )
             })}

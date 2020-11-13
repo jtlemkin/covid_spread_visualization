@@ -106,8 +106,6 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
         return {label, color} as LabelledColor
     })
 
-    console.log("LINE DATA", data)
-
     return (
         <Container 
             style={style} >
@@ -119,7 +117,6 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
                 ref={svgRef}>
                 { data.map((lineData, index) => {
                     const lineColorIndex = colors.graph.length - data.length + index
-                    console.log("LCI", lineColorIndex)
 
                     return (
                         <path

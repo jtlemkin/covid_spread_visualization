@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 import { USMap } from './USMap'
 import useCovidData from './hooks/useCovidData'
 import { Spinner } from './atoms/Spinner'
@@ -11,13 +11,14 @@ import { RadioButtons } from './RadioButtons'
 import { Graph } from './Graph'
 import { SearchForm } from './SearchForm'
 import styled from 'styled-components'
+import { Expandable } from './atoms/Expandable'
 
 const Container = styled.div`
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: ${ colors.background }
+  background-color: ${colors.background}
 `
 
 const Column = styled.div`
@@ -52,17 +53,19 @@ const App = () => {
     setPreviousFips(currentFips)
     setSelectedFips(newFip)
   }
-  
+
   const [areGraphsTotal, setAreGraphsTotal] = useState(true)
   const [areGraphsRelative, setAreGraphsRelative] = useState(true)
   const [areGraphsValuesCases, setAreGraphsValuesCases] = useState(true)
   const [areGraphsPredictions, setAreGraphsPredictions] = useState(true)
+  const [typeOfPrediction, setTypeOfPrediction] = useState("mask")
   const [mappingData, graphingData, percentile] = useCovidData(
-    currentFips, 
-    areGraphsTotal, 
-    areGraphsRelative, 
-    areGraphsValuesCases, 
-    areGraphsPredictions
+    currentFips,
+    areGraphsTotal,
+    areGraphsRelative,
+    areGraphsValuesCases,
+    areGraphsPredictions,
+    typeOfPrediction
   )
 
   const title = () => {
@@ -89,69 +92,96 @@ const App = () => {
       const Master = () => {
         return (
           <div style={{ flex: 1, paddingRight: 10, paddingLeft: 10 }}>
-            <USMap 
-              style={{maxWidth: '875px'}} 
+            <USMap
+              style={{ maxWidth: '875px' }}
               title={title()}
-              previousFips={previousFips} 
+              previousFips={previousFips}
               currentFips={currentFips}
               countyData={mappingData}
               setFips={setFips}
-              percentile={percentile} />
+              percentile={percentile}
+              whichPrediction={typeOfPrediction} />
           </div>
         )
+      }
+
+      const urls = [
+        "mask",
+        "social_distance",
+        "contact_tracing",
+        "mandatory_masking",
+        "strict_social_distance"
+      ]
+
+      const setTypeOfPredictionFromIndex = (index: number) => {
+        console.log("index", index)
+        setTypeOfPrediction(urls[index])
       }
 
       const Control = () => {
         return (
           <PaddedBackground>
             <CardList>
-              <SearchForm 
-                style={{ width: '100%', paddingTop: '10px', paddingBottom: '10px', boxSizing: 'border-box' }} 
-                selectCounty={setFips}/>
+              <SearchForm
+                style={{ width: '100%', paddingTop: '10px', paddingBottom: '10px', boxSizing: 'border-box' }}
+                selectCounty={setFips} />
 
               <Column>
-                <CardHeader style={{alignSelf: 'flex-start'}}>
+                <CardHeader style={{ alignSelf: 'flex-start' }}>
                   I Want to View...
                 </CardHeader>
-                <RadioButtons 
+                <RadioButtons
                   labels={["Predictions", "Historical"]}
                   onChange={toggleAreGraphsPredictions}
                   checkedIndex={areGraphsPredictions ? 0 : 1}
-                  style={{width: '100%'}}/>
+                  style={{ width: '100%' }} />
+                { areGraphsPredictions && 
+                  <RadioButtons
+                    labels={[
+                      "Moderate Mask Usage",
+                      "Mandated Mask Usage",
+                      "Contact Tracing",
+                      "Moderate Social Distancing",
+                      "Strict Social Distancing"
+                    ]}
+                    onChange={setTypeOfPredictionFromIndex}
+                    checkedIndex={urls.indexOf(typeOfPrediction)}
+                    style={{ width: '100%', borderTop: "1px solid black" }} />
+                }
               </Column>
 
               <Column>
-                  <CardHeader style={{alignSelf: 'flex-start'}}>
-                    I Want to View Data as...
+                <CardHeader style={{ alignSelf: 'flex-start' }}>
+                  I Want to View Data as...
                   </CardHeader>
-                  {switchData.map(data => {
-                      return (
-                          <RadioButtons 
-                              key={`Switch${data.labels[0]}${data.labels[1]}`}
-                              labels={data.labels}
-                              onChange={data.onValueChange} 
-                              checkedIndex={data.checkedIndex!}
-                              style={{width: '100%'}} />
-                      )
-                  })}
+                {switchData.map(data => {
+                  return (
+                    <RadioButtons
+                      key={`Switch${data.labels[0]}${data.labels[1]}`}
+                      labels={data.labels}
+                      onChange={data.onValueChange}
+                      checkedIndex={data.checkedIndex!}
+                      style={{ width: '100%' }} />
+                  )
+                })}
               </Column>
 
               <Graph
-                  style={{ width: '100%' }}
-                  data={graphData[indexOfChartToShow].values}
-                  title={graphData[indexOfChartToShow].title}
-                  type={graphData[indexOfChartToShow].type} />
+                style={{ width: '100%' }}
+                data={graphData[indexOfChartToShow].values}
+                title={graphData[indexOfChartToShow].title}
+                type={graphData[indexOfChartToShow].type} />
 
-              <div style={{textAlign: 'left'}}>
+              <div style={{ textAlign: 'left' }}>
                 <CardHeader>How To Use</CardHeader>
                 <p>This is a map for visualizing and predicting the spread of COVID-19.</p>
                 <p>By default it shows the percent of counties infected since the start of the pandemic, but there are options you can toggle that change this.</p>
-                <p>Click on the map to zoom into the states and counties that you wish to see data for. </p> 
+                <p>Click on the map to zoom into the states and counties that you wish to see data for. </p>
                 <p>Additionally you can search for cities, states and counties in the search places bar.</p>
                 <p>Drag the timeline at the bottom of the map to see the changing COVID-19 numbers over time. </p>
               </div>
 
-              <div style={{textAlign: 'left'}}>
+              <div style={{ textAlign: 'left' }}>
                 <CardHeader>Acknowledgments</CardHeader>
                 <p>COVID-19 Predictions Provided by Houman Homayoun of UC Davis and Sai Manoj of George Mason University</p>
                 <p>Designed and Developed by James Lemkin</p>
@@ -169,19 +199,19 @@ const App = () => {
           labels: ["Total Data", "Daily Data"],
           checkedIndex: areGraphsTotal ? 0 : 1,
           onValueChange: (x: number) => {
-            setAreGraphsTotal(x === 1)
+            setAreGraphsTotal(x === 0)
           }
         }, {
           labels: ["Percentages of County", "Total in County"],
           checkedIndex: areGraphsRelative ? 0 : 1,
           onValueChange: (x: number) => {
-            setAreGraphsRelative(x === 1)
+            setAreGraphsRelative(x === 0)
           }
         }, {
           labels: ["Infections", "Deaths"],
-          value: areGraphsValuesCases ? 0 : 1,
+          checkedIndex: areGraphsValuesCases ? 0 : 1,
           onValueChange: (x: number) => {
-            setAreGraphsValuesCases(x === 1)
+            setAreGraphsValuesCases(x === 0)
           },
         }
       ]
@@ -189,7 +219,7 @@ const App = () => {
       const toggleAreGraphsPredictions = (x: number) => {
         setAreGraphsPredictions(x === 0)
       }
- 
+
       const graphData = getGraphData(currentFips, graphingData, areGraphsTotal, areGraphsRelative)
 
       return <AdaptiveLayout master={<Master />} detail={<Control />} />

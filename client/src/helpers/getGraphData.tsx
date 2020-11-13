@@ -42,8 +42,6 @@ export function getGraphData(fips: number, data: DataEntry[][], isTotalData: boo
     });
   }
 
-  console.log("DAILY", !isTotalData)
-
   if (!isTotalData) {
     console.log("I shouldn't run!")
     graphingData = graphingData.map(lineData => {

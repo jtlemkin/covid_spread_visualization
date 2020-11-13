@@ -90,7 +90,8 @@ const useCovidData = (
     isDataTotal: boolean, 
     isDataRelative: boolean, 
     isDataCases: boolean,
-    isDataPredicted: boolean
+    isDataPredicted: boolean,
+    typeOfPrediction: string
 ) => {
     const countiesData = useCSV('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv')
     const nationData = useCSV('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv')
@@ -107,7 +108,8 @@ const useCovidData = (
         setTimeline(newTimeline)
     })
 
-    useFetch('/timeline/mask', (newPredictedTimeline) => {
+    useFetch(`/timeline/${typeOfPrediction}`, (newPredictedTimeline) => {
+        console.log("TYPE", typeOfPrediction)
         setPredictedTimeline(newPredictedTimeline)
         console.log("PREDICTIONS", newPredictedTimeline)
     })
@@ -153,7 +155,6 @@ const useCovidData = (
             )
 
             predictedMapTimeline.max = historicalMapTimeline.max
-            console.log("predicted map", predictedMapTimeline)
             setMappingData(predictedMapTimeline)
         } else {
             setMappingData(historicalMapTimeline)

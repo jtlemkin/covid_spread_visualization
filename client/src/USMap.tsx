@@ -24,9 +24,10 @@ interface USMapProps {
     percentile: number,
     setFips: (newFips: number) => void,
     style?: CSS.Properties,
+    whichPrediction: string
 }
 
-export const USMap = React.memo(({ title, currentFips, previousFips, countyData, percentile, setFips, style}: USMapProps) => {
+export const USMap = React.memo(({ title, currentFips, previousFips, countyData, percentile, setFips, style, whichPrediction}: USMapProps) => {
     const width = 975 * window.devicePixelRatio
     const height = 610 * window.devicePixelRatio
     
@@ -53,7 +54,7 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
         countyData.snapshots[selectedSnapshotIndex!], 
         percentile,
         cities
-    ), [currentFips, previousFips, selectedSnapshotIndex, percentile, cities])
+    ), [currentFips, previousFips, selectedSnapshotIndex, percentile, cities, whichPrediction])
 
     // The map is animated whenever the current fips is different than the previous fips
     // We want to update the current and previous fips to be the same so that the transition
