@@ -26,25 +26,32 @@ const Label = styled.p`
 `
 
 interface RadioButtonsProps {
-    label1: string,
-    label2: string,
-    onChange: (value: boolean) => void,
-    firstChecked: boolean,
+    labels: string[],
+    onChange: (checkedIndex: number) => void,
+    checkedIndex: number,
     style?: CSS.Properties,
 }
 
-export const RadioButtons = ({ label1, label2, onChange, firstChecked, style }: RadioButtonsProps) => {
+export const RadioButtons = ({ labels, onChange, checkedIndex, style }: RadioButtonsProps) => {
     return (
         <Row style={style}>
-            <Half>
-                <Label>{label1}</Label>
-                <Checkbox onChange={onChange} isChecked={firstChecked} style={{flex: 1}} />
-            </Half>
+            {labels.map((label: string, index: number) => {
+                const updateCheckedIndexIfChecked = (isChecked: boolean) => {
+                    if (isChecked) {
+                        onChange(index)
+                    }
+                }
 
-            <Half>
-                <Label>{label2}</Label>
-                <Checkbox onChange={onChange} isChecked={!firstChecked} style={{flex: 1}} />
-            </Half>
+                return (
+                    <Half>
+                        <Label>{label}</Label>
+                        <Checkbox 
+                            onChange={updateCheckedIndexIfChecked} 
+                            isChecked={index === checkedIndex} 
+                            style={{flex: 1}} />
+                    </Half>
+                )
+            })}
         </Row>
     );
 };

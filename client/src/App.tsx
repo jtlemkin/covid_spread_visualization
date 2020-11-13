@@ -114,10 +114,9 @@ const App = () => {
                   I Want to View...
                 </CardHeader>
                 <RadioButtons 
-                  label1={"Predictions"} 
-                  label2={"Historical"} 
+                  labels={["Predictions", "Historical"]}
                   onChange={toggleAreGraphsPredictions}
-                  firstChecked={areGraphsPredictions}
+                  checkedIndex={areGraphsPredictions ? 0 : 1}
                   style={{width: '100%'}}/>
               </Column>
 
@@ -128,11 +127,10 @@ const App = () => {
                   {switchData.map(data => {
                       return (
                           <RadioButtons 
-                              key={`Switch${data.label1}${data.label2}`}
-                              label1={data.label1} 
-                              label2={data.label2}
+                              key={`Switch${data.labels[0]}${data.labels[1]}`}
+                              labels={data.labels}
                               onChange={data.onValueChange} 
-                              firstChecked={data.value}
+                              checkedIndex={data.checkedIndex!}
                               style={{width: '100%'}} />
                       )
                   })}
@@ -168,25 +166,30 @@ const App = () => {
       // function types match
       const switchData = [
         {
-          label1: "Total Data",
-          label2: "Daily Data",
-          value: areGraphsTotal,
-          onValueChange: (x: boolean) => setAreGraphsTotal(!areGraphsTotal)
+          labels: ["Total Data", "Daily Data"],
+          checkedIndex: areGraphsTotal ? 0 : 1,
+          onValueChange: (x: number) => {
+            setAreGraphsTotal(x === 1)
+          }
         }, {
-          label1: "Percentages of County",
-          label2: "Total in County",
-          value: areGraphsRelative,
-          onValueChange: (x: boolean) => setAreGraphsRelative(!areGraphsRelative)
+          labels: ["Percentages of County", "Total in County"],
+          checkedIndex: areGraphsRelative ? 0 : 1,
+          onValueChange: (x: number) => {
+            setAreGraphsRelative(x === 1)
+          }
         }, {
-          label1: "Infections",
-          label2: "Deaths",
-          value: areGraphsValuesCases,
-          onValueChange: (x: boolean) => setAreGraphsValuesCases(!areGraphsValuesCases),
+          labels: ["Infections", "Deaths"],
+          value: areGraphsValuesCases ? 0 : 1,
+          onValueChange: (x: number) => {
+            setAreGraphsValuesCases(x === 1)
+          },
         }
       ]
 
-      const toggleAreGraphsPredictions = (x: boolean) => setAreGraphsPredictions(!areGraphsPredictions)
-
+      const toggleAreGraphsPredictions = (x: number) => {
+        setAreGraphsPredictions(x === 0)
+      }
+ 
       const graphData = getGraphData(currentFips, graphingData, areGraphsTotal, areGraphsRelative)
 
       return <AdaptiveLayout master={<Master />} detail={<Control />} />
