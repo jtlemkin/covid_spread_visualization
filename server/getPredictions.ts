@@ -4,51 +4,49 @@ const csv = require('csv-parser')
 const cases_file = 'counties_cases.csv'
 const deaths_file = 'counties_deaths.csv'
 
-const keys = [
-    "Mask", 
-    "social distance", 
-    "contact tracing", 
-    "mandatory masking", 
-    "Strict social distance"
-]
+interface Data {
+    mask: number,
+    socialDistance: number,
+    contactTracing: number,
+    mandatoryMasking: number,
+    strictSocialDistance: number
+}
 
-function formatKey(key: any) {
-    return key.toLowerCase().replace(' ', '_').replace(' ', '_')
+interface Row {
+    timestamp: number,
+    fips: number,
+    values: Data
 }
 
 async function parse_file(file_name: string) {
-    let data: any = {}
+    let data: Row[] = []
 
     const reader = fs.createReadStream(file_name)
 
     reader
         .pipe(csv())
         .on('data', (row: any) => {
-            keys.forEach(key => {
-                const formatted = formatKey(key)
+            if (row.date) {
+                const timestamp = (new Date(row.date)).getTime()
+                const fips = parseInt(row.fips)
+                const mask = parseInt(row["Mask"])
+                const socialDistance = parseInt(row["social distance"])
+                const contactTracing = parseInt(row["contact tracing"])
+                const mandatoryMasking = parseInt(row["mandatory masking"])
+                const strictSocialDistance = parseInt(row["Strict social distance"])
 
-                if (!(formatted in data)) {
-                    data[formatted] = {}
-                }
-                
-                if (!(row.county in data[formatted])) {
-                    data[formatted][row.county] = []
-                }
-
-                const timestamp = Date.parse(row.date)
-
-                data[formatted][row.county].push({
-                    fips: row.fips,
+                data.push({
                     timestamp,
-                    "value": row[key],
+                    fips,
+                    values: {
+                        mask,
+                        socialDistance, 
+                        contactTracing,
+                        mandatoryMasking,
+                        strictSocialDistance
+                    }
                 })
-
-                const start = data[formatted][row.county].length - 7
-                const end = data[formatted][row.county].length
-                const slice = data[formatted][row.county].slice(start, end)
-
-                data[formatted][row.county] = slice
-            })
+            }
         })
 
     return new Promise<any>((resolve, reject) => {
@@ -59,65 +57,159 @@ async function parse_file(file_name: string) {
     })
 }
 
-function createJSON(key: string, cases: any, deaths: any) {
-    let results: any = {}
+function trim(rows: Row[], cutoff: number) {
+    const oneWeekAgo = new Date(cutoff)
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+    const oneWeekBeforeCuttoff = oneWeekAgo.getTime()
+    return rows.filter(row => {
+        return row.timestamp >= oneWeekBeforeCuttoff && row.timestamp <= cutoff 
+    })
+}
 
-    // Combine infections and deaths
-    Object.keys(cases[key]).forEach(county => {
-        cases[key][county].forEach((stat: any, i: number) => {
-            const statistics = {
-                numInfected: stat.value,
-                numDead: deaths[key][county][i].value
-            }
+interface Pair {
+    cases: Row | null,
+    deaths: Row | null
+}
 
-            if (!(county in results)) {
-                results[county] = []
-            }
-    
-            const result = { 
-                fips: stat.fips,
-                timestamp: stat.timestamp,
-                statistics
-            }
-            
-            results[county].push(result)
+function merge(cases: Row[], deaths: Row[]) {
+    const groups: Map<number, Pair[]> = new Map()
+
+    // Add initial cases
+    cases.forEach(row => {
+        if (!groups.has(row.fips)) {
+            groups.set(row.fips, [])
+        }
+
+        const rows = groups.get(row.fips)
+        rows!.push({
+            cases: row,
+            deaths: null
         })
+        groups.set(row.fips, rows!)
     })
 
-    // Group by timestamp
-    let timestamped: any = {}
-    for (const fips in results) {
-        for (const data of results[fips]) {
-            if (!(data.timestamp in timestamped)) {
-                timestamped[data.timestamp] = {}
+    // Then add deaths to cases and sort
+    deaths.forEach(row => {
+        if (!groups.has(row.fips)) {
+            groups.set(row.fips, [])
+        }
+
+        const rows = groups.get(row.fips)
+        let num_matches = 0
+        for (let i = 0; i < rows!.length; i += 1) {
+            if (!rows![i].cases) {
+                continue
             }
 
-            timestamped[data.timestamp][parseInt(data.fips).toString()] = data.statistics
-        }
-    }
+            if (rows![i].cases!.timestamp === row.timestamp) {
+                rows![i].deaths = row
+                num_matches += 1
 
-    // Convert to array
-    let timestamped_array = Object.keys(timestamped).map(timestamp => {
-        return {
-            timestamp: parseInt(timestamp),
-            statistics: timestamped[timestamp]
+                if (num_matches > 1) {
+                    console.log("AHHHHHHH");
+                }
+            }
+        }
+
+        if (num_matches == 0) {
+            rows!.push({
+                cases: null,
+                deaths: row
+            })
         }
     })
 
-    timestamped_array.sort((a, b) => a.timestamp - b.timestamp)
+    groups.forEach((pairs, key) => {
+        const sorted = pairs.sort((a: Pair, b: Pair) => {
+            const time1 = a.cases ? a.cases.timestamp : a.deaths!.timestamp
+            const time2 = b.cases ? b.cases.timestamp : b.deaths!.timestamp
 
-    const json = JSON.stringify(timestamped_array)
-    fs.writeFileSync(`timeline_${key}.json`, json)
-    console.log("write!")
+            return time1 - time2
+        })
+
+        groups.set(key, sorted)
+    })
+
+    return groups
+}
+
+interface Timeline {
+    snapshots: Snapshot[],
+    max: CountyData
+}
+
+interface Snapshot {
+    timestamp: number,
+    statistics: any
+}
+
+interface CountyData {
+    numInfected: number,
+    numDead: number,
+}
+
+function createTimelines(data: Map<number, Pair[]>) {
+    const keys = [
+        "mask",
+        "socialDistance",
+        "contactTracing",
+        "mandatoryMasking",
+        "strictSocialDistance"
+    ]
+
+    keys.forEach(key => {
+        let timeline: Timeline = {
+            snapshots: [],
+            max: {
+                numInfected: 0,
+                numDead: 0
+            }
+        }
+
+        const snapshotMap: Map<number, Snapshot> = new Map()
+
+        data.forEach(pairs => {
+            pairs.forEach(pair => {
+                const timestamp = pair.cases ? pair.cases.timestamp : pair.deaths!.timestamp
+                const fips = pair.cases ? pair.cases.fips : pair.deaths!.fips
+
+                if (!snapshotMap.has(timestamp)) {
+                    snapshotMap.set(timestamp, {
+                        timestamp,
+                        statistics: {}
+                    })
+                }
+
+                let snapshot = snapshotMap.get(timestamp)
+                const stat = {
+                    numInfected: pair.cases ? pair.cases.values[key] : null,
+                    numDead: pair.deaths? pair.deaths.values[key] : null
+                }
+
+                snapshot!.statistics[fips.toString()] = stat
+            })
+        })
+
+        const sortedTimestamps = Array.from(snapshotMap.keys()).sort()
+        sortedTimestamps.forEach(timestamp => {
+            timeline.snapshots.push(snapshotMap.get(timestamp)!)
+        })
+
+        const json = JSON.stringify(timeline)
+        fs.writeFileSync(`timeline_${key}.json`, json)
+    })
 }
 
 export default async function getPredictions() {
-    const cases = await parse_file(cases_file)
-    const deaths = await parse_file(deaths_file)
+    const cases: Row[] = await parse_file(cases_file)
+    const deaths: Row[] = await parse_file(deaths_file)
 
-    for (const key of keys) {
-        const formatted = formatKey(key)
-        console.log(formatted)
-        createJSON(formatted, cases, deaths)
-    }
+    const cutoff = deaths[deaths.length - 1].timestamp
+
+    const trimmed_cases = trim(cases, cutoff)
+    const trimmed_deaths = trim(deaths, cutoff)
+
+    const merged = merge(trimmed_cases, trimmed_deaths)
+
+    createTimelines(merged)
 }

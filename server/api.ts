@@ -15,11 +15,11 @@ router.get('/timeline', function(req: any, res: any, next: any) {
 })
 
 router.get('/timeline/contact_tracing', function(req: any, res: any, next: any) {
-  res.sendFile(__dirname + "/timeline_contact_tracing.json");
+  res.sendFile(__dirname + "/timeline_contactTracing.json");
 })
 
 router.get('/timeline/mandatory_mask', function(req: any, res: any, next: any) {
-  res.sendFile(__dirname + "/timeline_mandatory_masking.json");
+  res.sendFile(__dirname + "/timeline_mandatoryMasking.json");
 })
 
 router.get('/timeline/mask', function(req: any, res: any, next: any) {
@@ -27,11 +27,11 @@ router.get('/timeline/mask', function(req: any, res: any, next: any) {
 })
 
 router.get('/timeline/social_distance', function(req: any, res: any, next: any) {
-  res.sendFile(__dirname + "/timeline_social_distance.json");
+  res.sendFile(__dirname + "/timeline_socialDistance.json");
 })
 
 router.get('/timeline/strict_social_distance', function(req: any, res: any, next: any) {
-  res.sendFile(__dirname + "/timeline_strict_social_distance.json");
+  res.sendFile(__dirname + "/timeline_strictSocialDistance.json");
 })
 
 router.get('/search/:str', function(req: any, res: any, next: any) {

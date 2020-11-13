@@ -57,30 +57,13 @@ const App = () => {
   const [areGraphsRelative, setAreGraphsRelative] = useState(true)
   const [areGraphsValuesCases, setAreGraphsValuesCases] = useState(true)
   const [areGraphsPredictions, setAreGraphsPredictions] = useState(true)
-  const [mappingData, graphingData] = useCovidData(currentFips, areGraphsTotal, areGraphsRelative, areGraphsValuesCases)
-
-  const percentile = useMemo(() => {
-    if (mappingData === null) {
-      return
-    }
-
-    // Sort the snapshots so that we can find a percentile that will
-    // be used for displaying the values
-    const sortedValues = mappingData.snapshots.map(snapshot => {
-        const values: number[] = []
-        
-        Object.values(snapshot.statistics).forEach((value: unknown) => {
-          values.push(value as number)
-        })
-
-        return values
-      })
-        .flat()
-        .sort((a, b) => a - b)
-
-    const percentileIndex = Math.floor(sortedValues.length * 0.997)
-    return sortedValues[percentileIndex]
-  }, [mappingData])
+  const [mappingData, graphingData, percentile] = useCovidData(
+    currentFips, 
+    areGraphsTotal, 
+    areGraphsRelative, 
+    areGraphsValuesCases, 
+    areGraphsPredictions
+  )
 
   const title = () => {
     const descriptor = areGraphsPredictions ? "Predicted" : "Reported"
@@ -102,7 +85,7 @@ const App = () => {
   const indexOfChartToShow = areGraphsValuesCases ? 0 : 1
 
   const Content = () => {
-    if (mappingData !== null && graphingData !== null && percentile !== undefined) {
+    if (mappingData !== null && graphingData !== null && percentile !== null) {
       const Master = () => {
         return (
           <div style={{ flex: 1, paddingRight: 10, paddingLeft: 10 }}>
