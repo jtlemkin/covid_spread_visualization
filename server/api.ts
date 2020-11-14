@@ -1,4 +1,5 @@
 var express = require('express');
+const path = require('path')
 var router = express.Router();
 
 import resultsFor from './getSearchResults'
@@ -6,7 +7,7 @@ import placesFor from './getPlaces'
 
 /* GET home page. */
 router.get('/', function(req: any, res: any, next: any) {
-  res.send('Hello, World!');
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 /* GET timeline */

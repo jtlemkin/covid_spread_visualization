@@ -104,10 +104,6 @@ function merge(cases: Row[], deaths: Row[]) {
             if (rows![i].cases!.timestamp === row.timestamp) {
                 rows![i].deaths = row
                 num_matches += 1
-
-                if (num_matches > 1) {
-                    console.log("AHHHHHHH");
-                }
             }
         }
 
@@ -182,8 +178,8 @@ function createTimelines(data: Map<number, Pair[]>) {
 
                 let snapshot = snapshotMap.get(timestamp)
                 const stat = {
-                    numInfected: pair.cases ? pair.cases.values[key] : null,
-                    numDead: pair.deaths? pair.deaths.values[key] : null
+                    numInfected: pair.cases ? (pair.cases.values as any)[key] : null,
+                    numDead: pair.deaths ? (pair.deaths.values as any)[key] : null
                 }
 
                 snapshot!.statistics[fips.toString()] = stat

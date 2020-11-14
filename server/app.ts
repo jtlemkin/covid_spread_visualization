@@ -1,6 +1,5 @@
 import createError = require('http-errors');
 import express = require('express');
-import path = require('path');
 import cookieParser = require('cookie-parser');
 import logger = require('morgan');
 import schedule = require('node-schedule');
@@ -16,7 +15,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('build'));
 
 updateTimeline();
 getPredictions();
