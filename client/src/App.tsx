@@ -11,7 +11,6 @@ import { RadioButtons } from './RadioButtons'
 import { Graph } from './Graph'
 import { SearchForm } from './SearchForm'
 import styled from 'styled-components'
-import { Expandable } from './atoms/Expandable'
 
 const Container = styled.div`
   text-align: center;
@@ -93,7 +92,7 @@ const App = () => {
         return (
           <div style={{ flex: 1, paddingRight: 10, paddingLeft: 10 }}>
             <USMap
-              style={{ maxWidth: '875px' }}
+              style={{ maxWidth: '800px' }}
               title={title()}
               previousFips={previousFips}
               currentFips={currentFips}
