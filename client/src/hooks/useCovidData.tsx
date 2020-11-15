@@ -84,15 +84,13 @@ const useCovidData = (
         )
     }, [predicted, isDataTotal, isDataRelative, isDataCases])
 
-    const percentile = historicalMappingData ? historicalMappingData.max * 0.4 : null
+    const percentile = historicalMappingData ? historicalMappingData.max * 0.3 : null
 
     const historicalGraphingData = useMemo(() => {
         if (!historicalMappingData) {
             return []
         }
 
-        //console.log("MAPPING", historicalMappingData)
-        //console.log("HISTORIC", graphify(historicalMappingData, selectedFips, isDataRelative))
         return graphify(historicalMappingData, selectedFips, isDataRelative)
     }, [historicalMappingData, selectedFips, isDataRelative])
 

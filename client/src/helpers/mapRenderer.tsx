@@ -9,6 +9,30 @@ import colors from '../colors'
 
 const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
 
+function colorForCounty(fips: number, snapshot: Snapshot, percentile: number) {
+    const value: number | null | undefined = snapshot.statistics[fips.toString()]
+
+    // Return a color indictating we have no data
+    if (value === undefined || value === null) {
+        return colors.no_data
+    }
+
+    // Percentile is a bad name for the point in which if value > percentile 
+    // then value is in the the top category. The percentile is set accordingly 
+    // to prevent outliers from creating categories that only include few 
+    // counties and leaving the rest of the counties in overfilled categories.
+    // Thus making the graph look dull and indiscernible 
+    const normalizedValue = value / percentile
+    const colorIndex = normalizedValue > 1 ? (
+        // Color is in the top category
+        colors.scale.length - 1
+    ) : (
+        // Find index to put category in equidistant lesser categories
+        Math.floor(normalizedValue * (colors.scale.length - 1))
+    )
+    return colors.scale[colorIndex]
+}
+
 function drawCounties(
     context: CanvasRenderingContext2D,
     snapshot: Snapshot,
@@ -25,30 +49,15 @@ function drawCounties(
 
     usUntyped.objects.counties.geometries.forEach((county) => {
         const fips = parseInt(county.id)
-        const value: number | undefined = snapshot.statistics[fips.toString()]
-        const normalizedValue = value !== undefined ? (
-            value / percentile
-        ) : ( 
-            0
-        )
-
-        const colorIndex = normalizedValue > 1 ? (
-            colors.scale.length - 1
-        ) : (
-            Math.ceil(normalizedValue * (colors.scale.length - 1))
-        )
-        const countyColor = colors.scale[colorIndex]
+        const countyColor = colorForCounty(fips, snapshot, percentile)
 
         if (selectedPlace.contains(fips) || previousPlace.contains(fips)) {
             if (selectedPlace.contains(fips) && previousPlace.contains(fips)) {
                 context.fillStyle = countyColor
-                //context.strokeStyle = colors.text.onBackground
             } else if (selectedPlace.contains(fips)) {
                 context.fillStyle = d3.interpolate(colors.background, countyColor)(t)
-                //context.strokeStyle = d3.interpolate(colors.background, colors.text.onBackground)(t)
             } else {
                 context.fillStyle = d3.interpolate(countyColor, colors.background)(t)
-                //context.strokeStyle = d3.interpolate(colors.text.onBackground, colors.background)(t)
             }
 
             context.beginPath()
@@ -82,30 +91,6 @@ function drawStates(
     })
 }
 
-/*function drawNation(
-    context: CanvasRenderingContext2D,
-    t: number,
-    selectedPlace: Place,
-    previousPlace: Place
-) {
-    const path = d3.geoPath(null, context)
-    const us = (usUntyped as unknown) as Topology
-
-    context.lineWidth = 1
-    if (selectedPlace.fips === 0 || previousPlace.fips === 0) {
-        if (selectedPlace.fips === 0 && previousPlace.fips === 0) {
-            context.strokeStyle = colors.text.onBackground
-        } else if (selectedPlace.fips === 0) {
-            context.strokeStyle = d3.interpolate(colors.background, colors.text.onBackground)(t)
-        } else {
-            context.strokeStyle = d3.interpolate(colors.text.onBackground, colors.background)(t)
-        }
-
-        path(topojson.feature(us, us.objects.nation))
-        context.stroke()
-    }
-}*/
-
 // Draws a single frame of the map
 function drawMap(
     context: CanvasRenderingContext2D, 
@@ -117,7 +102,6 @@ function drawMap(
 ) {
     drawCounties(context, snapshot, t, percentile, selectedPlace, previousPlace)
     drawStates(context, t, selectedPlace, previousPlace)
-    //drawNation(context, t, selectedPlace, previousPlace)
 }
 
 function drawCitiesLabels(

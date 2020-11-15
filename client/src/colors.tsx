@@ -6,8 +6,9 @@ const colors = {
         onSurface: 'black',
     },
     primary: '#bd0026',
-    scale: ['#ffffb2', '#fecc5c', '#fd8d3c', '#f03b20', '#bd0026'],
-    graph: ['#b51d14', '#4053d3']
+    scale: ['#fed976', '#feb24c', '#fd8d3c', '#f03b20', '#bd0026'],
+    graph: ['#b51d14', '#4053d3'],
+    no_data: '#F0FFFF'
 }
 
 export default colors

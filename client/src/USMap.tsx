@@ -82,10 +82,13 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
         }
     }, [currentFips])
 
-    const legendLabelledColors = colors.scale.map((color, i) => {
+    let legendLabelledColors = colors.scale.map((color, i) => {
         const label = getScaleLabel(i, countyData.max, percentile)
         return { color, label } as LabelledColor
     })
+    const no_data_color = colors.no_data
+    const no_data_label = "No Data"
+    legendLabelledColors.unshift({ color: no_data_color, label: no_data_label })
  
     return (
         <div style={style}>
