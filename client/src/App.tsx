@@ -56,19 +56,18 @@ const App = () => {
   const [areGraphsTotal, setAreGraphsTotal] = useState(true)
   const [areGraphsRelative, setAreGraphsRelative] = useState(true)
   const [areGraphsValuesCases, setAreGraphsValuesCases] = useState(true)
-  const [areGraphsPredictions, setAreGraphsPredictions] = useState(true)
-  const [typeOfPrediction, setTypeOfPrediction] = useState("mask")
-  const [mappingData, graphingData, percentile] = useCovidData(
+  const [typeOfPrediction, setTypeOfPrediction] = useState("cases")
+  const covidData = useCovidData(
     currentFips,
     areGraphsTotal,
     areGraphsRelative,
     areGraphsValuesCases,
-    areGraphsPredictions,
     typeOfPrediction
   )
+  const {mappingData, graphingData, percentile} = covidData
 
   const title = () => {
-    const descriptor = areGraphsPredictions ? "Predicted" : "Reported"
+    const descriptor = typeOfPrediction === "cases" ? "Reported" : "Predicted"
     const place = PlaceFactory(currentFips).name.toLowerCase()
       .split(' ')
       .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
@@ -80,10 +79,6 @@ const App = () => {
     return `${descriptor} ${daily} ${place} COVID-19 ${death} ${unit}`
   }
 
-  // The getGraphData function returns a tuple, the first index
-  // contains graph data for cases and the second deaths
-  // The getGraphData otherwise controls whether that data is daily
-  // and whether it is aggregated
   const indexOfChartToShow = areGraphsValuesCases ? 0 : 1
 
   const Content = () => {
@@ -105,6 +100,7 @@ const App = () => {
       }
 
       const urls = [
+        "cases",
         "mask",
         "social_distance",
         "contact_tracing",
@@ -113,7 +109,6 @@ const App = () => {
       ]
 
       const setTypeOfPredictionFromIndex = (index: number) => {
-        console.log("index", index)
         setTypeOfPrediction(urls[index])
       }
 
@@ -127,26 +122,20 @@ const App = () => {
 
               <Column>
                 <CardHeader style={{ alignSelf: 'flex-start' }}>
-                  I Want to View...
+                  What if we used...
                 </CardHeader>
                 <RadioButtons
-                  labels={["Predictions", "Historical"]}
-                  onChange={toggleAreGraphsPredictions}
-                  checkedIndex={areGraphsPredictions ? 0 : 1}
-                  style={{ width: '100%' }} />
-                { areGraphsPredictions && 
-                  <RadioButtons
-                    labels={[
-                      "Moderate Mask Usage",
-                      "Mandated Mask Usage",
-                      "Contact Tracing",
-                      "Moderate Social Distancing",
-                      "Strict Social Distancing"
-                    ]}
-                    onChange={setTypeOfPredictionFromIndex}
-                    checkedIndex={urls.indexOf(typeOfPrediction)}
-                    style={{ width: '100%', borderTop: "1px solid black" }} />
-                }
+                  labels={[
+                    "Nothing",
+                    "Moderate Mask Usage",
+                    "Mandated Mask Usage",
+                    "Contact Tracing",
+                    "Moderate Social Distancing",
+                    "Strict Social Distancing"
+                  ]}
+                  onChange={setTypeOfPredictionFromIndex}
+                  checkedIndex={urls.indexOf(typeOfPrediction)}
+                  style={{ width: '100%'}} />
               </Column>
 
               <Column>
@@ -215,11 +204,7 @@ const App = () => {
         }
       ]
 
-      const toggleAreGraphsPredictions = (x: number) => {
-        setAreGraphsPredictions(x === 0)
-      }
-
-      const graphData = getGraphData(currentFips, graphingData, areGraphsTotal, areGraphsRelative)
+      const graphData = getGraphData(graphingData, areGraphsTotal, areGraphsRelative)
 
       return <AdaptiveLayout master={<Master />} detail={<Control />} />
     } else {

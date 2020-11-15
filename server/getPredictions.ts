@@ -37,18 +37,22 @@ async function parse_file(file_name: string) {
                 const mandatoryMasking = parseInt(row["mandatory masking"])
                 const strictSocialDistance = parseInt(row["Strict social distance"])
 
-                data.push({
-                    timestamp,
-                    fips,
-                    values: {
-                        cases,
-                        mask,
-                        socialDistance, 
-                        contactTracing,
-                        mandatoryMasking,
-                        strictSocialDistance
-                    }
-                })
+                // This way we don't include US territories which we don't currently 
+                // have population data for
+                if (!row.fips.startsWith("72") && !row.fips.startsWith("78")) {
+                    data.push({
+                        timestamp,
+                        fips,
+                        values: {
+                            cases,
+                            mask,
+                            socialDistance, 
+                            contactTracing,
+                            mandatoryMasking,
+                            strictSocialDistance
+                        }
+                    })
+                }
             }
         })
 
@@ -98,10 +102,6 @@ function merge(cases: Row[], deaths: Row[]) {
             if (rows![i].cases!.timestamp === row.timestamp) {
                 rows![i].deaths = row
                 num_matches += 1
-
-                if (num_matches > 1) {
-                    console.log("AHHHHHHH");
-                }
             }
         }
 

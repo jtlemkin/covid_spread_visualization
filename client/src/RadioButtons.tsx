@@ -46,7 +46,7 @@ export const RadioButtons = ({ labels, onChange, checkedIndex, style }: RadioBut
                 }
 
                 return (
-                    <Half>
+                    <Half key={label}>
                         <Checkbox 
                             onChange={updateCheckedIndexIfChecked} 
                             isChecked={index === checkedIndex} />

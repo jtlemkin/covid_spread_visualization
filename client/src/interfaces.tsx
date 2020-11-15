@@ -16,10 +16,9 @@ export interface CountyData {
 }
 
 export interface DataEntry {
-    date: string,
+    date: number,
     fips: number,
-    cases: number,
-    deaths: number,
+    value: number,
 }
 
 export interface Dated {

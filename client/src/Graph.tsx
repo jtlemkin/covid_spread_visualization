@@ -69,9 +69,13 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
         axis && yAxis(d3.select(axis))
     }
 
+    console.log("TYPE", type)
+
     const lineColors = colors.graph
 
     const svgRef = useRef<SVGSVGElement | null>(null)
+
+    const labels = ["Actual", "Predicted"]
 
     useEffect(() => {
         const bisect = (mx: any) => {
@@ -95,13 +99,13 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
 
             tooltip
                 .attr("transform", `translate(${x(date)}, ${y(value)})`)
-                .call(callout, `${formatDate(date)}\n${formatValues(values, type)}`)
+                .call(callout, `${formatDate(date)}\n${formatValues(values, type, labels)}`)
         })
 
         svgElement.on("touchend mouseleave", () => tooltip.call(callout, null))
     }, [])
 
-    const legendLabelledColors = ["County", "State", "Nation"].map((label, i) => {
+    const legendLabelledColors = labels.map((label, i) => {
         const color = lineColors[i]
         return {label, color} as LabelledColor
     })
@@ -145,8 +149,7 @@ function formatDate(date: Date) {
     });
 }
 
-function formatValues(values: Dated[], type: string) {
-    const labels = ["County", "State", "US"]
+function formatValues(values: Dated[], type: string, labels: string[]) {
     const formatted = values.map((value, index) => {
         let adjustedValue = value.value
         if (type === "Percent") {
@@ -162,7 +165,7 @@ function formatValues(values: Dated[], type: string) {
         } else {
             // This little bit of arithmetic is so that if we're just looking at the state and nation data
             // The labels are "state", "us" instead of "county", "state"
-            return `${labels[index + 3 - values.length]}: ${str}`
+            return `${labels[index + labels.length - values.length]}: ${str}`
         }
     })
     return formatted.join('\n')

@@ -14,6 +14,10 @@ router.get('/timeline', function(req: any, res: any, next: any) {
   res.sendFile(__dirname + "/timeline_cases.json");
 })
 
+router.get('/timeline/cases', function(req: any, res: any, next: any) {
+  res.sendFile(__dirname + "/timeline_cases.json");
+})
+
 router.get('/timeline/contact_tracing', function(req: any, res: any, next: any) {
   res.sendFile(__dirname + "/timeline_contactTracing.json");
 })
