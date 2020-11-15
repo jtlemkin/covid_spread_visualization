@@ -3,10 +3,8 @@ import express = require('express');
 import path = require('path');
 import cookieParser = require('cookie-parser');
 import logger = require('morgan');
-import schedule = require('node-schedule');
 
 var apiRouter = require('./api');
-import updateTimeline from './updateTimeline'
 import getPredictions from './getPredictions'
 
 var app = express();
@@ -18,7 +16,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-updateTimeline();
 getPredictions();
 
 app.use('/', apiRouter);
@@ -38,8 +35,5 @@ app.use(function(err: any, req: any, res: any, next: any) {
   res.status(err.status || 500);
   res.send(err.message);
 });
-
-//updateTimeline()
-var event = schedule.scheduleJob('* * 0 * *', updateTimeline)
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
