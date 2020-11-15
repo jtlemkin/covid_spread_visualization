@@ -25,6 +25,7 @@ const Label = styled.p`
     flex: 1;
     color: ${colors.text.onSurface};
     text-align: start;
+    margin-left: 5px;
 `
 
 interface RadioButtonsProps {
@@ -46,10 +47,10 @@ export const RadioButtons = ({ labels, onChange, checkedIndex, style }: RadioBut
 
                 return (
                     <Half>
-                        <Label>{label}</Label>
                         <Checkbox 
                             onChange={updateCheckedIndexIfChecked} 
                             isChecked={index === checkedIndex} />
+                        <Label>{label}</Label>
                     </Half>
                 )
             })}
