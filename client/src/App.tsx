@@ -126,7 +126,7 @@ const App = () => {
                 </CardHeader>
                 <RadioButtons
                   labels={[
-                    "Nothing",
+                    "Nothing Different",
                     "Moderate Mask Usage",
                     "Mandated Mask Usage",
                     "Contact Tracing",
