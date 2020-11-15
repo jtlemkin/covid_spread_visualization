@@ -5,6 +5,7 @@ const cases_file = 'counties_cases.csv'
 const deaths_file = 'counties_deaths.csv'
 
 interface Data {
+    cases: number,
     mask: number,
     socialDistance: number,
     contactTracing: number,
@@ -29,6 +30,7 @@ async function parse_file(file_name: string) {
             if (row.date) {
                 const timestamp = (new Date(row.date)).getTime()
                 const fips = parseInt(row.fips)
+                const cases = parseInt(row["cases"])
                 const mask = parseInt(row["Mask"])
                 const socialDistance = parseInt(row["social distance"])
                 const contactTracing = parseInt(row["contact tracing"])
@@ -39,6 +41,7 @@ async function parse_file(file_name: string) {
                     timestamp,
                     fips,
                     values: {
+                        cases,
                         mask,
                         socialDistance, 
                         contactTracing,
@@ -54,15 +57,6 @@ async function parse_file(file_name: string) {
             resolve(data)
         })
         reader.on('error', reject)
-    })
-}
-
-function trim(rows: Row[], cutoff: number) {
-    const oneWeekAgo = new Date(cutoff)
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-    const oneWeekBeforeCuttoff = oneWeekAgo.getTime()
-    return rows.filter(row => {
-        return row.timestamp >= oneWeekBeforeCuttoff && row.timestamp <= cutoff 
     })
 }
 
@@ -150,6 +144,7 @@ interface CountyData {
 
 function createTimelines(data: Map<number, Pair[]>) {
     const keys = [
+        "cases",
         "mask",
         "socialDistance",
         "contactTracing",
@@ -182,8 +177,8 @@ function createTimelines(data: Map<number, Pair[]>) {
 
                 let snapshot = snapshotMap.get(timestamp)
                 const stat = {
-                    numInfected: pair.cases ? pair.cases.values[key] : null,
-                    numDead: pair.deaths? pair.deaths.values[key] : null
+                    numInfected: pair.cases ? (pair.cases.values as any)[key] : null,
+                    numDead: pair.deaths? (pair.deaths.values as any)[key] : null
                 }
 
                 snapshot!.statistics[fips.toString()] = stat
@@ -204,12 +199,7 @@ export default async function getPredictions() {
     const cases: Row[] = await parse_file(cases_file)
     const deaths: Row[] = await parse_file(deaths_file)
 
-    const cutoff = deaths[deaths.length - 1].timestamp
-
-    const trimmed_cases = trim(cases, cutoff)
-    const trimmed_deaths = trim(deaths, cutoff)
-
-    const merged = merge(trimmed_cases, trimmed_deaths)
+    const merged = merge(cases, deaths)
 
     createTimelines(merged)
 }

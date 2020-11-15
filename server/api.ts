@@ -11,7 +11,7 @@ router.get('/', function(req: any, res: any, next: any) {
 
 /* GET timeline */
 router.get('/timeline', function(req: any, res: any, next: any) {
-  res.sendFile(__dirname + "/timeline.json");
+  res.sendFile(__dirname + "/timeline_cases.json");
 })
 
 router.get('/timeline/contact_tracing', function(req: any, res: any, next: any) {
