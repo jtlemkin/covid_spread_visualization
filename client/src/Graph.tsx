@@ -27,6 +27,7 @@ const Title = styled.p`
     border-bottom-color: black;
     border-bottom-style: solid;
     border-bottom-width: thin;
+    font-size: 1.1em;
 `
 
 interface GraphProps {
@@ -68,8 +69,6 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
     const yAxisRef = (axis: any) => {
         axis && yAxis(d3.select(axis))
     }
-
-    console.log("TYPE", type)
 
     const lineColors = colors.graph
 

@@ -42,6 +42,7 @@ const CardHeader = styled.h4`
   border-bottom-width: thin;
   margin-top: 10px;
   margin-bottom: 5px;
+  font-size: 1.1em;
 `
 
 const App = () => {
