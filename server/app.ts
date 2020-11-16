@@ -38,7 +38,7 @@ app.use(function(err: any, req: any, res: any, next: any) {
 });
 
 const job = new CronJob(
-  '0 0 0 0 * 1',
+  '0 0 0 * * 1',
   getPredictions,
   null,
   true,
