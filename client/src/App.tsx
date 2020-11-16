@@ -208,7 +208,7 @@ const App = () => {
 
       return <AdaptiveLayout master={<Master />} detail={<Control />} />
     } else {
-      return <AdaptiveLayout master={<div><Spinner /></div>} />
+      return <AdaptiveLayout master={<div style={{padding: 30}}><Spinner /></div>} />
     }
   }
 
