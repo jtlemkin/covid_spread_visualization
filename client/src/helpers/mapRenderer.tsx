@@ -106,7 +106,7 @@ function highlightPlace(place: Place | null, context: CanvasRenderingContext2D) 
             console.log("NOT FOUND", place, usUntyped)
         }
 
-        context.lineWidth = place.type === "state" ? 1.75 : 1.75 / 2
+        context.lineWidth = place.type === "state" ? 1.75 : 1.75 / 4
         context.strokeStyle = 'black'
         context.beginPath()
         path(topojson.feature(us, geometry as GeometryObject))
