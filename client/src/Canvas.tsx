@@ -8,6 +8,7 @@ interface CanvasProps {
     renderFunc: (context: CanvasRenderingContext2D, t: number) => void,
     isAnimated: boolean,
     onPress: (event: React.PointerEvent<HTMLCanvasElement>) => void,
+    onHover: (event: React.PointerEvent<HTMLCanvasElement>) => void
     style: CSS.Properties
 }
 
@@ -17,6 +18,7 @@ export const Canvas = ({
     renderFunc, 
     isAnimated,
     onPress, 
+    onHover
 }: CanvasProps) => {
     const canvasRef = useCanvas(
         renderFunc,
@@ -29,6 +31,7 @@ export const Canvas = ({
             width={width} 
             height={height}
             onPointerDown={onPress} 
+            onPointerMove={onHover}
             style={{width: `${width}px`, maxWidth: '100%'}}> </canvas>
     )
 }

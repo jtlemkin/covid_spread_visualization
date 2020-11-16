@@ -33,6 +33,7 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
     
     const [selectedSnapshotIndex, setSelectedSnapshotIndex] = useState(countyData.snapshots.length - 1)
     const [cities, setCities] = useState<City[]>([])
+    const [highlightedFips, setHighlightedFips] = useState<number | null>(null)
 
     useFetch(`/cities/${currentFips}`, (result: any) => {
         const parsed: City[] = result.map((a: any) => {
@@ -53,8 +54,17 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
         previousFips, 
         countyData.snapshots[selectedSnapshotIndex!], 
         percentile,
-        cities
-    ), [currentFips, previousFips, selectedSnapshotIndex, percentile, cities, whichPrediction])
+        cities,
+        highlightedFips
+    ), [
+        currentFips, 
+        previousFips, 
+        selectedSnapshotIndex, 
+        percentile, 
+        cities, 
+        whichPrediction, 
+        highlightedFips
+    ])
 
     // The map is animated whenever the current fips is different than the previous fips
     // We want to update the current and previous fips to be the same so that the transition
@@ -82,6 +92,16 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
         }
     }, [currentFips])
 
+    const onHover = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
+        const type = PlaceFactory(currentFips).type
+        const childType = type === "state" ? "county" : "state"
+        const pos = getCanvasPoint(event, currentFips)
+
+        const selectedFips = getPlace(pos, currentFips, childType)
+
+        setHighlightedFips(selectedFips)
+    }, [currentFips])
+
     let legendLabelledColors = colors.scale.map((color, i) => {
         const label = getScaleLabel(i, countyData.max, percentile)
         return { color, label } as LabelledColor
@@ -100,6 +120,7 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
                     height={height} 
                     renderFunc={renderer}
                     onPress={setPressedFips} 
+                    onHover={onHover}
                     isAnimated={currentFips !== previousFips}
                     style={{width: `${width}px`, maxWidth: '100%'}}/>
                 { PlaceFactory(currentFips).type !== 'nation' && 

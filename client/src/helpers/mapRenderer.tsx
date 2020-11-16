@@ -39,17 +39,23 @@ function drawCounties(
     t: number,
     percentile: number,
     selectedPlace: Place,
-    previousPlace: Place
+    previousPlace: Place,
+    highlightedPlace: Place | null
 ) {
     const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
 
     context.lineWidth = 0.2
-    context.strokeStyle = colors.background
 
     usUntyped.objects.counties.geometries.forEach((county) => {
         const fips = parseInt(county.id)
         const countyColor = colorForCounty(fips, snapshot, percentile)
+
+        if (highlightedPlace !== null && highlightedPlace.fips === fips) {
+            context.strokeStyle = 'black'
+        } else {
+            context.strokeStyle = colors.background
+        }
 
         if (selectedPlace.contains(fips) || previousPlace.contains(fips)) {
             if (selectedPlace.contains(fips) && previousPlace.contains(fips)) {
@@ -70,9 +76,9 @@ function drawCounties(
 
 function drawStates(
     context: CanvasRenderingContext2D,
-    t: number,
     selectedPlace: Place,
-    previousPlace: Place
+    previousPlace: Place,
+    highlightedPlace: Place | null
 ) {
     const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
@@ -83,12 +89,39 @@ function drawStates(
 
         context.lineWidth = 1.75
 
+        const isHighlighted = highlightedPlace !== null && highlightedPlace.fips === fips * 1000
+
+        if (isHighlighted) {
+            context.strokeStyle = 'black'
+        } else {
+            context.strokeStyle = colors.background
+        }
+
         if (selectedPlace.contains(fips) || previousPlace.contains(fips)) {
             context.beginPath()
-            path(topojson.feature(us, state as GeometryObject))
+
+            if (isHighlighted) {
+                path(topojson.merge(us, [state] as any))
+            } else {
+                path(topojson.feature(us, state as GeometryObject))
+            }
             context.stroke()
         }
     })
+}
+
+function highlightPlace(place: Place | null, context: CanvasRenderingContext2D) {
+    const path = d3.geoPath(null, context)
+    const us = (usUntyped as unknown) as Topology
+    if (place) {
+        const id = place.type === "state" ? (place.fips / 1000).toString() : place.fips.toString()
+        const geometries = usUntyped.objects.states.geometries
+            .filter(geometry => geometry.id === id)
+        context.strokeStyle = 'black'
+        context.beginPath()
+        path(topojson.merge(us, geometries as any))
+        context.stroke()
+    }
 }
 
 // Draws a single frame of the map
@@ -98,10 +131,11 @@ function drawMap(
     snapshot: Snapshot,
     percentile: number,
     selectedPlace: Place, 
-    previousPlace: Place
+    previousPlace: Place,
+    highlightedPlace: Place | null
 ) {
-    drawCounties(context, snapshot, t, percentile, selectedPlace, previousPlace)
-    drawStates(context, t, selectedPlace, previousPlace)
+    drawCounties(context, snapshot, t, percentile, selectedPlace, previousPlace, highlightedPlace)
+    drawStates(context, selectedPlace, previousPlace, highlightedPlace)
 }
 
 function drawCitiesLabels(
@@ -173,7 +207,8 @@ export const getRenderer = (
     previousFips: number,
     snapshot: Snapshot,
     percentile: number,
-    cities: City[]
+    cities: City[],
+    highlightedFips: number | null
 ) => {
     const previousTransform = getTransform(previousFips)
     const selectedTransform = getTransform(selectedFips)
@@ -191,8 +226,10 @@ export const getRenderer = (
 
         const selectedPlace = PlaceFactory(selectedFips)
         const previousPlace = PlaceFactory(previousFips)
+        const highlightedPlace = highlightedFips ? PlaceFactory(highlightedFips) : null
 
-        drawMap(context, t, snapshot, percentile, selectedPlace, previousPlace)
+        drawMap(context, t, snapshot, percentile, selectedPlace, previousPlace, highlightedPlace)
         drawCitiesLabels(context, t, selectedPlace, previousPlace, transform.a, cities) //transform.a is the current transform scale
+        highlightPlace(highlightedPlace, context)
     }
 }
