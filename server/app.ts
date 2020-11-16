@@ -3,6 +3,7 @@ import express = require('express');
 import path = require('path');
 import cookieParser = require('cookie-parser');
 import logger = require('morgan');
+var CronJob = require('cron').CronJob;
 
 var apiRouter = require('./api');
 import getPredictions from './getPredictions'
@@ -35,5 +36,13 @@ app.use(function(err: any, req: any, res: any, next: any) {
   res.status(err.status || 500);
   res.send(err.message);
 });
+
+const job = new CronJob(
+  '0 0 0 0 * 1',
+  getPredictions,
+  null,
+  true,
+  'America/Los_Angeles'
+)
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
