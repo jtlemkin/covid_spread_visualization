@@ -13,29 +13,28 @@ import getCanvasPoint from './helpers/getCanvasPoint'
 import { Canvas } from './Canvas'
 import getScaleLabel from './helpers/getScaleLabel'
 import useFetch from './hooks/useFetch';
+import { useDashboardState, useDashboardDispatch } from './DashboardContext'
 
 // A fips number is an identifier for counties, states, and the nation
 
 interface USMapProps {
-    title: string,
-    currentFips: number,
-    previousFips: number,
     countyData: Timeline<number>,
     percentile: number,
-    setFips: (newFips: number) => void,
     style?: CSS.Properties,
-    whichPrediction: string
 }
 
-export const USMap = React.memo(({ title, currentFips, previousFips, countyData, percentile, setFips, style, whichPrediction}: USMapProps) => {
+export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) => {
     const width = 975 * window.devicePixelRatio
     const height = 610 * window.devicePixelRatio
+
+    const state = useDashboardState()
+    const dispatch = useDashboardDispatch()
     
     const [selectedSnapshotIndex, setSelectedSnapshotIndex] = useState(countyData.snapshots.length - 1)
     const [cities, setCities] = useState<City[]>([])
     const [highlightedFips, setHighlightedFips] = useState<number | null>(null)
 
-    useFetch(`/cities/${currentFips}`, (result: any) => {
+    useFetch(`/cities/${state.currentFips}`, (result: any) => {
         const parsed: City[] = result.map((a: any) => {
             return {
                 name: a[0].split(',')[0],
@@ -46,23 +45,22 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
         })
         
         setCities(parsed);
-        setFips(currentFips);
     })
 
     const renderer = useCallback(getRenderer(
-        currentFips, 
-        previousFips, 
+        state.currentFips, 
+        state.previousFips, 
         countyData.snapshots[selectedSnapshotIndex!], 
         percentile,
         cities,
         highlightedFips
     ), [
-        currentFips, 
-        previousFips, 
+        state.currentFips, 
+        state.previousFips, 
         selectedSnapshotIndex, 
         percentile, 
         cities, 
-        whichPrediction, 
+        state.viewingParams.predictionType, 
         highlightedFips
     ])
 
@@ -71,7 +69,6 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
     // animation does not play
     const onSliderChange = (newSnapshotIndex: number | number[] | undefined | null) => {
         setSelectedSnapshotIndex(newSnapshotIndex as number)
-        setFips(currentFips)
     }
 
     const labelForIndex = (index: number) => {
@@ -81,26 +78,26 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
     }
 
     const setPressedFips = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
-        const type = PlaceFactory(currentFips).type
+        const type = PlaceFactory(state.currentFips).type
         const childType = type === "state" ? "county" : "state"
-        const pos = getCanvasPoint(event, currentFips)
+        const pos = getCanvasPoint(event, state.currentFips)
 
-        const selectedFips = getPlace(pos, currentFips, childType)
+        const selectedFips = getPlace(pos, state.currentFips, childType)
 
         if (selectedFips !== null) {
-            setFips(selectedFips)
+            dispatch({type: 'set_fips', payload: selectedFips})
         }
-    }, [currentFips])
+    }, [state.currentFips])
 
     const onHover = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
-        const type = PlaceFactory(currentFips).type
+        const type = PlaceFactory(state.currentFips).type
         const childType = type === "state" ? "county" : "state"
-        const pos = getCanvasPoint(event, currentFips)
+        const pos = getCanvasPoint(event, state.currentFips)
 
-        const selectedFips = getPlace(pos, currentFips, childType)
+        const selectedFips = getPlace(pos, state.currentFips, childType)
 
         setHighlightedFips(selectedFips)
-    }, [currentFips])
+    }, [state.currentFips])
 
     let legendLabelledColors = colors.scale.map((color, i) => {
         const label = getScaleLabel(i, countyData.max, percentile)
@@ -109,6 +106,19 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
     const no_data_color = colors.no_data
     const no_data_label = "No Data"
     legendLabelledColors.unshift({ color: no_data_color, label: no_data_label })
+
+    const title = () => {
+        const descriptor = state.viewingParams.predictionType === "cases" ? "Reported" : "Predicted"
+        const place = PlaceFactory(state.currentFips).name.toLowerCase()
+          .split(' ')
+          .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+          .join(' ')
+        const daily = state.viewingParams.isTotal ? '' : 'Daily'
+        const unit = state.viewingParams.isRelative ? 'Rates' : 'Numbers'
+        const death = state.viewingParams.isCases ? '' : 'Death'
+    
+        return `${descriptor} ${daily} ${place} COVID-19 ${death} ${unit}`
+    }
  
     return (
         <div style={style}>
@@ -121,12 +131,19 @@ export const USMap = React.memo(({ title, currentFips, previousFips, countyData,
                     renderFunc={renderer}
                     onPress={setPressedFips} 
                     onHover={onHover}
-                    isAnimated={currentFips !== previousFips}
+                    isAnimated={state.shouldAnimate && state.currentFips !== state.previousFips}
                     style={{width: `${width}px`, maxWidth: '100%'}}/>
-                { PlaceFactory(currentFips).type !== 'nation' && 
+                { PlaceFactory(state.currentFips).type !== 'nation' && 
                     <FontAwesomeIcon 
                         style={{position: 'absolute', top: '10px', right: '10px', height: '20px', width: '20px', cursor: 'pointer'}}
-                        onClick={() => { setFips(PlaceFactory(currentFips).getOwner()!.fips) }} 
+                        onClick={() => { 
+                            dispatch({
+                                type: 'set_fips', 
+                                payload: PlaceFactory(state.currentFips)
+                                    .getOwner()!
+                                    .fips
+                            }) 
+                        }} 
                         icon={faSearchMinus}/>
                 }
             </div>

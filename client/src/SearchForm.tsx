@@ -4,6 +4,7 @@ import { SearchField, ScrollableList } from './atoms/ScrollableList'
 import { Expandable } from './atoms/Expandable'
 import CSS from 'csstype'
 import useFetch from './hooks/useFetch'
+import { useDashboardDispatch } from './DashboardContext'
 
 const Row = styled.div`
     display: flex;
@@ -21,11 +22,12 @@ const Container = styled.div`
 `
 
 interface SearchFormProps {
-    selectCounty: (fips: number) => void,
     style?: CSS.Properties
 }
 
-export const SearchForm = ({ selectCounty, style }: SearchFormProps) => {
+export const SearchForm = ({ style }: SearchFormProps) => {
+    const dispatch = useDashboardDispatch()
+
     const [isDropdownShown, setIsDropdownShown] = useState(false)
     const [hasFormBeenClicked, setHasFormBeenClicked] = useState(false)
     const [field, setField] = useState('')
@@ -50,7 +52,7 @@ export const SearchForm = ({ selectCounty, style }: SearchFormProps) => {
         const place = results.find(result => result[0] === name)
 
         if (place) {
-            selectCounty(place[1])
+            dispatch({type: 'set_fips', payload: place[1]})
         }
     }
 

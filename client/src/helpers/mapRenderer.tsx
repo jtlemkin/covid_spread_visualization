@@ -93,7 +93,6 @@ function drawStates(
 function highlightPlace(place: Place | null, context: CanvasRenderingContext2D) {
     const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
-    console.log("US", us)
     if (place && place.type !== "nation") {
         const id = place.type === "state" ? place.fips / 1000 : place.fips
         const geometries = place.type === "state" ? (

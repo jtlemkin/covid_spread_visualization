@@ -1,6 +1,6 @@
 import useFetch from './useFetch'
 import { useState, useMemo } from 'react'
-import { CountyData, Timeline, DataEntry } from '../interfaces'
+import { CountyData, Timeline, DataEntry, ViewingParams } from '../interfaces'
 import PlaceFactory from '../helpers/PlaceFactory'
 import formatTimeline from '../helpers/formatTimeline'
 
@@ -40,13 +40,7 @@ function graphify(data: Timeline<number>, selectedFips: number, isDataRelative: 
     })
 }
 
-const useCovidData = (
-    selectedFips: number, 
-    isDataTotal: boolean, 
-    isDataRelative: boolean, 
-    isDataCases: boolean,
-    typeOfPrediction: string
-) => {
+const useCovidData = (selectedFips: number, vp: ViewingParams) => {
     const [historical, setHistorical] = useState<Timeline<CountyData> | null>(null)
     const [predicted, setPredicted] = useState<Timeline<CountyData> | null>(null)
 
@@ -54,7 +48,7 @@ const useCovidData = (
         setHistorical(newTimeline)
     })
 
-    useFetch(`/timeline/${typeOfPrediction}`, (newTimeline) => {
+    useFetch(`/timeline/${vp.predictionType}`, (newTimeline) => {
         setPredicted(newTimeline)
     })
 
@@ -65,11 +59,11 @@ const useCovidData = (
 
         return formatTimeline(
             historical, 
-            isDataTotal, 
-            isDataRelative, 
-            isDataCases
+            vp.isTotal, 
+            vp.isRelative, 
+            vp.isCases
         )
-    }, [historical, isDataTotal, isDataRelative, isDataCases])
+    }, [historical, vp.isTotal, vp.isRelative, vp.isCases])
 
     const predictedMappingData = useMemo(() => {
         if (!predicted) {
@@ -78,11 +72,11 @@ const useCovidData = (
 
         return formatTimeline(
             predicted, 
-            isDataTotal, 
-            isDataRelative, 
-            isDataCases
+            vp.isTotal, 
+            vp.isRelative, 
+            vp.isCases
         )
-    }, [predicted, isDataTotal, isDataRelative, isDataCases])
+    }, [predicted, vp.isTotal, vp.isRelative, vp.isCases])
 
     const percentile = historicalMappingData ? historicalMappingData.max * 0.3 : null
 
@@ -91,16 +85,16 @@ const useCovidData = (
             return []
         }
 
-        return graphify(historicalMappingData, selectedFips, isDataRelative)
-    }, [historicalMappingData, selectedFips, isDataRelative])
+        return graphify(historicalMappingData, selectedFips, vp.isRelative)
+    }, [historicalMappingData, selectedFips, vp.isRelative])
 
     const predictedGraphingData = useMemo(() => {
         if (!predictedMappingData) {
             return []
         }
 
-        return graphify(predictedMappingData, selectedFips, isDataRelative)
-    }, [predictedMappingData, selectedFips, isDataRelative])
+        return graphify(predictedMappingData, selectedFips, vp.isRelative)
+    }, [predictedMappingData, selectedFips, vp.isRelative])
 
     return {
         mappingData: predictedMappingData,
