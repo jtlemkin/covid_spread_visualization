@@ -19,7 +19,7 @@ interface Row {
     values: Data
 }
 
-async function parse_file(file_name: string) {
+async function parse_file(file_name: string, type: "cases" | "deaths") {
     let data: Row[] = []
 
     const reader = fs.createReadStream(file_name)
@@ -30,7 +30,7 @@ async function parse_file(file_name: string) {
             if (row.date) {
                 const timestamp = (new Date(row.date)).getTime()
                 const fips = parseInt(row.fips)
-                const cases = parseInt(row["cases"])
+                const cases = parseInt(row[type])
                 const mask = parseInt(row["Mask"])
                 const socialDistance = parseInt(row["social distance"])
                 const contactTracing = parseInt(row["contact tracing"])
@@ -142,16 +142,38 @@ interface CountyData {
     numDead: number,
 }
 
-function createTimelines(data: Map<number, Pair[]>) {
-    const keys = [
-        "cases",
-        "mask",
-        "socialDistance",
-        "contactTracing",
-        "mandatoryMasking",
-        "strictSocialDistance"
-    ]
+const keys = [
+    "cases",
+    "mask",
+    "socialDistance",
+    "contactTracing",
+    "mandatoryMasking",
+    "strictSocialDistance"
+]
 
+/*function aggregate(rows: Row[]) {
+    let aggregated: Row[] = []
+
+    for (let i = 0; i < rows.length; i++) {
+        let newRow = rows[i]
+
+        if (aggregated.length > 0 && (aggregated[i - 1].fips === newRow.fips)) {
+            keys.forEach(key => {
+                let prior: number | null | undefined = aggregated[i - 1].values[key]
+    
+                if (prior !== null && prior !== undefined) {
+                    newRow.values[key] = Math.max(prior, prior + newRow.values[key])
+                }
+            })
+        }
+
+        aggregated.push(newRow)
+    }
+
+    return aggregated
+}*/
+
+function createTimelines(data: Map<number, Pair[]>) {
     keys.forEach(key => {
         let timeline: Timeline = {
             snapshots: [],
@@ -196,8 +218,11 @@ function createTimelines(data: Map<number, Pair[]>) {
 }
 
 export default async function getPredictions() {
-    const cases: Row[] = await parse_file(cases_file)
-    const deaths: Row[] = await parse_file(deaths_file)
+    const cases: Row[] = await parse_file(cases_file, "cases")
+    const deaths: Row[] = await parse_file(deaths_file, "deaths")
+
+    //const agg_cases = aggregate(cases)
+    //const agg_deaths = aggregate(deaths)
 
     const merged = merge(cases, deaths)
 
