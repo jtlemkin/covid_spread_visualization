@@ -1,6 +1,7 @@
 import React, { FunctionComponent, ReactNode } from 'react'
 import useWindowSize from './hooks/useWindowSize'
 import styled from 'styled-components'
+import colors from './colors'
 
 type AdaptiveLayoutProps = {
     master: ReactNode,
@@ -24,7 +25,7 @@ const Header = styled.div`
     width: 100%;
     height: 50px;
     max-height: 50px;
-    background-color: #1C4F72;
+    background-color: ${colors.school};
     display: flex;
     align-items: center;
     justify-content: space-between;

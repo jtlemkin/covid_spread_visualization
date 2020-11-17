@@ -2,6 +2,8 @@ import React from 'react'
 import ReactSlider from 'react-slider'
 import styled from 'styled-components'
 import colors from '../colors'
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const StyledSlider = styled(ReactSlider)`
     width: 100%;
@@ -12,28 +14,28 @@ const StyledThumb = styled.div`
     display: flex;
     align-items: center;
     text-align: center;
-    flex-direction: column;
+    flex-direction: row;
     height: 42px;
-`
-
-const Bar = styled.div`
-    height: 30px;
-    width: 3px;
+    border-radius: 20px;
+    background-color: ${colors.background};
+    justify-content: center;
     cursor: grab;
-    background-color: black;
-    background-color: ${colors.text.onBackground};
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
 `
 
 const StyledTrack = styled.div`
     height: 2px;
     background: black;
-    top: 14px;
+    top: 21px;
     background-color: ${colors.text.onBackground};
 `
 
 const Label = styled.div`
     font-size: 1em;
     color: ${colors.text.onBackground};
+    margin-left: 5px;
+    margin-right: 5px;
 `
 
 interface SliderProps {
@@ -50,10 +52,9 @@ export const Slider = (props: SliderProps) => {
     const Thumb = (props: object, state: ThumbState) => {
         return (
             <StyledThumb {...props}>
-                <Bar />
-                <Label>
-                    {label(value)}
-                </Label>
+                <FontAwesomeIcon icon={faChevronLeft} style={{paddingLeft: '5px'}}/>
+                <Label><b>{label(value)}</b></Label>
+                <FontAwesomeIcon icon={faChevronRight}style={{paddingRight: '5px'}}/>
             </StyledThumb>
         )
     }
