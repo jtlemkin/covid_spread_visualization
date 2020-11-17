@@ -31,7 +31,6 @@ export const SearchForm = ({ style }: SearchFormProps) => {
     const [isDropdownShown, setIsDropdownShown] = useState(false)
     const [hasFormBeenClicked, setHasFormBeenClicked] = useState(false)
     const [field, setField] = useState('')
-    const [results, setResults] = useState<Result[]>([])
 
     const onFocus = (isFocused: boolean) => {
         if (!hasFormBeenClicked) {
@@ -44,11 +43,15 @@ export const SearchForm = ({ style }: SearchFormProps) => {
         }
     }
 
-    useFetch(`/search/${field}`, (results: Result[]) => {
-        setResults(results)
-    })
+    console.log("Rerender!")
+
+    const [results, isFetchingResults] = useFetch<Result[]>(`/search/${field}`, true)
 
     const onButtonClick = (name: string) => {
+        if (!results) {
+            return
+        }
+
         const place = results.find(result => result[0] === name)
 
         if (place) {
@@ -56,7 +59,7 @@ export const SearchForm = ({ style }: SearchFormProps) => {
         }
     }
 
-    const names = results.map(result => result[0])
+    const names = results ? results.map(result => result[0]) : []
 
     return (
         <Container style={style}>

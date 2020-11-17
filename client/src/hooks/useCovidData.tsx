@@ -1,12 +1,12 @@
 import useFetch from './useFetch'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { CountyData, Timeline, DataEntry, ViewingParams } from '../interfaces'
 import PlaceFactory from '../helpers/PlaceFactory'
 import formatTimeline from '../helpers/formatTimeline'
 
 // Iterates over timeline, summing up cases or deaths in the selected map
 // viewing region
-function graphify(data: Timeline<number>, selectedFips: number, isDataRelative: boolean) {
+async function graphify(data: Timeline<number>, selectedFips: number, isDataRelative: boolean) {
     return data.snapshots.map(snapshot => {
         let sum = Object.keys(snapshot.statistics)
             .filter(key => PlaceFactory(selectedFips).contains(parseInt(key)))
@@ -41,16 +41,11 @@ function graphify(data: Timeline<number>, selectedFips: number, isDataRelative: 
 }
 
 const useCovidData = (selectedFips: number, vp: ViewingParams) => {
-    const [historical, setHistorical] = useState<Timeline<CountyData> | null>(null)
-    const [predicted, setPredicted] = useState<Timeline<CountyData> | null>(null)
-
-    useFetch('/timeline/cases', (newTimeline) => {
-        setHistorical(newTimeline)
-    })
-
-    useFetch(`/timeline/${vp.predictionType}`, (newTimeline) => {
-        setPredicted(newTimeline)
-    })
+    const [historical, isFetchingHistorical] = useFetch<Timeline<CountyData>>('/timeline/cases', false)
+    const [predicted, isFetchingPredicted] = useFetch<Timeline<CountyData>>(`/timeline/${vp.predictionType}`, false)
+    const isFetchingCovidData = isFetchingPredicted || isFetchingHistorical
+    const [historicalGraphingData, setHistoricalGraphingData] = useState<DataEntry[]>([])
+    const [predictedGraphingData, setPredictedGraphingData] = useState<DataEntry[]>([])
 
     const historicalMappingData = useMemo(() => {
         if (!historical) {
@@ -80,26 +75,29 @@ const useCovidData = (selectedFips: number, vp: ViewingParams) => {
 
     const percentile = historicalMappingData ? historicalMappingData.max * 0.3 : null
 
-    const historicalGraphingData = useMemo(() => {
+    useEffect(() => {
         if (!historicalMappingData) {
-            return []
+            return
         }
 
-        return graphify(historicalMappingData, selectedFips, vp.isRelative)
+        graphify(historicalMappingData, selectedFips, vp.isRelative)
+            .then(setHistoricalGraphingData)
     }, [historicalMappingData, selectedFips, vp.isRelative])
 
-    const predictedGraphingData = useMemo(() => {
+    useEffect(() => {
         if (!predictedMappingData) {
-            return []
+            return
         }
 
-        return graphify(predictedMappingData, selectedFips, vp.isRelative)
-    }, [predictedMappingData, selectedFips, vp.isRelative])
+        graphify(predictedMappingData, selectedFips, vp.isRelative)
+            .then(setPredictedGraphingData)
+    })
 
     return {
         mappingData: predictedMappingData,
         graphingData: [historicalGraphingData, predictedGraphingData],
-        percentile
+        percentile,
+        isFetchingCovidData
     }
 }
 

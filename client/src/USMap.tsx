@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { getRenderer } from './helpers/mapRenderer'
 import CSS from 'csstype'
 import { Slider } from './atoms/Slider'
@@ -32,24 +32,25 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
     const dashboardDispatch = useDashboardDispatch()
     const usMapState = useUSMapState()
     const usMapDispatch = useUSMapDispatch()
-    
-    const [cities, setCities] = useState<City[]>([])
     const [highlightedFips, setHighlightedFips] = useState<number | null>(null)
 
     const lastSnapshotIndex = countyData.snapshots.length - 1
 
-    useFetch(`/cities/${dashboardState.currentFips}`, (result: any) => {
-        const parsed: City[] = result.map((a: any) => {
+    const [unparsedCities, isFetchingCities] = useFetch<any>(`/cities/${dashboardState.currentFips}`, true)
+    const cities = useMemo(() => {
+        if (!unparsedCities) {
+            return []
+        }
+
+        return unparsedCities.map((a: any) => {
             return {
                 name: a[0].split(',')[0],
                 lat: a[2],
                 lng: a[3],
                 county_fips: a[1]
             } as City
-        })
-        
-        setCities(parsed);
-    })
+        }) as City[]
+    }, [unparsedCities])
 
     const renderer = useCallback(getRenderer(
         dashboardState.currentFips, 
