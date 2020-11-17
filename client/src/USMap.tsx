@@ -14,6 +14,7 @@ import { Canvas } from './Canvas'
 import getScaleLabel from './helpers/getScaleLabel'
 import useFetch from './hooks/useFetch';
 import { useDashboardState, useDashboardDispatch } from './DashboardContext'
+import { useUSMapState, useUSMapDispatch } from './USMapContext';
 
 // A fips number is an identifier for counties, states, and the nation
 
@@ -27,14 +28,17 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
     const width = 975 * window.devicePixelRatio
     const height = 610 * window.devicePixelRatio
 
-    const state = useDashboardState()
-    const dispatch = useDashboardDispatch()
+    const dashboardState = useDashboardState()
+    const dashboardDispatch = useDashboardDispatch()
+    const usMapState = useUSMapState()
+    const usMapDispatch = useUSMapDispatch()
     
-    const [selectedSnapshotIndex, setSelectedSnapshotIndex] = useState(countyData.snapshots.length - 1)
     const [cities, setCities] = useState<City[]>([])
     const [highlightedFips, setHighlightedFips] = useState<number | null>(null)
 
-    useFetch(`/cities/${state.currentFips}`, (result: any) => {
+    const lastSnapshotIndex = countyData.snapshots.length - 1
+
+    useFetch(`/cities/${dashboardState.currentFips}`, (result: any) => {
         const parsed: City[] = result.map((a: any) => {
             return {
                 name: a[0].split(',')[0],
@@ -48,19 +52,19 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
     })
 
     const renderer = useCallback(getRenderer(
-        state.currentFips, 
-        state.previousFips, 
-        countyData.snapshots[selectedSnapshotIndex!], 
+        dashboardState.currentFips, 
+        dashboardState.previousFips, 
+        countyData.snapshots[lastSnapshotIndex - usMapState.snapshotIndexOffset], 
         percentile,
         cities,
         highlightedFips
     ), [
-        state.currentFips, 
-        state.previousFips, 
-        selectedSnapshotIndex, 
+        dashboardState.currentFips, 
+        dashboardState.previousFips, 
+        usMapState.snapshotIndexOffset, 
         percentile, 
         cities, 
-        state.viewingParams.predictionType, 
+        dashboardState.viewingParams.predictionType, 
         highlightedFips
     ])
 
@@ -68,7 +72,8 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
     // We want to update the current and previous fips to be the same so that the transition
     // animation does not play
     const onSliderChange = (newSnapshotIndex: number | number[] | undefined | null) => {
-        setSelectedSnapshotIndex(newSnapshotIndex as number)
+        const payload = lastSnapshotIndex - (newSnapshotIndex as number)
+        usMapDispatch({type: 'set_snapshot', payload})
     }
 
     const labelForIndex = (index: number) => {
@@ -78,26 +83,26 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
     }
 
     const setPressedFips = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
-        const type = PlaceFactory(state.currentFips).type
+        const type = PlaceFactory(dashboardState.currentFips).type
         const childType = type === "state" ? "county" : "state"
-        const pos = getCanvasPoint(event, state.currentFips)
+        const pos = getCanvasPoint(event, dashboardState.currentFips)
 
-        const selectedFips = getPlace(pos, state.currentFips, childType)
+        const selectedFips = getPlace(pos, dashboardState.currentFips, childType)
 
         if (selectedFips !== null) {
-            dispatch({type: 'set_fips', payload: selectedFips})
+            dashboardDispatch({type: 'set_fips', payload: selectedFips})
         }
-    }, [state.currentFips])
+    }, [dashboardState.currentFips])
 
     const onHover = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
-        const type = PlaceFactory(state.currentFips).type
+        const type = PlaceFactory(dashboardState.currentFips).type
         const childType = type === "state" ? "county" : "state"
-        const pos = getCanvasPoint(event, state.currentFips)
+        const pos = getCanvasPoint(event, dashboardState.currentFips)
 
-        const selectedFips = getPlace(pos, state.currentFips, childType)
+        const selectedFips = getPlace(pos, dashboardState.currentFips, childType)
 
         setHighlightedFips(selectedFips)
-    }, [state.currentFips])
+    }, [dashboardState.currentFips])
 
     let legendLabelledColors = colors.scale.map((color, i) => {
         const label = getScaleLabel(i, countyData.max, percentile)
@@ -108,21 +113,21 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
     legendLabelledColors.unshift({ color: no_data_color, label: no_data_label })
 
     const title = () => {
-        const descriptor = state.viewingParams.predictionType === "cases" ? "Reported" : "Predicted"
-        const place = PlaceFactory(state.currentFips).name.toLowerCase()
+        const descriptor = dashboardState.viewingParams.predictionType === "cases" ? "Reported" : "Predicted"
+        const place = PlaceFactory(dashboardState.currentFips).name.toLowerCase()
           .split(' ')
           .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
           .join(' ')
-        const daily = state.viewingParams.isTotal ? '' : 'Daily'
-        const unit = state.viewingParams.isRelative ? 'Rates' : 'Numbers'
-        const death = state.viewingParams.isCases ? '' : 'Death'
+        const daily = dashboardState.viewingParams.isTotal ? '' : 'Daily'
+        const unit = dashboardState.viewingParams.isRelative ? 'Rates' : 'Numbers'
+        const death = dashboardState.viewingParams.isCases ? '' : 'Death'
     
         return `${descriptor} ${daily} ${place} COVID-19 ${death} ${unit}`
     }
  
     return (
         <div style={style}>
-            <h2 style={{ color: colors.text.onBackground, marginBottom: 5, marginTop: 5 }}>{title}</h2>
+            <h2 style={{ color: colors.text.onBackground, marginBottom: 5, marginTop: 5 }}>{title()}</h2>
             <Legend labelledColors={legendLabelledColors} />
             <div style={{position: 'relative'}}>
                 <Canvas 
@@ -131,15 +136,15 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
                     renderFunc={renderer}
                     onPress={setPressedFips} 
                     onHover={onHover}
-                    isAnimated={state.shouldAnimate && state.currentFips !== state.previousFips}
+                    isAnimated={dashboardState.shouldAnimate && dashboardState.currentFips !== dashboardState.previousFips}
                     style={{width: `${width}px`, maxWidth: '100%'}}/>
-                { PlaceFactory(state.currentFips).type !== 'nation' && 
+                { PlaceFactory(dashboardState.currentFips).type !== 'nation' && 
                     <FontAwesomeIcon 
                         style={{position: 'absolute', top: '10px', right: '10px', height: '20px', width: '20px', cursor: 'pointer'}}
                         onClick={() => { 
-                            dispatch({
+                            dashboardDispatch({
                                 type: 'set_fips', 
-                                payload: PlaceFactory(state.currentFips)
+                                payload: PlaceFactory(dashboardState.currentFips)
                                     .getOwner()!
                                     .fips
                             }) 
@@ -150,7 +155,7 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
             <Slider 
                 min={0} 
                 max={countyData.snapshots.length - 1}
-                defaultValue={countyData.snapshots.length - 1}
+                value={lastSnapshotIndex - usMapState.snapshotIndexOffset}
                 onChange={onSliderChange}
                 label={labelForIndex} />
         </div>

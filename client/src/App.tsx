@@ -1,13 +1,15 @@
 import React from 'react'
 import { DashboardProvider } from './DashboardContext'
 import Dashboard from './Dashboard'
+import { USMapProvider } from './USMapContext'
 
 const App = () => {
- 
 
   return (
     <DashboardProvider>
-      <Dashboard/>
+      <USMapProvider>
+        <Dashboard/>
+      </USMapProvider>
     </DashboardProvider>
   )
 }

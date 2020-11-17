@@ -39,20 +39,20 @@ const Label = styled.div`
 interface SliderProps {
     min: number,
     max: number,
-    defaultValue: number,
+    value: number,
     onChange: (value: number | number[] | null | undefined) => void,
     label: (value: number) => string
 }
 
 export const Slider = (props: SliderProps) => {
-    const { min, max, defaultValue, onChange, label } = props
+    const { min, max, value, onChange, label } = props
 
     const Thumb = (props: object, state: ThumbState) => {
         return (
             <StyledThumb {...props}>
                 <Bar />
                 <Label>
-                    {label(state.value as number)}
+                    {label(value)}
                 </Label>
             </StyledThumb>
         )
@@ -66,7 +66,7 @@ export const Slider = (props: SliderProps) => {
         <StyledSlider
             min={min}
             max={max}
-            defaultValue={defaultValue}
+            value={value}
             onChange={onChange}
             orientation='horizontal'
             renderThumb={Thumb}

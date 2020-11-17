@@ -25,7 +25,6 @@ const useCanvas = (draw: (context: CanvasRenderingContext2D, t: number) => void,
         const context = canvas?.getContext('2d')
 
         if (canvas && context) {
-            console.log('useCanvas', shouldAnimate, isAnimating, !isAnimating && shouldAnimate)
             if (!isAnimating) {
                 if (shouldAnimate) {
                     setIsAnimating(true)
