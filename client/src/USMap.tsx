@@ -111,7 +111,7 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
         return { color, label } as LabelledColor
     })
     const no_data_color = colors.no_data
-    const no_data_label = "No Data"
+    const no_data_label = "N/A"
     legendLabelledColors.unshift({ color: no_data_color, label: no_data_label })
 
     const title = () => {
