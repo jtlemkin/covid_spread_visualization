@@ -15,6 +15,7 @@ function useFetch<T>(url: string, shouldCache: boolean) {
         setIsFetching(true)
 
         if (cache.get(url) !== undefined) {
+            console.log("cache hit!", url)
             const data = cache.get(url)
             setResult(data)
             setIsFetching(false)
@@ -23,6 +24,7 @@ function useFetch<T>(url: string, shouldCache: boolean) {
                 .then(res => res.json())
                 .then((results: T) => {
                     if (shouldCache) {
+                        console.log("cache set", url)
                         cache.set(url, results)
                     }
                     setResult(results)
