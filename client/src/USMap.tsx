@@ -36,9 +36,9 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
 
     const lastSnapshotIndex = countyData.snapshots.length - 1
 
-    const [unparsedCities, isFetchingCities] = useFetch<any>(`/cities/${dashboardState.currentFips}`, true)
+    const [unparsedCities, isFetching] = useFetch<any>(`/cities/${dashboardState.currentFips}`, true)
     const cities = useMemo(() => {
-        if (!unparsedCities) {
+        if (isFetching) {
             return []
         }
 
@@ -66,7 +66,8 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
         percentile, 
         cities, 
         dashboardState.viewingParams.predictionType, 
-        highlightedFips
+        highlightedFips,
+        dashboardDispatch
     ])
 
     // The map is animated whenever the current fips is different than the previous fips
@@ -93,7 +94,7 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
         if (selectedFips !== null) {
             dashboardDispatch({type: 'set_fips', payload: selectedFips})
         }
-    }, [dashboardState.currentFips])
+    }, [dashboardState.currentFips, dashboardDispatch])
 
     const onHover = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
         const type = PlaceFactory(dashboardState.currentFips).type

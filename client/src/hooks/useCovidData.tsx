@@ -91,7 +91,7 @@ const useCovidData = (selectedFips: number, vp: ViewingParams) => {
 
         graphify(predictedMappingData, selectedFips, vp.isRelative)
             .then(setPredictedGraphingData)
-    })
+    }, [predictedMappingData, selectedFips, vp.isRelative])
 
     return {
         mappingData: predictedMappingData,

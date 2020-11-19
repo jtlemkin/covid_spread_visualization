@@ -102,7 +102,7 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
         })
 
         svgElement.on("touchend mouseleave", () => tooltip.call(callout, null))
-    }, [])
+    }, [data, labels, type, x, y])
 
     const legendLabelledColors = labels.map((label, i) => {
         const color = lineColors[i]

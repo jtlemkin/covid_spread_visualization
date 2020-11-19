@@ -53,7 +53,7 @@ const useCanvas = (draw: (context: CanvasRenderingContext2D, t: number) => void,
             }
             console.log()
         }
-    }, [draw])
+    }, [draw, dispatch, isAnimating, shouldAnimate])
 
     return canvasRef
 }

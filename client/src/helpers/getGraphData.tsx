@@ -2,7 +2,11 @@ import colors from '../colors';
 import { DataEntry } from '../interfaces';
 
 // The data either contains case data or death data
-export function getGraphData(data: DataEntry[][], isTotalData: boolean, isRelativeData: boolean) {
+export function getGraphData(data: DataEntry[][] | null, isTotalData: boolean, isRelativeData: boolean) {
+  if (!data) {
+    return null
+  }
+
   const graphData = [
     {
       values: data.map(lineData => lineData.map(entry => {

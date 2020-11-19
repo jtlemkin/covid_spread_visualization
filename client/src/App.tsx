@@ -4,11 +4,10 @@ import Dashboard from './Dashboard'
 import { USMapProvider } from './USMapContext'
 
 const App = () => {
-
   return (
     <DashboardProvider>
       <USMapProvider>
-        <Dashboard/>
+        <Dashboard key="dashboard"/>
       </USMapProvider>
     </DashboardProvider>
   )

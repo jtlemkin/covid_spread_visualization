@@ -44,6 +44,19 @@ const Text = styled.p`
     margin-right: 15px;
 `
 
+interface AppHeaderProps {
+    isMobile: boolean
+}
+
+const AppHeader = ({isMobile}: AppHeaderProps) => {
+    return (
+        <Header style={{flexDirection: isMobile ? 'column' : 'row', height: 'auto', maxHeight: 'none'}}>
+            <Heading>COVID-19 Prediction Model to Assist in Policy Making</Heading>
+            <Text>Developed by Houman Homayoun, Sai Manoj, Sreenitha Kasarapu and James Lemkin</Text>
+        </Header>
+    )
+}
+
 export const AdaptiveLayout = ({ master, detail }: AdaptiveLayoutProps) => {
     const windowSize = useWindowSize()
     const isDesktop = windowSize.width > 1024
@@ -51,10 +64,7 @@ export const AdaptiveLayout = ({ master, detail }: AdaptiveLayoutProps) => {
     if (!isDesktop) {
         return (
             <div>
-                <Header style={{flexDirection: 'column', height: 'auto', maxHeight: 'none'}}>
-                    <Heading>COVID-19 Prediction Model to Assist in Policy Making</Heading>
-                    <Text>Developed by Houman Homayoun, Sai Manoj, Sreenitha Kasarapu and James Lemkin</Text>
-                </Header>
+                <AppHeader isMobile={true}/>
                 <div style={{display: 'flex', flexDirection: 'column'}}>
                     {master}
                     {detail}
@@ -65,10 +75,7 @@ export const AdaptiveLayout = ({ master, detail }: AdaptiveLayoutProps) => {
 
     return (
         <div>
-            <Header>
-                <Heading>COVID-19 Prediction Model to Assist in Policy Making</Heading>
-                <Text>Developed by Houman Homayoun, Sai Manoj, Sreenitha Kasarapu and James Lemkin</Text>
-            </Header>
+            <AppHeader isMobile={false}/>
             <Fixed height={windowSize.height - 50} width={windowSize.width}>
                 <div style={{ display: 'flex', flexDirection: 'row', maxHeight: '100%', margin: 'auto' }}>
                     {master}

@@ -43,9 +43,7 @@ export const SearchForm = ({ style }: SearchFormProps) => {
         }
     }
 
-    console.log("Rerender!")
-
-    const [results, isFetchingResults] = useFetch<Result[]>(`/search/${field}`, true)
+    const [results, isFetching] = useFetch<Result[]>(`/search/${field}`, true)
 
     const onButtonClick = (name: string) => {
         if (!results) {

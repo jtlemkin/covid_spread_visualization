@@ -1,7 +1,8 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
+
+let cache: Map<string, any> = new Map()
 
 function useFetch<T>(url: string, shouldCache: boolean) {
-    const cache = useRef<any>({})
     const [result, setResult] = useState<T | null>(null)
     const [isFetching, setIsFetching] = useState(true)
 
@@ -13,8 +14,8 @@ function useFetch<T>(url: string, shouldCache: boolean) {
 
         setIsFetching(true)
 
-        if (cache.current[url] !== undefined) {
-            const data = cache.current[url]
+        if (cache.get(url) !== undefined) {
+            const data = cache.get(url)
             setResult(data)
             setIsFetching(false)
         } else {
@@ -22,7 +23,7 @@ function useFetch<T>(url: string, shouldCache: boolean) {
                 .then(res => res.json())
                 .then((results: T) => {
                     if (shouldCache) {
-                        cache.current[url] = results
+                        cache.set(url, results)
                     }
                     setResult(results)
                     setIsFetching(false)
@@ -34,7 +35,7 @@ function useFetch<T>(url: string, shouldCache: boolean) {
                 controller.abort()
             }
         }
-    }, [url])
+    }, [url, shouldCache])
 
     return [result, isFetching] as [T | null, boolean]
 }
