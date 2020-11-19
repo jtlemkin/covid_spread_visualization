@@ -28,11 +28,12 @@ function getPercentage(timeline: Timeline<number>, index: number, fips: number) 
         return null
     } else {
         const population = PlaceFactory(fips).getPopulation()
-        if (Number.isNaN(num / population)) {
-            console.log("NaN", num, population)
-        }
         return num / population
     }
+}
+
+function noOp(timeline: Timeline<number>, index: number, fips: number) {
+    return timeline.snapshots[index].statistics[fips.toString()]
 }
 
 function timelineMap(
@@ -48,9 +49,6 @@ function timelineMap(
             Object.keys(snapshot.statistics).forEach(fipsString => {
                 const fips = parseInt(fipsString)
                 const newValue = newValueFun(timeline, index, fips)
-                if (newValue !== null && Number.isNaN(newValue)) {
-                    console.log("NaN", fips, newValue)
-                }
                 newStatistics[fips] = newValue
 
                 if (newValue !== null && newValue > max) {
@@ -64,21 +62,26 @@ function timelineMap(
         return { snapshots, max } as Timeline<number>
 }
 
+function extractValue(snapshot: Snapshot, isDataCases: boolean) {
+    const newStatistics: any = {}
+
+    Object.entries(snapshot.statistics).forEach(keyValue => {
+        const fips = keyValue[0]
+        const countyData = keyValue[1] as CountyData
+        const value = isDataCases ? countyData.numInfected : countyData.numDead
+        newStatistics[fips] = value
+    })
+
+    return { timestamp: snapshot.timestamp, statistics: newStatistics } as Snapshot
+}
+
 export default function formatTimeline(timeline: Timeline<CountyData>, isDataTotal: boolean, isDataRelative: boolean, isDataCases: boolean) {
     // Initialize mapping data
-    const snapshots = timeline.snapshots.map(snapshot => {
-        const newStatistics: any = {}
-
-        Object.entries(snapshot.statistics).forEach(keyValue => {
-            const fips = keyValue[0]
-            const countyData = keyValue[1] as CountyData
-            const value = isDataCases ? countyData.numInfected : countyData.numDead
-            newStatistics[fips] = value
-        })
-
-        return { timestamp: snapshot.timestamp, statistics: newStatistics } as Snapshot
-    })
-    const max = timeline.max.numInfected
+    if (!isDataCases) {
+        console.log("timeline", timeline)
+    }
+    const snapshots = timeline.snapshots.map(snapshot => extractValue(snapshot, isDataCases))
+    const max = isDataCases ? timeline.max.numInfected : timeline.max.numDead
     let newMappingData: Timeline<number> = { snapshots, max }
 
     if (!isDataTotal) {
@@ -87,6 +90,15 @@ export default function formatTimeline(timeline: Timeline<CountyData>, isDataTot
 
     if (isDataRelative) {
         newMappingData = timelineMap(newMappingData, getPercentage)
+    }
+
+    // The getDelta and getPercentage methods update the max values
+    // for the timeline, but if the data is total and aggregated then
+    // neither function is called and the max is set to 0, which 
+    // isn't the true max, so we call timelineMap with a noop function
+    // which should still update the max
+    if (isDataTotal && !isDataRelative) {
+        newMappingData = timelineMap(newMappingData, noOp)
     }
 
     return newMappingData
