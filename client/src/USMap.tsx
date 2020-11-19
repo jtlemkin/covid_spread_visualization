@@ -123,8 +123,11 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
         const daily = dashboardState.viewingParams.isTotal ? '' : 'Daily'
         const unit = dashboardState.viewingParams.isRelative ? 'Rates' : 'Numbers'
         const death = dashboardState.viewingParams.isCases ? '' : 'Death'
+        const dateFormattingOptions = {day: "2-digit", month: "short"}
+        const lastUpdated = new Date(countyData.snapshots[countyData.snapshots.length - 1].timestamp)
+        const lastUpdateLabel = lastUpdated.toLocaleDateString(undefined, dateFormattingOptions)
     
-        return `${descriptor} ${daily} ${place} COVID-19 ${death} ${unit}`
+        return `${descriptor} ${daily} ${place} COVID-19 ${death} ${unit}, Updated ${lastUpdateLabel}`
     }
  
     return (
