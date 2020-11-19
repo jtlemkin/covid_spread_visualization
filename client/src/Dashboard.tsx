@@ -7,6 +7,7 @@ import colors from './colors'
 import styled from 'styled-components'
 import { useDashboardState } from './DashboardContext'
 import { Control } from './Control'
+import useWindowSize from './hooks/useWindowSize'
 
 const Container = styled.div`
   text-align: center;
@@ -22,15 +23,16 @@ export default function Dashboard() {
   const covidData = useCovidData(state.currentFips, state.viewingParams)
   const { mappingData, graphingData, percentile, isFetchingCovidData } = covidData
 
+  const windowSize = useWindowSize()
+  const masterWidth = windowSize.height * 1.1
 
   return (
     <Container>
         <AdaptiveLayout 
           master={
-            <div style={{ flex: 1, paddingRight: 10, paddingLeft: 10 }}>
+            <div style={{ flex: 1, paddingRight: 10, paddingLeft: 10, maxWidth: masterWidth }}>
               { !isFetchingCovidData ? (
                 <USMap
-                  style={{ maxWidth: '800px' }}
                   countyData={mappingData!}
                   percentile={percentile!} />
               ) : (

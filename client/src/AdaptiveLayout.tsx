@@ -21,10 +21,12 @@ const Fixed: FunctionComponent<FixedProps> = ({ height, width, children }) => {
     )
 }
 
+const headerHeight = 50
+
 const Header = styled.div`
     width: 100%;
-    height: 50px;
-    max-height: 50px;
+    height: ${headerHeight}px !important;
+    max-height: ${headerHeight}px !important;
     background-color: ${colors.school};
     display: flex;
     align-items: center;
@@ -76,7 +78,7 @@ export const AdaptiveLayout = ({ master, detail }: AdaptiveLayoutProps) => {
     return (
         <div>
             <AppHeader isMobile={false}/>
-            <Fixed height={windowSize.height - 50} width={windowSize.width}>
+            <Fixed height={windowSize.height - headerHeight} width={windowSize.width}>
                 <div style={{ display: 'flex', flexDirection: 'row', maxHeight: '100%', margin: 'auto' }}>
                     {master}
                 </div>
