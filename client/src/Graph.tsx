@@ -77,7 +77,10 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
     const labels = ["Actual", "Predicted"]
 
     useEffect(() => {
-        const bisect = (mx: any) => {
+        // myBisect returns an a tuple, the first value is the closest actual
+        // data point to the cursor, the second the is the closest predicted
+        // data point
+        const myBisect = (mx: any) => {
             const bisect = d3.bisector((d: Dated) => d.date).left;
             const date = x.invert(mx)
             const values = data.map(lineData => {
@@ -86,19 +89,22 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
                 const b = lineData[index];
                 return b && (date.valueOf() - a.date.valueOf() > b.date.valueOf() - date.valueOf()) ? b : a;
             })
-            return values
+            return values as [Dated, Dated]
         }
 
         const svgElement = d3.select(svgRef.current!)
 
         const tooltip = svgElement.append("g")
         svgElement.on("touchmove mousemove", function(event) {
-            const values: Dated[] = bisect((d3 as any).pointer(event, svgElement.node())[0])
-            const { value, date } = values[0]
+            const values = myBisect((d3 as any).pointer(event, svgElement.node())[0])
 
-            tooltip
-                .attr("transform", `translate(${x(date)}, ${y(value)})`)
-                .call(callout, `${formatDate(date)}\n${formatValues(values, type, labels)}`)
+            if (values) {
+                const { value, date } = values[1]
+
+                tooltip
+                    .attr("transform", `translate(${x(date)}, ${y(value)})`)
+                    .call(callout, `${formatDate(date)}\n${formatValues(values, type, labels)}`)
+            }
         })
 
         svgElement.on("touchend mouseleave", () => tooltip.call(callout, null))
@@ -148,7 +154,7 @@ function formatDate(date: Date) {
     });
 }
 
-function formatValues(values: Dated[], type: string, labels: string[]) {
+function formatValues(values: [Dated, Dated], type: string, labels: string[]) {
     const formatted = values.map((value, index) => {
         let adjustedValue = value.value
         if (type === "Percent") {
@@ -159,13 +165,8 @@ function formatValues(values: Dated[], type: string, labels: string[]) {
         if (type === "Percent") {
             str += '%'
         }
-        if (values.length === 1) {
-            return str
-        } else {
-            // This little bit of arithmetic is so that if we're just looking at the state and nation data
-            // The labels are "state", "us" instead of "county", "state"
-            return `${labels[index + labels.length - values.length]}: ${str}`
-        }
+
+        return `${labels[index + labels.length - values.length]}: ${str}`
     })
     return formatted.join('\n')
 }

@@ -3,7 +3,7 @@ import { DataEntry } from '../interfaces';
 
 // The data either contains case data or death data
 export function getGraphData(data: DataEntry[][] | null, isTotalData: boolean, isRelativeData: boolean) {
-  if (!data) {
+  if (data === null) {
     return null
   }
 

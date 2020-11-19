@@ -43,35 +43,34 @@ async function graphify(data: Timeline<number>, selectedFips: number, isDataRela
 const useCovidData = (selectedFips: number, vp: ViewingParams) => {
     const [historical, isFetchingHistorical] = useFetch<Timeline<CountyData>>('/timeline/cases', true)
     const [predicted, isFetchingPredicted] = useFetch<Timeline<CountyData>>(`/timeline/${vp.predictionType}`, false)
-    const isFetchingCovidData = isFetchingPredicted || isFetchingHistorical
-    const [historicalGraphingData, setHistoricalGraphingData] = useState<DataEntry[]>([])
-    const [predictedGraphingData, setPredictedGraphingData] = useState<DataEntry[]>([])
+    const [historicalGraphingData, setHistoricalGraphingData] = useState<DataEntry[] | null>(null)
+    const [predictedGraphingData, setPredictedGraphingData] = useState<DataEntry[] | null>(null)
 
     const historicalMappingData = useMemo(() => {
-        if (!historical) {
+        if (isFetchingHistorical) {
             return null
         }
 
         return formatTimeline(
-            historical, 
+            historical!, 
             vp.isTotal, 
             vp.isRelative, 
             vp.isCases
         )
-    }, [historical, vp.isTotal, vp.isRelative, vp.isCases])
+    }, [historical, isFetchingHistorical, vp.isTotal, vp.isRelative, vp.isCases])
 
     const predictedMappingData = useMemo(() => {
-        if (!predicted) {
+        if (isFetchingPredicted) {
             return null
         }
 
         return formatTimeline(
-            predicted, 
+            predicted!, 
             vp.isTotal, 
             vp.isRelative, 
             vp.isCases
         )
-    }, [predicted, vp.isTotal, vp.isRelative, vp.isCases])
+    }, [predicted, isFetchingPredicted, vp.isTotal, vp.isRelative, vp.isCases])
 
     let percentile = historicalMappingData ? historicalMappingData.max * 0.3 : null
     if (!vp.isTotal && percentile) {
@@ -80,25 +79,34 @@ const useCovidData = (selectedFips: number, vp: ViewingParams) => {
 
     useEffect(() => {
         if (!historicalMappingData) {
+            setHistoricalGraphingData(null)
             return
+        } else {
+            graphify(historicalMappingData, selectedFips, vp.isRelative)
+                .then(setHistoricalGraphingData)
         }
-
-        graphify(historicalMappingData, selectedFips, vp.isRelative)
-            .then(setHistoricalGraphingData)
     }, [historicalMappingData, selectedFips, vp.isRelative])
 
     useEffect(() => {
         if (!predictedMappingData) {
-            return
+            setPredictedGraphingData(null)
+        } else {
+            graphify(predictedMappingData, selectedFips, vp.isRelative)
+                .then(setPredictedGraphingData)
         }
-
-        graphify(predictedMappingData, selectedFips, vp.isRelative)
-            .then(setPredictedGraphingData)
     }, [predictedMappingData, selectedFips, vp.isRelative])
+
+    const graphingData = historicalGraphingData && predictedGraphingData ? (
+        [historicalGraphingData, predictedGraphingData] as [DataEntry[], DataEntry[]]
+    ) : (
+        null
+    )
+
+    const isFetchingCovidData = !historicalMappingData || !predictedMappingData
 
     return {
         mappingData: predictedMappingData,
-        graphingData: [historicalGraphingData, predictedGraphingData],
+        graphingData,
         percentile,
         isFetchingCovidData
     }
