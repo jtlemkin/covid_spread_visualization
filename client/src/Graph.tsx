@@ -103,7 +103,7 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
 
                 tooltip
                     .attr("transform", `translate(${x(date)}, ${y(value)})`)
-                    .call(callout, `${formatDate(date)}\n${formatValues(values, type, labels)}`)
+                    .call(callout, `${formatDate(date)}${formatValues(values, type, labels)}${formatDiff(values, type)}`)
             }
         })
 
@@ -168,7 +168,24 @@ function formatValues(values: [Dated, Dated], type: string, labels: string[]) {
 
         return `${labels[index + labels.length - values.length]}: ${str}`
     })
-    return formatted.join('\n')
+    return '\n' + formatted.join('\n')
+}
+
+function formatDiff(values: [Dated, Dated], type: string) {
+    let adjustedValues = [values[0].value, values[1].value]
+    let endChar = ''
+    if (type === "Percent") {
+        adjustedValues = [adjustedValues[0] * 100, adjustedValues[1] * 100]
+        endChar = '%'
+    }
+
+    const diff = adjustedValues[0] - adjustedValues[1]
+    const str = diff.toLocaleString()
+    if (!diff) {
+        return ''
+    } else {
+        return `\nDifference: ${str}${endChar}`
+    }
 }
 
 const callout = (g: any, value: string) => {
