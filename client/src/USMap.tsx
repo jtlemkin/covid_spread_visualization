@@ -92,6 +92,7 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
         const selectedFips = getPlace(pos, dashboardState.currentFips, childType)
 
         if (selectedFips !== null) {
+            setHighlightedFips(null)
             dashboardDispatch({type: 'set_fips', payload: selectedFips})
         }
     }, [dashboardState.currentFips, dashboardDispatch])
@@ -152,6 +153,7 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
                     <FontAwesomeIcon 
                         style={{position: 'absolute', top: '10px', right: '10px', height: '20px', width: '20px', cursor: 'pointer'}}
                         onClick={() => { 
+                            setHighlightedFips(null)
                             dashboardDispatch({
                                 type: 'set_fips', 
                                 payload: PlaceFactory(dashboardState.currentFips)
