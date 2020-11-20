@@ -72,9 +72,15 @@ const useCovidData = (selectedFips: number, vp: ViewingParams) => {
         )
     }, [predicted, isFetchingPredicted, vp.isTotal, vp.isRelative, vp.isCases])
 
-    let percentile = historicalMappingData ? historicalMappingData.max * 0.3 : null
+    let percentile = historicalMappingData ? historicalMappingData.max * 0.4 : null
     if (!vp.isTotal && percentile) {
-        percentile /= 24
+        percentile /= 8
+    }
+    if (!vp.isCases && percentile) {
+        percentile /= 2
+    }
+    if (!vp.isRelative && percentile) {
+        percentile /= 6
     }
 
     useEffect(() => {
