@@ -26,6 +26,8 @@ const Label = styled.p`
     color: ${colors.text.onSurface};
     text-align: start;
     margin-left: 5px;
+    margin-top: 7px;
+    margin-bottom: 7px;
 `
 
 interface RadioButtonsProps {
