@@ -8,10 +8,12 @@ function getDelta(timeline: Timeline<number>, index: number, fips: number) {
         return null
     }
 
-    if (index === 0) {
-        return num
+    if (index % 2 === 0) {
+        return null
     } else {
-        const lastNum: number | null  | undefined = timeline.snapshots[index - 1].statistics[fips.toString()]
+        const lastNum: number | null | undefined = timeline.snapshots[index - 1].statistics[fips.toString()]
+
+        console.log("last", lastNum)
 
         if (lastNum !== undefined && lastNum !== null) {
             return num - lastNum
@@ -41,25 +43,25 @@ function timelineMap(
     newValueFun: (timeline: Timeline<number>, index: number, fips: number) => number | null
 ) {
     const snapshots: Snapshot[] = []
-        let max = 0
+    let max = 0
 
-        timeline.snapshots.forEach((snapshot, index) => {
-            const newStatistics: any = {}
+    timeline.snapshots.forEach((snapshot, index) => {
+        const newStatistics: any = {}
 
-            Object.keys(snapshot.statistics).forEach(fipsString => {
-                const fips = parseInt(fipsString)
-                const newValue = newValueFun(timeline, index, fips)
-                newStatistics[fips] = newValue
+        Object.keys(snapshot.statistics).forEach(fipsString => {
+            const fips = parseInt(fipsString)
+            const newValue = newValueFun(timeline, index, fips)
+            newStatistics[fips] = newValue
 
-                if (newValue !== null && newValue > max) {
-                    max = newValue
-                }
-            })
-
-            snapshots.push({ timestamp: snapshot.timestamp, statistics: newStatistics })
+            if (newValue !== null && newValue > max) {
+                max = newValue
+            }
         })
 
-        return { snapshots, max } as Timeline<number>
+        snapshots.push({ timestamp: snapshot.timestamp, statistics: newStatistics })
+    })
+
+    return { snapshots, max } as Timeline<number>
 }
 
 function extractValue(snapshot: Snapshot, isDataCases: boolean) {
@@ -75,6 +77,12 @@ function extractValue(snapshot: Snapshot, isDataCases: boolean) {
     return { timestamp: snapshot.timestamp, statistics: newStatistics } as Snapshot
 }
 
+function halve(timeline: Timeline<number>) {
+    const newSnapshots = timeline.snapshots
+        .filter((snapshot, index) => index % 2 !== 0)
+    return { snapshots: newSnapshots, max: timeline.max } as Timeline<number>
+}
+
 export default function formatTimeline(timeline: Timeline<CountyData>, isDataTotal: boolean, isDataRelative: boolean, isDataCases: boolean) {
     // Initialize mapping data
     if (!isDataCases) {
@@ -85,8 +93,12 @@ export default function formatTimeline(timeline: Timeline<CountyData>, isDataTot
     let newMappingData: Timeline<number> = { snapshots, max }
 
     if (!isDataTotal) {
+        console.log("timeline", newMappingData)
         newMappingData = timelineMap(newMappingData, getDelta)
+        console.log("formatted", newMappingData)
     }
+
+    newMappingData = halve(newMappingData)
 
     if (isDataRelative) {
         newMappingData = timelineMap(newMappingData, getPercentage)

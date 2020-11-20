@@ -212,6 +212,24 @@ function createTimelines(data: Map<number, Pair[]>) {
             timeline.snapshots.push(snapshotMap.get(timestamp)!)
         })
 
+        // Remove snapshots so that we have two adjacent days representing
+        // each week. We leave two so that the client can still extract
+        // daily numbers on their machine
+        let trimmedSnapshots: Snapshot[] = []
+        let i = 0;
+        for (; i < timeline.snapshots.length; i++) {
+            const index = timeline.snapshots.length - 1 - i
+            const snapshot = timeline.snapshots[index]
+
+            if (i % 7 === 0 || i % 7 === 1) {
+                trimmedSnapshots.push(snapshot)
+            }
+        }
+        if (i % 7 === 1) {
+            trimmedSnapshots.pop()
+        }
+        timeline.snapshots = trimmedSnapshots.reverse()
+
         const json = JSON.stringify(timeline)
         fs.writeFileSync(`timeline_${key}.json`, json)
     })
