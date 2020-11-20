@@ -27,6 +27,8 @@ export const Canvas = ({
         isAnimated
     )
 
+    console.log("canvas rerender!")
+
     return (
         <canvas 
             ref={canvasRef} 

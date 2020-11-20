@@ -2,7 +2,10 @@ import { useRef, useEffect, useState } from 'react'
 import * as d3 from 'd3'
 import { useDashboardDispatch } from '../DashboardContext'
 
-const useCanvas = (draw: (context: CanvasRenderingContext2D, t: number) => void, shouldAnimate: boolean) => {
+const useCanvas = (
+    draw: (context: CanvasRenderingContext2D, t: number) => void, 
+    shouldAnimate: boolean
+) => {
     const dispatch = useDashboardDispatch()
 
     const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -43,8 +46,8 @@ const useCanvas = (draw: (context: CanvasRenderingContext2D, t: number) => void,
                             // cascading bug, although I'm not sure what it's
                             // cause is
                             timer.stop()
-                            setIsAnimating(false)
                             dispatch({type: 'finish_animating'})
+                            setIsAnimating(false)
                         }
                     })
                 } else {
