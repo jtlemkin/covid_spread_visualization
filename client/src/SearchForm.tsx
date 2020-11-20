@@ -60,7 +60,7 @@ export const SearchForm = ({ style }: SearchFormProps) => {
     const names = results ? results.map(result => result[0]) : []
 
     return (
-        <Container style={style}>
+        <Container style={{...style, paddingTop: 10, paddingBottom: 10}}>
             <Row>
                 <SearchField 
                     field={field} onFocus={onFocus} 
