@@ -15,14 +15,22 @@ import getScaleLabel from './helpers/getScaleLabel'
 import useFetch from './hooks/useFetch';
 import { useDashboardState, useDashboardDispatch } from './DashboardContext'
 import { useUSMapState, useUSMapDispatch } from './USMapContext';
-
-// A fips number is an identifier for counties, states, and the nation
+import styled from 'styled-components'
 
 interface USMapProps {
     countyData: Timeline<number>,
     percentile: number,
     style?: CSS.Properties,
 }
+
+const Icon = styled(FontAwesomeIcon)`
+    position: absolute;
+    top: 10px; 
+    right: 10px;
+    height: 20px; 
+    width: 20px !important; 
+    cursor: pointer
+`
 
 export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) => {
     const width = 975 * window.devicePixelRatio
@@ -150,8 +158,7 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
                     isAnimated={dashboardState.shouldAnimate && dashboardState.currentFips !== dashboardState.previousFips}
                     style={{width: `${width}px`, maxWidth: '100%'}}/>
                 { PlaceFactory(dashboardState.currentFips).type !== 'nation' && 
-                    <FontAwesomeIcon 
-                        style={{position: 'absolute', top: '10px', right: '10px', height: '20px', width: '20px', cursor: 'pointer'}}
+                    <Icon 
                         onClick={() => { 
                             setHighlightedFips(null)
                             dashboardDispatch({
