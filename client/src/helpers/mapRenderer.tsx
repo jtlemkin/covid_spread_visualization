@@ -102,7 +102,7 @@ function highlightPlace(place: Place | null, context: CanvasRenderingContext2D) 
         )
         const geometry = geometries.find(geometry => parseInt(geometry.id) === id)
 
-        context.lineWidth = place.type === "state" ? 1.75 : 1.75 / 4
+        context.lineWidth = place.type === "state" ? 1.75 : 1.75 / 2
         context.strokeStyle = 'black'
         context.beginPath()
         path(topojson.feature(us, geometry as GeometryObject))
@@ -118,9 +118,11 @@ function drawMap(
     percentile: number,
     selectedPlace: Place, 
     previousPlace: Place,
+    highlightedPlace: Place | null
 ) {
     drawCounties(context, snapshot, t, percentile, selectedPlace, previousPlace)
     drawStates(context, selectedPlace, previousPlace)
+    highlightPlace(highlightedPlace, context)
 }
 
 function drawCitiesLabels(
@@ -213,8 +215,7 @@ export const getRenderer = (
         const previousPlace = PlaceFactory(previousFips)
         const highlightedPlace = highlightedFips ? PlaceFactory(highlightedFips) : null
 
-        drawMap(context, t, snapshot, percentile, selectedPlace, previousPlace)
+        drawMap(context, t, snapshot, percentile, selectedPlace, previousPlace, highlightedPlace)
         drawCitiesLabels(context, t, selectedPlace, previousPlace, transform.a, cities) //transform.a is the current transform scale
-        highlightPlace(highlightedPlace, context)
     }
 }
