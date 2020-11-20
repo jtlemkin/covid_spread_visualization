@@ -58,7 +58,7 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
                 county_fips: a[1]
             } as City
         }) as City[]
-    }, [unparsedCities])
+    }, [unparsedCities, isFetching])
 
     const renderer = useCallback(getRenderer(
         dashboardState.currentFips, 
