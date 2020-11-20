@@ -54,7 +54,6 @@ const useCanvas = (
                     draw(context, 1)
                 }
             }
-            console.log()
         }
     }, [draw, dispatch, isAnimating, shouldAnimate])
 

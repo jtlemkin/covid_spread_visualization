@@ -138,7 +138,6 @@ export function createTimeline(covidData: NYTCSVRow[]) {
 export default async function updateTimeline() {
     getNYTRowArray().then(data => {
         const timeline = createTimeline(data)
-        console.log("ex", timeline.snapshots[0].statistics)
 
         const json = JSON.stringify(timeline)
 

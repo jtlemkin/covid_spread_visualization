@@ -11,11 +11,15 @@ async function graphify(data: Timeline<number>, selectedFips: number) {
         let sum = Object.keys(snapshot.statistics)
             .filter(key => PlaceFactory(selectedFips).contains(parseInt(key)))
             .reduce((sum, key) => {
-                if (snapshot.statistics[key] === null) {
+                if (snapshot.statistics[key] === null || Number.isNaN(snapshot.statistics[key])) {
                     return sum
                 }
-                
-                let n = snapshot.statistics[key] * PlaceFactory(parseInt(key)).getPopulation()
+
+                const pop = PlaceFactory(parseInt(key)).getPopulation()        
+                let n = snapshot.statistics[key] * pop
+                if (Number.isNaN(n)) {
+                    console.log("Say so", snapshot.statistics[key])
+                }
                 return sum + n
             }, 0)
 

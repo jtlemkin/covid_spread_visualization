@@ -13,8 +13,6 @@ function getDelta(timeline: Timeline<number>, index: number, fips: number) {
     } else {
         const lastNum: number | null | undefined = timeline.snapshots[index - 1].statistics[fips.toString()]
 
-        console.log("last", lastNum)
-
         if (lastNum !== undefined && lastNum !== null) {
             return num - lastNum
         } else {
@@ -85,9 +83,6 @@ export default function formatTimeline(
     isDataCases: boolean
 ) {
     // Initialize mapping data
-    if (!isDataCases) {
-        console.log("timeline", timeline)
-    }
     const snapshots = timeline.snapshots.map(snapshot => extractValue(snapshot, isDataCases))
     const max = isDataCases ? timeline.max.numInfected : timeline.max.numDead
     let newMappingData: Timeline<number> = { snapshots, max }

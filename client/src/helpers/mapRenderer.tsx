@@ -102,10 +102,6 @@ function highlightPlace(place: Place | null, context: CanvasRenderingContext2D) 
         )
         const geometry = geometries.find(geometry => parseInt(geometry.id) === id)
 
-        if (!geometry) {
-            console.log("NOT FOUND", place, usUntyped)
-        }
-
         context.lineWidth = place.type === "state" ? 1.75 : 1.75 / 4
         context.strokeStyle = 'black'
         context.beginPath()
