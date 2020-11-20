@@ -1,8 +1,28 @@
 const fs = require('fs')
 const csv = require('csv-parser')
+const path = require('path')
+const axios = require('axios')
 
 const cases_file = 'counties_cases.csv'
 const deaths_file = 'counties_deaths.csv'
+
+async function downloadCSV(url, fname) {
+    const _path = path.resolve(__dirname, fname)
+    const writer = fs.createWriteStream(_path)
+
+    const response = await axios({
+        url,
+        method: 'GET',
+        responseType: 'stream'
+    })
+
+    response.data.pipe(writer)
+
+    return new Promise((resolve, reject) => {
+        writer.on('finish', resolve)
+        writer.on('error', reject)
+    })
+}
 
 interface Data {
     cases: number,
@@ -31,16 +51,16 @@ async function parse_file(file_name: string, type: "cases" | "deaths") {
                 const timestamp = (new Date(row.date)).getTime()
                 const fips = parseInt(row.fips)
                 const cases = parseInt(row[type])
-                const mask = parseInt(row["Mask"])
-                const socialDistance = parseInt(row["social distance"])
-                const contactTracing = parseInt(row["contact tracing"])
-                const mandatoryMasking = parseInt(row["mandatory masking"])
-                const strictSocialDistance = parseInt(row["Strict social distance"])
+                const mask = parseInt(row["Masking"])
+                const socialDistance = parseInt(row["Social Distancing"])
+                const contactTracing = parseInt(row["Contact Tracing"])
+                const mandatoryMasking = parseInt(row["Mandatory Masking"])
+                const strictSocialDistance = parseInt(row["Strict social distancing"])
 
                 // This way we don't include US territories which we don't currently 
                 // have population data for
                 if (!row.fips.startsWith("72") && !row.fips.startsWith("78")) {
-                    data.push({
+                    const entry = {
                         timestamp,
                         fips,
                         values: {
@@ -51,7 +71,9 @@ async function parse_file(file_name: string, type: "cases" | "deaths") {
                             mandatoryMasking,
                             strictSocialDistance
                         }
-                    })
+                    }
+
+                    data.push(entry)
                 }
             }
         })
@@ -151,7 +173,7 @@ const keys = [
     "strictSocialDistance"
 ]
 
-/*function aggregate(rows: Row[]) {
+function aggregate(rows: Row[]) {
     let aggregated: Row[] = []
 
     for (let i = 0; i < rows.length; i++) {
@@ -171,7 +193,7 @@ const keys = [
     }
 
     return aggregated
-}*/
+}
 
 function createTimelines(data: Map<number, Pair[]>) {
     keys.forEach(key => {
@@ -236,13 +258,18 @@ function createTimelines(data: Map<number, Pair[]>) {
 }
 
 export default async function getPredictions() {
+    const cases_url = 'https://raw.githubusercontent.com/jtlemkin/covid-data/main/strategies_cases.csv'
+    const deaths_url = 'https://raw.githubusercontent.com/jtlemkin/covid-data/main/strategies_deaths.csv'
+    await downloadCSV(cases_url, cases_file)
+    await downloadCSV(deaths_url, deaths_file)
+
     const cases: Row[] = await parse_file(cases_file, "cases")
     const deaths: Row[] = await parse_file(deaths_file, "deaths")
 
-    //const agg_cases = aggregate(cases)
-    //const agg_deaths = aggregate(deaths)
+    const agg_cases = aggregate(cases)
+    const agg_deaths = aggregate(deaths)
 
-    const merged = merge(cases, deaths)
+    const merged = merge(agg_cases, agg_deaths)
 
     createTimelines(merged)
 }
