@@ -35,6 +35,6 @@ export const Canvas = ({
             onPointerDown={onPress} 
             onPointerMove={onHover}
             onPointerLeave={onLeave}
-            style={{width: `${width}px`, maxWidth: '100%'}> </canvas>
+            style={{width: `${width}px`, maxWidth: '100%'}}> </canvas>
     )
 }
