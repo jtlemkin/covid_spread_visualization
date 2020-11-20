@@ -105,7 +105,7 @@ export const Control = ({graphingData}: ControlProps) => {
                 "Nothing Different",
                 "Some Mask Usage and Shut Downs",
                 "Strict Mask Usage",
-                "Contact Tracing",
+                "Contact Tracing Only",
                 "Strict Mask Usage and Shut Downs",
                 "Strict Social Distancing"
               ]}
