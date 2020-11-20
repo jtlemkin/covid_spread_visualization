@@ -2,6 +2,7 @@ import React, { FunctionComponent, ReactNode } from 'react'
 import useWindowSize from './hooks/useWindowSize'
 import styled from 'styled-components'
 import colors from './colors'
+import CSS from 'csstype'
 
 type AdaptiveLayoutProps = {
     master: ReactNode,
@@ -25,8 +26,6 @@ const headerHeight = 50
 
 const Header = styled.div`
     width: 100%;
-    height: ${headerHeight}px !important;
-    max-height: ${headerHeight}px !important;
     background-color: ${colors.school};
     display: flex;
     align-items: center;
@@ -47,12 +46,13 @@ const Text = styled.p`
 `
 
 interface AppHeaderProps {
-    isMobile: boolean
+    isMobile: boolean,
+    style?: CSS.Properties
 }
 
-const AppHeader = ({isMobile}: AppHeaderProps) => {
+const AppHeader = ({isMobile, style}: AppHeaderProps) => {
     return (
-        <Header style={{flexDirection: isMobile ? 'column' : 'row', height: 'auto', maxHeight: 'none'}}>
+        <Header style={{flexDirection: isMobile ? 'column' : 'row', ...style}}>
             <Heading>COVID-19 Prediction Model to Assist in Policy Making</Heading>
             <Text>Developed by Houman Homayoun, Sai Manoj, Sreenitha Kasarapu and James Lemkin</Text>
         </Header>
@@ -66,7 +66,7 @@ export const AdaptiveLayout = ({ master, detail }: AdaptiveLayoutProps) => {
     if (!isDesktop) {
         return (
             <div>
-                <AppHeader isMobile={true}/>
+                <AppHeader isMobile={true} style={{height: 'auto'}}/>
                 <div style={{display: 'flex', flexDirection: 'column'}}>
                     {master}
                     {detail}
@@ -77,7 +77,7 @@ export const AdaptiveLayout = ({ master, detail }: AdaptiveLayoutProps) => {
 
     return (
         <div>
-            <AppHeader isMobile={false}/>
+            <AppHeader isMobile={false} style={{height: `${headerHeight}px`}}/>
             <Fixed height={windowSize.height - headerHeight} width={windowSize.width}>
                 <div style={{ display: 'flex', flexDirection: 'row', maxHeight: '100%', margin: 'auto' }}>
                     {master}
