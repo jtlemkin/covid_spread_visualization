@@ -33,16 +33,15 @@ const Title = styled.p`
 interface GraphProps {
     data: Dated[][],
     title: string,
-    type: string,
     style?: CSS.Properties
 }
 
-export const Graph = ({ data, title, type, style }: GraphProps) => {
+export const Graph = ({ data, title, style }: GraphProps) => {
     const width = 400
     const height = 265
     const margin = {top: 20, right: 30, bottom: 65, left: 55}
 
-    const formatType: string = type === "Percent" ? ".2%" : ".0s"
+    const formatType = ".0s"
 
     const x = d3.scaleUtc()
         .domain(d3.extent(data.flat(), d => d.date) as [Date, Date])
@@ -103,12 +102,12 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
 
                 tooltip
                     .attr("transform", `translate(${x(date)}, ${y(value)})`)
-                    .call(callout, `${formatDate(date)}${formatValues(values, type, labels)}${formatDiff(values, type)}`)
+                    .call(callout, `${formatDate(date)}${formatValues(values, labels)}${formatDiff(values)}`)
             }
         })
 
         svgElement.on("touchend mouseleave", () => tooltip.call(callout, null))
-    }, [data, labels, type, x, y])
+    }, [data, labels, x, y])
 
     const legendLabelledColors = labels.map((label, i) => {
         const color = lineColors[lineColors.length - 1 - i]
@@ -154,30 +153,18 @@ function formatDate(date: Date) {
     });
 }
 
-function formatValues(values: [Dated, Dated], type: string, labels: string[]) {
+function formatValues(values: [Dated, Dated], labels: string[]) {
     const formatted = values.map((value, index) => {
-        let adjustedValue = value.value
-        if (type === "Percent") {
-            adjustedValue *= 100
-        }
-
-        let str = adjustedValue.toLocaleString()
-        if (type === "Percent") {
-            str += '%'
-        }
+        let str = value.value.toLocaleString()
 
         return `${labels[index + labels.length - values.length]}: ${str}`
     })
     return '\n' + formatted.join('\n')
 }
 
-function formatDiff(values: [Dated, Dated], type: string) {
+function formatDiff(values: [Dated, Dated]) {
     let adjustedValues = [values[0].value, values[1].value]
     let endChar = ''
-    if (type === "Percent") {
-        adjustedValues = [adjustedValues[0] * 100, adjustedValues[1] * 100]
-        endChar = '%'
-    }
 
     const diff = adjustedValues[0] - adjustedValues[1]
     const str = diff.toLocaleString()

@@ -75,12 +75,6 @@ export const Control = ({graphingData}: ControlProps) => {
             dispatch({type: "toggle_total"})
           }
         }, {
-          labels: ["Percentages of County", "Total in County"],
-          checkedIndex: state.viewingParams.isRelative ? 0 : 1,
-          onValueChange: (x: number) => {
-            dispatch({type: "toggle_relative"})
-          }
-        }, {
           labels: ["Infections", "Deaths"],
           checkedIndex: state.viewingParams.isCases ? 0 : 1,
           onValueChange: (x: number) => {
@@ -92,7 +86,6 @@ export const Control = ({graphingData}: ControlProps) => {
     const graphData = getGraphData(
         graphingData, 
         state.viewingParams.isTotal, 
-        state.viewingParams.isRelative
     )
 
     // I think there are maybe two graphs for some reason for cases and deaths,
@@ -141,8 +134,7 @@ export const Control = ({graphingData}: ControlProps) => {
             <Graph
               style={{ width: '100%' }}
               data={graphData[indexOfChartToShow].values}
-              title={graphData[indexOfChartToShow].title}
-              type={graphData[indexOfChartToShow].type} />
+              title={graphData[indexOfChartToShow].title} />
           ) : (
             <div style={{padding: 30}}><Spinner /></div>
           )}

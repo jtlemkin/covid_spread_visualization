@@ -34,10 +34,6 @@ function getPercentage(timeline: Timeline<number>, index: number, fips: number) 
     }
 }
 
-function noOp(timeline: Timeline<number>, index: number, fips: number) {
-    return timeline.snapshots[index].statistics[fips.toString()]
-}
-
 function timelineMap(
     timeline: Timeline<number>, 
     newValueFun: (timeline: Timeline<number>, index: number, fips: number) => number | null
@@ -83,7 +79,11 @@ function halve(timeline: Timeline<number>) {
     return { snapshots: newSnapshots, max: timeline.max } as Timeline<number>
 }
 
-export default function formatTimeline(timeline: Timeline<CountyData>, isDataTotal: boolean, isDataRelative: boolean, isDataCases: boolean) {
+export default function formatTimeline(
+    timeline: Timeline<CountyData>, 
+    isDataTotal: boolean, 
+    isDataCases: boolean
+) {
     // Initialize mapping data
     if (!isDataCases) {
         console.log("timeline", timeline)
@@ -93,25 +93,12 @@ export default function formatTimeline(timeline: Timeline<CountyData>, isDataTot
     let newMappingData: Timeline<number> = { snapshots, max }
 
     if (!isDataTotal) {
-        console.log("timeline", newMappingData)
         newMappingData = timelineMap(newMappingData, getDelta)
-        console.log("formatted", newMappingData)
     }
 
     newMappingData = halve(newMappingData)
 
-    if (isDataRelative) {
-        newMappingData = timelineMap(newMappingData, getPercentage)
-    }
-
-    // The getDelta and getPercentage methods update the max values
-    // for the timeline, but if the data is total and aggregated then
-    // neither function is called and the max is set to 0, which 
-    // isn't the true max, so we call timelineMap with a noop function
-    // which should still update the max
-    if (isDataTotal && !isDataRelative) {
-        newMappingData = timelineMap(newMappingData, noOp)
-    }
+    newMappingData = timelineMap(newMappingData, getPercentage)
 
     return newMappingData
 }

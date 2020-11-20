@@ -9,8 +9,8 @@ interface DashboardState {
 }
 
 type Action = {type: 'set_fips', payload: number} | {type: 'toggle_total'} | 
-    {type: 'toggle_relative'} | {type: 'toggle_cases'} | 
-    {type: 'set_prediction', payload: string} | {type: 'finish_animating'}
+    {type: 'toggle_cases'} | {type: 'set_prediction', payload: string} | 
+    {type: 'finish_animating'}
 type Dispatch = (action: Action) => void
 
 const DashboardStateContext = createContext<DashboardState | undefined>(undefined)
@@ -31,15 +31,6 @@ function dashboardReducer(state: DashboardState, action: Action) {
                 viewingParams: {
                     ...state.viewingParams,
                     isTotal: !state.viewingParams.isTotal
-                },
-                shouldAnimate: false
-            }
-        case 'toggle_relative':
-            return {
-                ...state,
-                viewingParams: {
-                    ...state.viewingParams,
-                    isRelative: !state.viewingParams.isRelative
                 },
                 shouldAnimate: false
             }
@@ -79,7 +70,6 @@ export function DashboardProvider({children}: DashboardProviderProps) {
         previousFips: 0,
         viewingParams: {
             isTotal: true,
-            isRelative: true,
             isCases: true,
             predictionType: "cases"
         },

@@ -54,7 +54,6 @@ export interface LabelledColor {
 
 export interface ViewingParams {
     isTotal: boolean,
-    isRelative: boolean,
     isCases: boolean,
     predictionType: string
 }
