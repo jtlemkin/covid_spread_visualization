@@ -106,6 +106,10 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
         setHighlightedFips(selectedFips)
     }, [dashboardState.currentFips])
 
+    const onLeave = useCallback(() => {
+        setHighlightedFips(null)
+    }, [])
+
     let legendLabelledColors = colors.scale.map((color, i) => {
         const label = getScaleLabel(i, countyData.max, percentile)
         return { color, label } as LabelledColor
@@ -141,6 +145,7 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
                     renderFunc={renderer}
                     onPress={setPressedFips} 
                     onHover={onHover}
+                    onLeave={onLeave}
                     isAnimated={dashboardState.shouldAnimate && dashboardState.currentFips !== dashboardState.previousFips}
                     style={{width: `${width}px`, maxWidth: '100%'}}/>
                 { PlaceFactory(dashboardState.currentFips).type !== 'nation' && 
