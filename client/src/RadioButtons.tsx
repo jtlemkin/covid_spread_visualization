@@ -17,15 +17,15 @@ const Half = styled.div`
     justify-content: space-between;
     align-items: center;
     flex-direction: row;
-    margin: 10px;
-    max-width: 50%;
+    margin: 7px;
+    min-width: 33%;
 `
 
 const Label = styled.p`
     flex: 1;
     color: ${colors.text.onSurface};
     text-align: start;
-    margin-left: 5px;
+    margin-left: 7px;
     margin-top: 7px;
     margin-bottom: 7px;
 `

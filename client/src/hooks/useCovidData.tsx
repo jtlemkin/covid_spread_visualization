@@ -66,6 +66,9 @@ const useCovidData = (selectedFips: number, vp: ViewingParams) => {
     if (!vp.isCases && percentile) {
         percentile /= 2
     }
+    if (!vp.isCases && !vp.isTotal && percentile) {
+        percentile /= 4
+    }
 
     useEffect(() => {
         if (!historicalMappingData) {

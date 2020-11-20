@@ -46,6 +46,7 @@ const StyledCheckbox = styled.div<StyledCheckboxProps>`
 const CheckboxContainer = styled.label`
     display: inline-block;
     vertical-align: middle;
+    cursor: pointer;
 `
 
 interface CheckboxProps {

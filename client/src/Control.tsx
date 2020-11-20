@@ -103,10 +103,10 @@ export const Control = ({graphingData}: ControlProps) => {
             <RadioButtons
               labels={[
                 "Nothing Different",
-                "Moderate Mask Usage",
-                "Mandated Mask Usage",
+                "Some Mask Usage",
+                "Strict Mask Usage",
                 "Contact Tracing",
-                "Moderate Social Distancing",
+                "Some Social Distancing",
                 "Strict Social Distancing"
               ]}
               onChange={setTypeOfPredictionFromIndex}
