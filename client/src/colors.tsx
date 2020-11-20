@@ -7,7 +7,7 @@ const colors = {
     },
     primary: '#bd0026',
     scale: ['#fed976', '#feb24c', '#fd8d3c', '#f03b20', '#bd0026'],
-    graph: ['#b51d14', '#4053d3'],
+    graph: ['#4053d3', '#b51d14'],
     no_data: '#F0FFFF',
     school: '#1C4F72'
 }

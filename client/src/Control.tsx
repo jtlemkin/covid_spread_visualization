@@ -163,8 +163,8 @@ export const Control = ({graphingData}: ControlProps) => {
             <p>Designed and Developed by James Lemkin</p>
             <p>Data provided from the New York Times</p>
             <Img src="/NSF_4-Color_bitmap_Logo.png" alt="NSF Logo" style={{width: '60px'}}/>
-            <Img src="/UC-Davis-Logo.png" alt="UC Davis Logo" style={{width: '110px'}}/>
-            <Img src="/1024px-George_Mason_University_logo.svg.png" alt="GMU Logo" style={{width: '110px'}}/>
+            <Img src="/UC-Davis-Logo.png" alt="UC Davis Logo" style={{width: '120px'}}/>
+            <Img src="/1024px-George_Mason_University_logo.svg.png" alt="GMU Logo" style={{width: '100px'}}/>
           </div>
         </CardList>
       </PaddedBackground>

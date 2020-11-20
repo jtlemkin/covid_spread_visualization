@@ -111,7 +111,7 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
     }, [data, labels, type, x, y])
 
     const legendLabelledColors = labels.map((label, i) => {
-        const color = lineColors[i]
+        const color = lineColors[lineColors.length - 1 - i]
         return {label, color} as LabelledColor
     })
 
@@ -124,7 +124,7 @@ export const Graph = ({ data, title, type, style }: GraphProps) => {
                 viewBox={`0 0 ${width} ${height}`} 
                 preserveAspectRatio="xMidYMid meet" 
                 ref={svgRef}>
-                { data.map((lineData, index) => {
+                { data.slice().reverse().map((lineData, index) => {
                     const lineColorIndex = colors.graph.length - data.length + index
 
                     return (
