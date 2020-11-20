@@ -149,8 +149,10 @@ export const Control = ({graphingData}: ControlProps) => {
 
           <div style={{ textAlign: 'left' }}>
             <CardHeader>How To Use</CardHeader>
-            <p>This is a map for visualizing and predicting the spread of COVID-19.</p>
-            <p>By default it shows the percent of counties infected since the start of the pandemic, but there are options you can toggle that change this.</p>
+            <p>This website highlights lessons learned from the COVID-19 pandemic by using state of the art AI to show how the spread of the virus could have been changed by making certain policy measures near the beginning of the pandemic.</p>
+            <p>In the "What if we used..." section, you can select different measures that change how COVID-19 spreads in the visualization.</p>
+            <p>Currently, these parameters show what would happen if we only used the selected measure and no others.</p>
+            <p>By default, the map shows the percent of counties infected since the start of the pandemic, but there are options you can toggle that change this.</p>
             <p>Click on the map to zoom into the states and counties that you wish to see data for. </p>
             <p>Additionally you can search for cities, states and counties in the search places bar.</p>
             <p>Drag the timeline at the bottom of the map to see the changing COVID-19 numbers over time. </p>
