@@ -31,7 +31,7 @@ async function graphify(data: Timeline<number>, selectedFips: number) {
 }
 
 const useCovidData = (selectedFips: number, vp: ViewingParams) => {
-    const [historical, isFetchingHistorical] = useFetch<Timeline<CountyData>>('/timeline/cases', true)
+    const [historical, isFetchingHistorical] = useFetch<Timeline<CountyData>>('/timeline/cases', false)
     const [predicted, isFetchingPredicted] = useFetch<Timeline<CountyData>>(`/timeline/${vp.predictionType}`, false)
     const [historicalGraphingData, setHistoricalGraphingData] = useState<DataEntry[] | null>(null)
     const [predictedGraphingData, setPredictedGraphingData] = useState<DataEntry[] | null>(null)
