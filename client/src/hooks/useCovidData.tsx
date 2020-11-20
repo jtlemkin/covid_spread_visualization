@@ -17,9 +17,6 @@ async function graphify(data: Timeline<number>, selectedFips: number) {
 
                 const pop = PlaceFactory(parseInt(key)).getPopulation()        
                 let n = snapshot.statistics[key] * pop
-                if (Number.isNaN(n)) {
-                    console.log("Say so", snapshot.statistics[key])
-                }
                 return sum + n
             }, 0)
 

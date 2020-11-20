@@ -6,7 +6,7 @@ const axios = require('axios')
 const cases_file = 'counties_cases.csv'
 const deaths_file = 'counties_deaths.csv'
 
-async function downloadCSV(url, fname) {
+async function downloadCSV(url: string, fname: string) {
     const _path = path.resolve(__dirname, fname)
     const writer = fs.createWriteStream(_path)
 
@@ -26,8 +26,8 @@ async function downloadCSV(url, fname) {
 
 interface Data {
     cases: number,
-    mask: number,
-    socialDistance: number,
+    socialDistancePlusMask: number,
+    strictSocialDistancePlusMask: number,
     contactTracing: number,
     mandatoryMasking: number,
     strictSocialDistance: number
@@ -51,8 +51,8 @@ async function parse_file(file_name: string, type: "cases" | "deaths") {
                 const timestamp = (new Date(row.date)).getTime()
                 const fips = parseInt(row.fips)
                 const cases = parseInt(row[type])
-                const mask = parseInt(row["Masking"])
-                const socialDistance = parseInt(row["Social Distancing"])
+                const socialDistancePlusMask = parseInt(row["Masking + Social Distancing"])
+                const strictSocialDistancePlusMask = parseInt(row["Mandatory Masking + Strict Social Distancing"])
                 const contactTracing = parseInt(row["Contact Tracing"])
                 const mandatoryMasking = parseInt(row["Mandatory Masking"])
                 const strictSocialDistance = parseInt(row["Strict social distancing"])
@@ -65,8 +65,8 @@ async function parse_file(file_name: string, type: "cases" | "deaths") {
                         fips,
                         values: {
                             cases,
-                            mask,
-                            socialDistance, 
+                            socialDistancePlusMask,
+                            strictSocialDistancePlusMask, 
                             contactTracing,
                             mandatoryMasking,
                             strictSocialDistance
@@ -166,8 +166,8 @@ interface CountyData {
 
 const keys = [
     "cases",
-    "mask",
-    "socialDistance",
+    "socialDistancePlusMask",
+    "strictSocialDistancePlusMask",
     "contactTracing",
     "mandatoryMasking",
     "strictSocialDistance"

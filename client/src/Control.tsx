@@ -48,10 +48,10 @@ const Img = styled.img`
 
 const urls = [
     "cases",
-    "mask",
+    "social_distance_plus_mask",
     "mandatory_mask",
     "contact_tracing",
-    "social_distance",
+    "strict_social_distance_plus_mask",
     "strict_social_distance"
   ]
 
@@ -103,10 +103,10 @@ export const Control = ({graphingData}: ControlProps) => {
             <RadioButtons
               labels={[
                 "Nothing Different",
-                "Some Mask Usage",
+                "Some Mask Usage and Shut Downs",
                 "Strict Mask Usage",
                 "Contact Tracing",
-                "Some Social Distancing",
+                "Strict Mask Usage and Shut Downs",
                 "Strict Social Distancing"
               ]}
               onChange={setTypeOfPredictionFromIndex}
