@@ -6,14 +6,16 @@ const getCanvasPoint = (event: React.PointerEvent<HTMLCanvasElement>, currentFip
     const rect = canvas.getBoundingClientRect()
 
     const pos = new DOMPoint(
-        (event.clientX - rect.left) / canvas.clientWidth * 975, 
-        (event.clientY - rect.top) / canvas.clientHeight * 610
+        (event.clientX - rect.left) / rect.width * 975, 
+        (event.clientY - rect.top) / rect.height * 610
     )
 
     const nationalTransform = getTransform(0)
     const nationalMatrix = new DOMMatrix(
         [nationalTransform.scale, 0, 0, nationalTransform.scale, ...nationalTransform.scaleAdjustedTranslation]
     )
+
+    console.log("National", nationalTransform)
     
     const currentTransform = getTransform(currentFips)
     const currentMatrix = (new DOMMatrix(

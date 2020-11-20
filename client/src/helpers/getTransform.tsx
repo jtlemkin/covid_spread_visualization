@@ -7,14 +7,15 @@ import { Transform } from '../interfaces'
 const MAP_SIZE = [975, 610]
 
 const getTransform = (fips: number) => {
-    const geometry = fips === 0 ? (
-        usUntyped.objects.nation
+    // If looking at the US there is no transform
+    if (fips === 0) {
+        return { scale: 1, scaleAdjustedTranslation: [0, 0] } as Transform
+    }
+
+    const geometry = fips % 1000 === 0 ? (
+        usUntyped.objects.states.geometries.find(state => parseInt(state.id) === fips / 1000)
     ) : (
-        fips % 1000 === 0 ? (
-            usUntyped.objects.states.geometries.find(state => parseInt(state.id) === fips / 1000)
-        ) : (
-            usUntyped.objects.counties.geometries.find(county => parseInt(county.id) === fips)
-        )
+        usUntyped.objects.counties.geometries.find(county => parseInt(county.id) === fips)
     )
 
     const us = (usUntyped as unknown) as Topology
@@ -23,14 +24,10 @@ const getTransform = (fips: number) => {
     const height = bounds[1][1] - bounds[0][1]
     const width = bounds[1][0] - bounds[0][0]
     // The US is a special case where it seems like the center calculated this way causes maine to be cut off
-    const center = fips === 0 ? (
-        [MAP_SIZE[0] / 2, MAP_SIZE[1] / 2]
-    ) : (
-        [
-            (bounds[1][0] + bounds[0][0]) / 2,
-            (bounds[1][1] + bounds[0][1]) / 2
-        ]
-    )
+    const center = [
+        (bounds[1][0] + bounds[0][0]) / 2,
+        (bounds[1][1] + bounds[0][1]) / 2
+    ]
     const scale = Math.min(MAP_SIZE[1] / height, MAP_SIZE[0] / width)
     const translation = [center[0] - MAP_SIZE[0] / 2, center[1] - MAP_SIZE[1] / 2]
     const scaleAdjustedTranslation: [number, number] = [
