@@ -37,12 +37,19 @@ const Heading = styled.h2`
     margin: 5px;
     margin-left: 15px;
     color: white;
+    font-size: 1.3em;
 `
 
 const Text = styled.p`
     color: white;
     margin: 5px;
     margin-right: 15px;
+    font-size: 0.8em;
+`
+
+const Img = styled.img`
+    padding-left: 2px;
+    padding-right: 2px;
 `
 
 interface AppHeaderProps {
@@ -53,8 +60,13 @@ interface AppHeaderProps {
 const AppHeader = ({isMobile, style}: AppHeaderProps) => {
     return (
         <Header style={{flexDirection: isMobile ? 'column' : 'row', ...style}}>
-            <Heading>COVID-19 Prediction Model to Assist in Policy Making</Heading>
-            <Text>Developed by Houman Homayoun, Sai Manoj, Sreenitha Kasarapu and James Lemkin</Text>
+            <div style={{display: 'flex', alignItems: 'center'}}>
+                <Img src="/NSF_4-Color_bitmap_Logo.png" width="40px" />
+                <Img src="/UCDavisUnofficialSeal_2Color_0.png" width="40px" />
+                <Img src="/George_Mason_University_seal.svg" width="40px" />
+                <Heading>COVID-19 Prediction Model to Assist in Policy Making</Heading>
+            </div>
+            <Text>Developed by James Lemkin, Sreenitha Kasarapu, Sai Manoj, Houman Homayoun</Text>
         </Header>
     )
 }

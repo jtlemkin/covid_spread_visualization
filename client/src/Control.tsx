@@ -151,8 +151,8 @@ export const Control = ({graphingData}: ControlProps) => {
           <div style={{ textAlign: 'left' }}>
             <CardHeader>Acknowledgments</CardHeader>
             <p>Funded by NSF RAPID #2029414</p>
-            <p>COVID-19 Predictions Provided by <a href="https://www.ece.ucdavis.edu/~hhomayou/">Professor Houman Homayoun</a> of UC Davis and <a href="http://mason.gmu.edu/~spudukot/">Professor Sai Manoj</a> and <a href="https://www.linkedin.com/in/sreenitha-kasarapu/">Sreenitha Kasarapu</a> of George Mason University</p>
-            <p>Designed and Developed by <a href="https://www.linkedin.com/in/jtlemkin/">James Lemkin</a></p>
+            <p>COVID-19 Predictions Provided by <a href="https://www.linkedin.com/in/sreenitha-kasarapu/">Sreenitha Kasarapu</a> and <a href="http://mason.gmu.edu/~spudukot/">Professor Sai Manoj</a> of George Mason University</p>
+            <p>Designed and Developed by <a href="https://www.linkedin.com/in/jtlemkin/">James Lemkin</a> and <a href="https://www.ece.ucdavis.edu/~hhomayou/">Professor Houman Homayoun</a></p>
             <p>Data provided from the <a href="https://github.com/nytimes/covid-19-data">New York Times</a></p>
             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
               <Img src="/NSF_4-Color_bitmap_Logo.png" alt="NSF Logo" style={{width: '70px'}}/>
