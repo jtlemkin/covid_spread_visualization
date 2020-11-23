@@ -97,8 +97,6 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
         const childType = type === "state" ? "county" : "state"
         const pos = getCanvasPoint(event, dashboardState.currentFips)
 
-        console.log("pos", pos)
-
         const selectedFips = getPlace(pos, dashboardState.currentFips, childType)
 
         if (selectedFips !== null) {

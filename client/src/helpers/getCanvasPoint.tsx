@@ -14,8 +14,6 @@ const getCanvasPoint = (event: React.PointerEvent<HTMLCanvasElement>, currentFip
     const nationalMatrix = new DOMMatrix(
         [nationalTransform.scale, 0, 0, nationalTransform.scale, ...nationalTransform.scaleAdjustedTranslation]
     )
-
-    console.log("National", nationalTransform)
     
     const currentTransform = getTransform(currentFips)
     const currentMatrix = (new DOMMatrix(
