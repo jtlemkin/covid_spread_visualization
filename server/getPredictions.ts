@@ -181,10 +181,10 @@ function aggregate(rows: Row[]) {
 
         if (aggregated.length > 0 && (aggregated[i - 1].fips === newRow.fips)) {
             keys.forEach(key => {
-                let prior: number | null | undefined = aggregated[i - 1].values[key]
+                let prior: number | null | undefined = (aggregated[i - 1].values as any)[key]
     
                 if (prior !== null && prior !== undefined) {
-                    newRow.values[key] = Math.max(prior, prior + newRow.values[key])
+                    (newRow.values as any)[key] = Math.max(prior, prior + (newRow.values as any)[key])
                 }
             })
         }
