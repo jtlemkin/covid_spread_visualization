@@ -253,7 +253,7 @@ function createTimelines(data: Map<number, Pair[]>) {
         timeline.snapshots = trimmedSnapshots.reverse()
 
         const json = JSON.stringify(timeline)
-        fs.writeFileSync(`timeline_${key}.json`, json)
+        fs.writeFileSync(`build/timeline_${key}.json`, json)
     })
 }
 

@@ -6,15 +6,12 @@ import placesFor from './getPlaces'
 
 /* GET home page. */
 router.get('/', function(req: any, res: any, next: any) {
-  res.send('Hello, World!');
+  res.sendFile(__dirname + '/client/index.html');
 });
 
 /* GET timeline */
-router.get('/timeline', function(req: any, res: any, next: any) {
-  res.sendFile(__dirname + "/timeline_cases.json");
-})
-
 router.get('/timeline/cases', function(req: any, res: any, next: any) {
+  console.log("hit!")
   res.sendFile(__dirname + "/timeline_cases.json");
 })
 
