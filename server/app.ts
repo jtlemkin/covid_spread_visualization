@@ -9,7 +9,7 @@ var apiRouter = require('./api');
 import getPredictions from './getPredictions'
 
 var app = express();
-const port = 8080;
+const port = process.env.PORT || 8080;
 
 app.use(logger('dev'));
 app.use(express.json());
