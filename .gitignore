@@ -25,7 +25,6 @@ yarn-debug.log*
 yarn-error.log*
 
 *.csv
-*.deployment
 
 server/timeline_*
 

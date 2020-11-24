@@ -1,0 +1,3 @@
+[config]
+PRE_BUILD_COMMAND=echo foo && cd server
+SCM_DO_BUILD_DURING_DEPLOYMENT=false
