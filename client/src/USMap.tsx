@@ -148,18 +148,17 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
     legendLabelledColors.unshift({ color: no_data_color, label: no_data_label })
 
     const title = () => {
-        const descriptor = dashboardState.viewingParams.predictionType === "cases" ? "Reported" : "Predicted"
+        const descriptor = dashboardState.viewingParams.predictionType === "cases" ? "" : "Predicted"
         const place = PlaceFactory(dashboardState.currentFips).name.toLowerCase()
           .split(' ')
           .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
           .join(' ')
         const daily = dashboardState.viewingParams.isTotal ? '' : 'Daily'
-        const death = dashboardState.viewingParams.isCases ? 'Infection' : 'Deaths'
+        const death = dashboardState.viewingParams.isCases ? 'Infections' : 'Deaths'
         const dateFormattingOptions = {day: "2-digit", month: "short"}
         const lastUpdated = new Date(countyData.snapshots[countyData.snapshots.length - 1].timestamp)
-        const lastUpdateLabel = lastUpdated.toLocaleDateString(undefined, dateFormattingOptions)
     
-        return `${descriptor} ${daily} ${place} ${death} Rates\nUpdated ${lastUpdateLabel}`
+        return `${descriptor} ${daily} ${place} ${death} per 100,000`
     }
  
     return (
