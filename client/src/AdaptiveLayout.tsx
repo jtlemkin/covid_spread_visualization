@@ -64,7 +64,7 @@ const AppHeader = ({isMobile, style}: AppHeaderProps) => {
                 <Img src="/NSF_4-Color_bitmap_Logo.png" width="40px" />
                 <Img src="/UCDavisUnofficialSeal_2Color_0.png" width="40px" />
                 <Img src="/George_Mason_University_seal.svg" width="40px" />
-                <Heading>COVID-19 Prediction Model to Assist in Policy Making</Heading>
+                <Heading>COVID-19 Prediction Model to Assist in Policy Making: Beta Version</Heading>
             </div>
             <Text>Developed by James Lemkin, Sreenitha Kasarapu, Sai Manoj, Houman Homayoun</Text>
         </Header>

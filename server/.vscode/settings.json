@@ -2,5 +2,7 @@
     "appService.zipIgnorePattern": [
         "node_modules{,/**}",
         ".vscode{,/**}"
-    ]
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/049d4bf0-f882-4e83-a9d8-814f79ff4cd6/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/covid19-nsf",
+    "appService.deploySubpath": "."
 }

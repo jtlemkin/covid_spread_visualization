@@ -32,6 +32,23 @@ const Icon = styled(FontAwesomeIcon)`
     cursor: pointer
 `
 
+const Tooltip = styled.div`
+    z-index: 100; 
+    position: fixed;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    background-color: ${colors.background};
+    border: 1px grey solid;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    padding: 5px;
+`
+
+const TooltipHeader = styled.p`
+    font-weight: 500;
+    font-size: 0.8em;
+`
+
 export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) => {
     const width = 975 * window.devicePixelRatio
     const height = 610 * window.devicePixelRatio
@@ -41,6 +58,8 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
     const usMapState = useUSMapState()
     const usMapDispatch = useUSMapDispatch()
     const [highlightedFips, setHighlightedFips] = useState<number | null>(null)
+
+    const [tooltipPos, setTooltipPos] = useState<[number, number] | null>(null)
 
     const lastSnapshotIndex = countyData.snapshots.length - 1
 
@@ -109,6 +128,7 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
         const type = PlaceFactory(dashboardState.currentFips).type
         const childType = type === "state" ? "county" : "state"
         const pos = getCanvasPoint(event, dashboardState.currentFips)
+        setTooltipPos([event.pageX, event.pageY]);
 
         const selectedFips = getPlace(pos, dashboardState.currentFips, childType)
 
@@ -168,6 +188,12 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
                             }) 
                         }} 
                         icon={faSearchMinus}/>
+                }
+                { highlightedFips && tooltipPos &&
+                    <Tooltip style={{left: tooltipPos[0], top: tooltipPos[1] + 50}}>
+                        <TooltipHeader>{PlaceFactory(highlightedFips).name}</TooltipHeader>
+                        <p style={{fontSize: '0.8em'}}>Pop: {PlaceFactory(highlightedFips).getPopulation().toLocaleString()}</p>
+                    </Tooltip> 
                 }
             </div>
             <Slider 
