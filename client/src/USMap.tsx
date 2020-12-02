@@ -42,11 +42,11 @@ const Tooltip = styled.div`
     border-radius: 5px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     padding: 5px;
+    text-align: left;
 `
 
 const TooltipHeader = styled.p`
     font-weight: 500;
-    font-size: 0.8em;
 `
 
 export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) => {
@@ -63,6 +63,47 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
 
     const lastSnapshotIndex = countyData.snapshots.length - 1
 
+    let tooltipValue: number | null = null
+    if (tooltipPos && highlightedFips) {
+        if (PlaceFactory(highlightedFips!).type === "county") {
+            console.log("County!")
+            tooltipValue = countyData
+                .snapshots[lastSnapshotIndex - usMapState.snapshotIndexOffset]
+                .statistics[highlightedFips!.toString()] as number * 100000
+        } else {
+            console.log("State", Object.keys(
+                countyData
+                    .snapshots[lastSnapshotIndex - usMapState.snapshotIndexOffset]
+                    .statistics
+            ))
+            tooltipValue = Object.keys(
+                countyData
+                    .snapshots[lastSnapshotIndex - usMapState.snapshotIndexOffset]
+                    .statistics
+            ).reduce((sum, id) => {
+                const fips = parseInt(id)
+                if (PlaceFactory(highlightedFips!).contains(fips)) {
+                    const cases = countyData
+                        .snapshots[lastSnapshotIndex - usMapState.snapshotIndexOffset]
+                        .statistics[id] as number * PlaceFactory(fips).getPopulation()
+                    return sum + cases
+                } else {
+                    return sum
+                }
+            }, 0) / PlaceFactory(highlightedFips!).getPopulation() * 100000
+        }
+    }
+
+    let tooltipName: string | null = null
+    if (tooltipPos && highlightedFips) {
+        if (PlaceFactory(highlightedFips).type == "county") {
+            const pieces = PlaceFactory(highlightedFips).name.split(' ').slice()
+            tooltipName = pieces.slice(0, pieces.length - 2).join(' ')
+        } else {
+            tooltipName = PlaceFactory(highlightedFips).name
+        }
+    }
+
     const [unparsedCities, isFetching] = useFetch<any>(`/cities/${dashboardState.currentFips}`, true)
     const cities = useMemo(() => {
         if (isFetching) {
@@ -77,7 +118,7 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
                 county_fips: a[1]
             } as City
         }) as City[]
-    }, [unparsedCities, isFetching])
+    }, [unparsedCities, isFetching]) 
 
     const renderer = useCallback(getRenderer(
         dashboardState.currentFips, 
@@ -155,8 +196,6 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
           .join(' ')
         const daily = dashboardState.viewingParams.isTotal ? '' : 'Daily'
         const death = dashboardState.viewingParams.isCases ? 'Infections' : 'Deaths'
-        const dateFormattingOptions = {day: "2-digit", month: "short"}
-        const lastUpdated = new Date(countyData.snapshots[countyData.snapshots.length - 1].timestamp)
     
         return `${descriptor} ${daily} ${place} ${death} per 100,000`
     }
@@ -189,9 +228,10 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
                         icon={faSearchMinus}/>
                 }
                 { highlightedFips && tooltipPos &&
-                    <Tooltip style={{left: tooltipPos[0], top: tooltipPos[1] + 50}}>
-                        <TooltipHeader>{PlaceFactory(highlightedFips).name}</TooltipHeader>
-                        <p style={{fontSize: '0.8em'}}>Pop: {PlaceFactory(highlightedFips).getPopulation().toLocaleString()}</p>
+                    <Tooltip style={{left: tooltipPos[0], top: tooltipPos[1] + 70}}>
+                        <TooltipHeader><b>{tooltipName}</b></TooltipHeader>
+                        <p style={{fontSize: '0.8em'}}><b>Pop:</b> {PlaceFactory(highlightedFips).getPopulation().toLocaleString()}</p>
+                        <p style={{fontSize: '0.8em'}}><b>Per 100,000:</b> {tooltipValue!.toLocaleString("en", {maximumFractionDigits: 0})}</p>
                     </Tooltip> 
                 }
             </div>
