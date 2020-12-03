@@ -15,9 +15,10 @@ const StyledThumb = styled.div`
     align-items: center;
     text-align: center;
     flex-direction: row;
+    font-color: white;
     height: 42px;
     border-radius: 20px;
-    background-color: ${colors.background};
+    background-color: ${colors.school};
     justify-content: center;
     cursor: grab;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
@@ -33,7 +34,7 @@ const StyledTrack = styled.div`
 
 const Label = styled.div`
     font-size: 1em;
-    color: ${colors.text.onBackground};
+    color: white;
     margin-left: 5px;
     margin-right: 5px;
 `
@@ -52,9 +53,9 @@ export const Slider = (props: SliderProps) => {
     const Thumb = (props: object, state: ThumbState) => {
         return (
             <StyledThumb {...props}>
-                <FontAwesomeIcon icon={faChevronLeft} style={{paddingLeft: '5px'}}/>
+                <FontAwesomeIcon icon={faChevronLeft} style={{paddingLeft: '5px', color: 'white'}}/>
                 <Label><b>{label(value)}</b></Label>
-                <FontAwesomeIcon icon={faChevronRight}style={{paddingRight: '5px'}}/>
+                <FontAwesomeIcon icon={faChevronRight}style={{paddingRight: '5px', color: 'white'}}/>
             </StyledThumb>
         )
     }
