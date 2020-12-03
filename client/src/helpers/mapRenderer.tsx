@@ -90,7 +90,7 @@ function drawStates(
     })
 }
 
-function highlightPlace(place: Place | null, context: CanvasRenderingContext2D) {
+function highlightPlace(place: Place | null, currentScale: number, context: CanvasRenderingContext2D) {
     const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
     if (place && place.type !== "nation") {
@@ -102,7 +102,8 @@ function highlightPlace(place: Place | null, context: CanvasRenderingContext2D) 
         )
         const geometry = geometries.find(geometry => parseInt(geometry.id) === id)
 
-        context.lineWidth = place.type === "state" ? 1.75 : 1.75 / 2
+        const scalingFactor = 1 / currentScale
+        context.lineWidth = 1.75 * scalingFactor
         context.strokeStyle = 'black'
         context.beginPath()
         path(topojson.feature(us, geometry as GeometryObject))
@@ -118,11 +119,12 @@ function drawMap(
     percentile: number,
     selectedPlace: Place, 
     previousPlace: Place,
-    highlightedPlace: Place | null
+    highlightedPlace: Place | null,
+    currentScale: number
 ) {
     drawCounties(context, snapshot, t, percentile, selectedPlace, previousPlace)
     drawStates(context, selectedPlace, previousPlace)
-    highlightPlace(highlightedPlace, context)
+    highlightPlace(highlightedPlace, currentScale, context)
 }
 
 function drawCitiesLabels(
@@ -215,7 +217,7 @@ export const getRenderer = (
         const previousPlace = PlaceFactory(previousFips)
         const highlightedPlace = highlightedFips ? PlaceFactory(highlightedFips) : null
 
-        drawMap(context, t, snapshot, percentile, selectedPlace, previousPlace, highlightedPlace)
+        drawMap(context, t, snapshot, percentile, selectedPlace, previousPlace, highlightedPlace, transform.a)
         drawCitiesLabels(context, t, selectedPlace, previousPlace, transform.a, cities) //transform.a is the current transform scale
     }
 }
