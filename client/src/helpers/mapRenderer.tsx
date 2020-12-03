@@ -72,7 +72,14 @@ function drawStates(
     context: CanvasRenderingContext2D,
     selectedPlace: Place,
     previousPlace: Place,
+    t: number
 ) {
+    if (selectedPlace.type !== "nation" && t == 1) {
+        return
+    }
+
+    console.log("type", selectedPlace.type)
+
     const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
     context.strokeStyle = colors.background
@@ -123,7 +130,7 @@ function drawMap(
     currentScale: number
 ) {
     drawCounties(context, snapshot, t, percentile, selectedPlace, previousPlace)
-    drawStates(context, selectedPlace, previousPlace)
+    drawStates(context, selectedPlace, previousPlace, t)
     highlightPlace(highlightedPlace, currentScale, context)
 }
 
