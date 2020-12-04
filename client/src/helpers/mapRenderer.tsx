@@ -161,7 +161,7 @@ function drawCitiesLabels(
             }
 
             const scalingFactor = 1 / currentScale
-            const fontSize = 12 * scalingFactor
+            const fontSize = Math.max(13 * scalingFactor, 0.5)
 
             context.font = `${fontSize}px Arial`
             context.lineWidth = 2 * scalingFactor
