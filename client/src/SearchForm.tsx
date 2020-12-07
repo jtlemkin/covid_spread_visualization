@@ -53,7 +53,12 @@ export const SearchForm = ({ style }: SearchFormProps) => {
         const place = results.find(result => result[0] === name)
 
         if (place) {
-            dispatch({type: 'set_fips', payload: place[1]})
+            let fips = place[1]
+            const newYorkCityFips = [36061, 36047, 36081, 36005, 36085]
+            if (newYorkCityFips.includes(fips)) {
+                fips = 1
+            }
+            dispatch({type: 'set_fips', payload: fips})
         }
     }
 

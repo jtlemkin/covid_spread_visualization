@@ -66,7 +66,6 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
     let tooltipValue: number | null = null
     if (tooltipPos && highlightedFips) {
         if (PlaceFactory(highlightedFips!).type === "county") {
-            console.log("County!")
             tooltipValue = countyData
                 .snapshots[lastSnapshotIndex - usMapState.snapshotIndexOffset]
                 .statistics[highlightedFips!.toString()] as number * 100000
@@ -96,9 +95,12 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
 
     let tooltipName: string | null = null
     if (tooltipPos && highlightedFips) {
-        if (PlaceFactory(highlightedFips).type == "county") {
+        if (PlaceFactory(highlightedFips).type === "county") {
             const pieces = PlaceFactory(highlightedFips).name.split(' ').slice()
             tooltipName = pieces.slice(0, pieces.length - 2).join(' ')
+            if (highlightedFips === 1) {
+                tooltipName = "New York City"
+            }
         } else {
             tooltipName = PlaceFactory(highlightedFips).name
         }
@@ -157,7 +159,12 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
         const childType = type === "state" ? "county" : "state"
         const pos = getCanvasPoint(event, dashboardState.currentFips)
 
-        const selectedFips = getPlace(pos, dashboardState.currentFips, childType)
+        let selectedFips = getPlace(pos, dashboardState.currentFips, childType)
+
+        const newYorkCityFips = [36061, 36047, 36081, 36005, 36085]
+        if (selectedFips && newYorkCityFips.includes(selectedFips)) {
+            selectedFips = 1
+        }
 
         if (selectedFips !== null) {
             setHighlightedFips(null)
@@ -171,7 +178,11 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
         const pos = getCanvasPoint(event, dashboardState.currentFips)
         setTooltipPos([event.pageX, event.pageY]);
 
-        const selectedFips = getPlace(pos, dashboardState.currentFips, childType)
+        let selectedFips = getPlace(pos, dashboardState.currentFips, childType)
+        const newYorkCityFips = [36061, 36047, 36081, 36005, 36085]
+        if (selectedFips && newYorkCityFips.includes(selectedFips)) {
+            selectedFips = 1
+        }
 
         setHighlightedFips(selectedFips)
     }, [dashboardState.currentFips])

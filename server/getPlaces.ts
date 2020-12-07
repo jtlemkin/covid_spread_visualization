@@ -4,5 +4,9 @@ const rawdata = fs.readFileSync('./cities.json')
 const cities: any = JSON.parse(rawdata)
 
 export default function placesFor(fips: string) {
-    return cities[parseInt(fips).toString()]
+    if (Object.keys(cities).includes(fips)) {
+        return cities[parseInt(fips).toString()]
+    } else {
+        return []
+    }
 }

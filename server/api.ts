@@ -11,7 +11,6 @@ router.get('/', function(req: any, res: any, next: any) {
 
 /* GET timeline */
 router.get('/timeline/cases', function(req: any, res: any, next: any) {
-  console.log("hit!")
   res.sendFile(__dirname + "/timeline_cases.json");
 })
 

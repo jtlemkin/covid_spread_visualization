@@ -8,6 +8,7 @@ import { Snapshot, Place, City, Transform } from '../interfaces'
 import colors from '../colors'
 
 const projection = d3.geoAlbersUsa().scale(1300).translate([487.5, 305])
+const newYorkCityFips = [36061, 36047, 36081, 36005, 36085]
 
 function colorForCounty(fips: number, snapshot: Snapshot, percentile: number) {
     const value: number | null | undefined = snapshot.statistics[fips.toString()]
@@ -66,6 +67,24 @@ function drawCounties(
             context.stroke()
         }
     })
+
+    // Draw New York City
+    const countyColor = colorForCounty(1, snapshot, percentile)
+
+    if (selectedPlace.contains(1) || previousPlace.contains(1)) {
+        if (selectedPlace.contains(1) && previousPlace.contains(1)) {
+            context.fillStyle = countyColor
+        } else if (selectedPlace.contains(1)) {
+            context.fillStyle = d3.interpolate(colors.background, countyColor)(t)
+        } else {
+            context.fillStyle = d3.interpolate(countyColor, colors.background)(t)
+        }
+
+        context.beginPath()
+        path(topojson.merge(us, usUntyped.objects.counties.geometries.filter(county => newYorkCityFips.includes(parseInt(county.id))) as any))
+        context.fill()
+        context.stroke()
+    }
 }
 
 function drawStates(
@@ -74,11 +93,9 @@ function drawStates(
     previousPlace: Place,
     t: number
 ) {
-    if (selectedPlace.type !== "nation" && t == 1) {
+    if (selectedPlace.type !== "nation" && t === 1) {
         return
     }
-
-    console.log("type", selectedPlace.type)
 
     const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
@@ -100,7 +117,19 @@ function drawStates(
 function highlightPlace(place: Place | null, currentScale: number, context: CanvasRenderingContext2D) {
     const path = d3.geoPath(null, context)
     const us = (usUntyped as unknown) as Topology
-    if (place && place.type !== "nation") {
+    if (!place || place.type === "nation") {
+        return
+    }
+
+    const scalingFactor = 1 / currentScale
+    context.lineWidth = 1.75 * scalingFactor
+    context.strokeStyle = 'black'
+    context.beginPath()
+
+    if (place.fips === 1) {
+        const geometries = usUntyped.objects.counties.geometries.filter(county => newYorkCityFips.includes(parseInt(county.id)))
+        path(topojson.merge(us, geometries as any))
+    } else {
         const id = place.type === "state" ? place.fips / 1000 : place.fips
         const geometries = place.type === "state" ? (
             usUntyped.objects.states.geometries
@@ -108,14 +137,10 @@ function highlightPlace(place: Place | null, currentScale: number, context: Canv
             usUntyped.objects.counties.geometries
         )
         const geometry = geometries.find(geometry => parseInt(geometry.id) === id)
-
-        const scalingFactor = 1 / currentScale
-        context.lineWidth = 1.75 * scalingFactor
-        context.strokeStyle = 'black'
-        context.beginPath()
         path(topojson.feature(us, geometry as GeometryObject))
-        context.stroke()
     }
+
+    context.stroke()
 }
 
 // Draws a single frame of the map

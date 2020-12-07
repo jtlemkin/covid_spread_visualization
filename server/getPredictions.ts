@@ -253,7 +253,7 @@ function createTimelines(data: Map<number, Pair[]>) {
         timeline.snapshots = trimmedSnapshots.reverse()
 
         const json = JSON.stringify(timeline)
-        fs.writeFileSync(`build/timeline_${key}.json`, json)
+        fs.writeFileSync(`timeline_${key}.json`, json)
     })
 }
 
@@ -262,6 +262,8 @@ export default async function getPredictions() {
     const deaths_url = 'https://raw.githubusercontent.com/jtlemkin/covid-data/main/strategies_deaths.csv'
     await downloadCSV(cases_url, cases_file)
     await downloadCSV(deaths_url, deaths_file)
+
+    console.log("Download complete")
 
     const cases: Row[] = await parse_file(cases_file, "cases")
     const deaths: Row[] = await parse_file(deaths_file, "deaths")

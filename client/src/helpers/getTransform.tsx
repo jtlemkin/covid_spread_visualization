@@ -5,6 +5,7 @@ import { Topology, GeometryObject } from 'topojson-specification'
 import { Transform } from '../interfaces'
 
 const MAP_SIZE = [975, 610]
+const newYorkCityFips = [36061, 36047, 36081, 36005, 36085]
 
 const getTransform = (fips: number) => {
     // If looking at the US there is no transform
@@ -12,15 +13,25 @@ const getTransform = (fips: number) => {
         return { scale: 1, scaleAdjustedTranslation: [0, 0] } as Transform
     }
 
-    const geometry = fips % 1000 === 0 ? (
-        usUntyped.objects.states.geometries.find(state => parseInt(state.id) === fips / 1000)
-    ) : (
-        usUntyped.objects.counties.geometries.find(county => parseInt(county.id) === fips)
-    )
-
     const us = (usUntyped as unknown) as Topology
     const path = d3.geoPath()
-    const bounds = path.bounds(topojson.feature(us, geometry as GeometryObject))
+
+    let _bounds = null
+    if (fips === 1) {
+        // Get bounds for NYC
+        const geometries = usUntyped.objects.counties.geometries.filter(county => newYorkCityFips.includes(parseInt(county.id)))
+        _bounds = path.bounds(topojson.merge(us, geometries as any))
+    } else {
+        const geometry = fips % 1000 === 0 ? (
+            usUntyped.objects.states.geometries.find(state => parseInt(state.id) === fips / 1000)
+        ) : (
+            usUntyped.objects.counties.geometries.find(county => parseInt(county.id) === fips)
+        )
+    
+        _bounds = path.bounds(topojson.feature(us, geometry as GeometryObject))
+    }
+    const bounds: [[number, number], [number, number]] = _bounds
+
     const height = bounds[1][1] - bounds[0][1]
     const width = bounds[1][0] - bounds[0][0]
     // The US is a special case where it seems like the center calculated this way causes maine to be cut off
