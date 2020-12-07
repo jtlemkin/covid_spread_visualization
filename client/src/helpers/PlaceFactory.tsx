@@ -14,7 +14,15 @@ function getPopulationsKey(fips: number) {
 }
 
 const PlaceFactory = (fips: number) => {
-    const name: string = fips === 1 ? "New York City, NY" : (places as any)[fips]!
+    let name = ""
+    if (fips === 1) {
+        name = "New York City, NY"
+    } else {
+        name = (places as any)[fips]
+        if (!name) {
+            name = "Name not found"
+        }
+    }
     const type = fips === 0 ? "nation" : (fips % 1000 === 0 ? "state" : "county")
 
     const contains = (otherFips: number) => {
