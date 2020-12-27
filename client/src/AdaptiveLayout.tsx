@@ -26,7 +26,7 @@ const headerHeight = 50
 
 const Header = styled.div`
     width: 100%;
-    background-color: ${colors.school};
+    background-color: white;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -34,22 +34,13 @@ const Header = styled.div`
 `
 
 const Heading = styled.h2`
-    margin: 5px;
     margin-left: 15px;
-    color: white;
+    color: black;
     font-size: 1.3em;
 `
 
-const Text = styled.p`
-    color: white;
-    margin: 5px;
-    margin-right: 15px;
-    font-size: 0.8em;
-`
-
 const Img = styled.img`
-    padding-left: 2px;
-    padding-right: 2px;
+    padding-left: 20px;
 `
 
 interface AppHeaderProps {
@@ -60,13 +51,14 @@ interface AppHeaderProps {
 const AppHeader = ({isMobile, style}: AppHeaderProps) => {
     return (
         <Header style={{flexDirection: isMobile ? 'column' : 'row', ...style}}>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-                <Img src="/NSF_4-Color_bitmap_Logo.png" width="40px" />
-                <Img src="/UCDavisUnofficialSeal_2Color_0.png" width="40px" />
-                <Img src="/George_Mason_University_seal.svg" width="40px" />
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', margin: '10px'}}>
                 <Heading>COVID-19 Prediction Model to Assist in Policy Making: Beta Version</Heading>
+                <div style={{display: 'flex', justifyContent: 'space-evenly', alignItems: 'center'}}>
+                    <Img src="/NSF_4-Color_bitmap_Logo.png" style={{maxHeight: 40}} />
+                    <Img src="/UC-Davis-Logo.png" style={{maxHeight: 25}} />
+                    <Img src="/1024px-George_Mason_University_logo.svg.png" style={{maxHeight: 30, paddingBottom: 5}} />
+                </div>
             </div>
-            <Text>Developed by James Lemkin, Sreenitha Kasarapu, Sai Manoj, Houman Homayoun</Text>
         </Header>
     )
 }
@@ -77,7 +69,7 @@ export const AdaptiveLayout = ({ master, detail }: AdaptiveLayoutProps) => {
 
     if (!isDesktop) {
         return (
-            <div>
+            <div style={{width: '100%'}}>
                 <AppHeader isMobile={true} style={{height: 'auto'}}/>
                 <div style={{display: 'flex', flexDirection: 'column'}}>
                     {master}
@@ -91,7 +83,7 @@ export const AdaptiveLayout = ({ master, detail }: AdaptiveLayoutProps) => {
         <div>
             <AppHeader isMobile={false} style={{height: `${headerHeight}px`}}/>
             <Fixed height={windowSize.height - headerHeight} width={windowSize.width}>
-                <div style={{ display: 'flex', flexDirection: 'row', maxHeight: '100%', margin: 'auto' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', maxHeight: '100%', margin: 'auto' }}>
                     {master}
                 </div>
 

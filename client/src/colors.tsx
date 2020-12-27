@@ -1,5 +1,5 @@
 const colors = {
-    background: '#f7f7f7',
+    background: '#EFF2F5',
     surface: 'white',
     text: {
         onBackground: 'black',
@@ -7,7 +7,7 @@ const colors = {
     },
     primary: '#bd0026',
     scale: ['#fed976', '#feb24c', '#fd8d3c', '#f03b20', '#bd0026'],
-    graph: ['#4053d3', '#b51d14'],
+    graph: ['#feb24c', '#bd0026'],
     no_data: '#F0FFFF',
     school: '#1C4F72'
 }

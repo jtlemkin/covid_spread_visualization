@@ -30,7 +30,7 @@ export default function Dashboard() {
     <Container>
         <AdaptiveLayout 
           master={
-            <div style={{ flex: 1, paddingRight: 10, paddingLeft: 10, maxWidth: masterWidth }}>
+            <div style={{ flex: 1, paddingRight: 10, paddingLeft: 10, maxWidth: masterWidth, alignSelf: 'center' }}>
               { !isFetchingCovidData ? (
                 <USMap
                   countyData={mappingData!}

@@ -1,3 +1,7 @@
+let appInsights = require('applicationinsights');
+appInsights.setup('0b371f6d-ae30-44bc-a13d-9add82b197e3');
+appInsights.start();
+
 import createError = require('http-errors');
 import express = require('express');
 import path = require('path');

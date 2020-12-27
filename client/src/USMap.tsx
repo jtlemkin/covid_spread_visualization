@@ -49,6 +49,11 @@ const TooltipHeader = styled.p`
     font-weight: 500;
 `
 
+const Text = styled.p`
+    font-size: 0.8em;
+    text-align: left;
+`
+
 export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) => {
     const width = 975 * window.devicePixelRatio
     const height = 610 * window.devicePixelRatio
@@ -70,11 +75,6 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
                 .snapshots[lastSnapshotIndex - usMapState.snapshotIndexOffset]
                 .statistics[highlightedFips!.toString()] as number * 100000
         } else {
-            console.log("State", Object.keys(
-                countyData
-                    .snapshots[lastSnapshotIndex - usMapState.snapshotIndexOffset]
-                    .statistics
-            ))
             tooltipValue = Object.keys(
                 countyData
                     .snapshots[lastSnapshotIndex - usMapState.snapshotIndexOffset]
@@ -252,6 +252,7 @@ export const USMap = React.memo(({ countyData, percentile, style }: USMapProps) 
                 value={lastSnapshotIndex - usMapState.snapshotIndexOffset}
                 onChange={onSliderChange}
                 label={labelForIndex} />
+            <Text>Developed by James Lemkin, Sreenitha Kasarapu, Sai Manoj, Houman Homayoun</Text>
         </div>
     )
 })
