@@ -260,10 +260,10 @@ function createTimelines(data: Map<number, Pair[]>) {
 export default async function getPredictions() {
     const cases_url = 'https://raw.githubusercontent.com/jtlemkin/covid-data/main/strategies_cases.csv'
     const deaths_url = 'https://raw.githubusercontent.com/jtlemkin/covid-data/main/strategies_deaths.csv'
-    await downloadCSV(cases_url, cases_file)
-    await downloadCSV(deaths_url, deaths_file)
+    //await downloadCSV(cases_url, cases_file)
+    //await downloadCSV(deaths_url, deaths_file)
 
-    console.log("Download complete")
+    //console.log("Download complete")
 
     const cases: Row[] = await parse_file(cases_file, "cases")
     const deaths: Row[] = await parse_file(deaths_file, "deaths")
