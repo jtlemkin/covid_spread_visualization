@@ -1,8 +1,9 @@
 import places from '../data/places.json'
-import populations from '../data/populations.json'
+import county_pops from '../data/county_populations.json'
+import state_pops from '../data/state_populations.json'
 import { Place } from '../interfaces'
 
-const populationsUntyped = (populations as any);
+const populationsUntyped = (county_pops as any);
 const newYorkCityFips = [36061, 36047, 36081, 36005, 36085]
 
 function getPopulationsKey(fips: number) {
@@ -52,22 +53,7 @@ const PlaceFactory = (fips: number) => {
         if (type === "nation") {
             return 328_200_000
         } else if (type === "state") {
-            let pop = Object.keys(populationsUntyped).reduce((population, id) => {
-                fips = parseInt(id)
-                if (contains(fips) && !newYorkCityFips.includes(fips)) {
-                    population += populationsUntyped[getPopulationsKey(fips)]
-                }
-
-                return population
-            }, 0)
-
-            // If state is New York add the population of New York City because
-            // it is a special case not included in our reduce function
-            if (fips === 36000) {
-                pop += 8_336_817
-            }
-
-            return pop
+            return (state_pops as any)[Math.floor(fips / 1000).toString()]
         }
 
         if (fips === 2158) {
@@ -75,7 +61,7 @@ const PlaceFactory = (fips: number) => {
         } else if (fips === 1) {
             return 8_336_817
         } else {
-            return populationsUntyped[getPopulationsKey(fips)] as number
+            return (county_pops as any)[getPopulationsKey(fips)] as number
         }
     }
 
